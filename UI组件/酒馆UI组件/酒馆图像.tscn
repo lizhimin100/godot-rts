@@ -1,0 +1,58 @@
+[gd_scene load_steps=9 format=3 uid="uid://bkq5l5mluq7bg"]
+
+[ext_resource type="Texture2D" uid="uid://c714hm5r5jbcr" path="res://美术、音频/建筑/酒馆.png" id="1_ev2fd"]
+[ext_resource type="Script" uid="uid://drerod5g4qn7t" path="res://代码/UI/酒馆.gd" id="1_o7mnh"]
+[ext_resource type="Script" uid="uid://bqj5smwyxquwc" path="res://代码/组件代码/轮廓高亮组件.gd" id="2_o7mnh"]
+[ext_resource type="Shader" uid="uid://cyv24a5tb8h7q" path="res://shader学习/shader/轮廓高亮.gdshader" id="2_yvqyp"]
+[ext_resource type="StyleBox" uid="uid://chxka1cagm6yg" path="res://主题/按钮主题/空样式.tres" id="3_mtcum"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_o7mnh"]
+radius = 143.108
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mtcum"]
+shader = ExtResource("2_yvqyp")
+shader_parameter/line_color = Color(1, 1, 1, 1)
+shader_parameter/line_thickness = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mtcum"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[node name="酒馆建筑" type="Area2D"]
+input_pickable = false
+script = ExtResource("1_o7mnh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_o7mnh")
+
+[node name="CanvasGroup" type="CanvasGroup" parent="."]
+z_index = 99
+material = SubResource("ShaderMaterial_mtcum")
+
+[node name="酒馆按钮" type="Button" parent="CanvasGroup"]
+offset_left = -128.0
+offset_top = -128.0
+offset_right = 128.0
+offset_bottom = 128.0
+theme_override_styles/focus = ExtResource("3_mtcum")
+theme_override_styles/disabled_mirrored = ExtResource("3_mtcum")
+theme_override_styles/disabled = ExtResource("3_mtcum")
+theme_override_styles/hover_pressed_mirrored = ExtResource("3_mtcum")
+theme_override_styles/hover_pressed = ExtResource("3_mtcum")
+theme_override_styles/hover_mirrored = ExtResource("3_mtcum")
+theme_override_styles/hover = ExtResource("3_mtcum")
+theme_override_styles/pressed_mirrored = ExtResource("3_mtcum")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mtcum")
+theme_override_styles/normal_mirrored = ExtResource("3_mtcum")
+theme_override_styles/normal = ExtResource("3_mtcum")
+
+[node name="酒馆图像" type="Sprite2D" parent="CanvasGroup"]
+texture = ExtResource("1_ev2fd")
+
+[node name="轮廓高亮组件" type="Node" parent="." node_paths=PackedStringArray("visuals")]
+script = ExtResource("2_o7mnh")
+visuals = NodePath("../CanvasGroup")
+outline_thickness = 3
+
+[connection signal="mouse_entered" from="CanvasGroup/酒馆按钮" to="." method="_on_酒馆按钮_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasGroup/酒馆按钮" to="." method="_on_酒馆按钮_mouse_exited"]
+[connection signal="pressed" from="CanvasGroup/酒馆按钮" to="." method="_on_酒馆按钮_pressed"]

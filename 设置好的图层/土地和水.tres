@@ -1,0 +1,36 @@
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://b0bx7trno57e6"]
+
+[ext_resource type="Texture2D" uid="uid://dnkto7p444soc" path="res://小剑资源/Terrain/Water/Water.png" id="1_bs8q6"]
+[ext_resource type="Texture2D" uid="uid://heslydcwo8qa" path="res://忍者地形/TilesetFloor.png" id="2_flirt"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ck1k6"]
+texture = ExtResource("1_bs8q6")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cv0q5"]
+texture = ExtResource("2_flirt")
+1:8/0 = 0
+12:8/0 = 0
+12:15/0 = 0
+11:19/0 = 0
+1:22/0 = 0
+12:22/0 = 0
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_ck1k6")
+sources/2 = SubResource("TileSetAtlasSource_cv0q5")

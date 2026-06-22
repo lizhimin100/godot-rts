@@ -1,0 +1,41 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://b72cd6jvaspfi"]
+
+[ext_resource type="Texture2D" uid="uid://if7lasys8bdi" path="res://小剑资源/Terrain/Ground/Shadows.png" id="1_712vq"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d8n3d"]
+texture = ExtResource("1_712vq")
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+8:4/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+8:5/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+8:6/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+8:7/0 = 0
+4:8/0 = 0
+5:8/0 = 0
+6:8/0 = 0
+7:8/0 = 0
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_d8n3d")

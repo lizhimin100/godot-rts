@@ -1,0 +1,110 @@
+[gd_scene load_steps=5 format=3 uid="uid://bk01m4g0u0ed3"]
+
+[ext_resource type="PackedScene" uid="uid://dht5nqlych3ww" path="res://UI/存储UI/背包格子.tscn" id="1_41m0w"]
+[ext_resource type="FontFile" uid="uid://hhub7q5v0o7p" path="res://美术、音频/Uranus_Pixel_11Px.ttf" id="1_640wa"]
+[ext_resource type="Script" uid="uid://th4uonwljdiv" path="res://代码/存储物品界面ui刷新格子代码.gd" id="1_gfv0h"]
+[ext_resource type="Script" uid="uid://dhkpfds6esf7u" path="res://代码/鼠标（背包格子0）刷新代码.gd" id="2_450nt"]
+
+[node name="存储物品界面UI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -317.0
+offset_right = -27.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gfv0h")
+
+[node name="背包UI" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -296.5
+offset_top = -199.5
+offset_right = 200.5
+offset_bottom = 117.5
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.402011, 0.466281, 0.711303, 1)
+
+[node name="GridContainer" type="GridContainer" parent="背包UI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -212.0
+offset_top = -122.5
+offset_right = 212.0
+offset_bottom = 122.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 40
+columns = 5
+
+[node name="鼠标" type="Node2D" parent="背包UI/GridContainer"]
+z_index = 1
+script = ExtResource("2_450nt")
+
+[node name="Sprite2D" type="Sprite2D" parent="背包UI/GridContainer/鼠标"]
+
+[node name="显示鼠标物品数量" type="Label" parent="背包UI/GridContainer/鼠标"]
+offset_left = 8.0
+offset_top = 9.0
+offset_right = 28.0
+offset_bottom = 29.0
+theme_override_fonts/font = ExtResource("1_640wa")
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="背包格子1" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子2" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子3" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子4" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子5" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子6" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子7" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子8" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子9" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子10" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子11" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子12" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子13" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子14" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2
+
+[node name="背包格子15" parent="背包UI/GridContainer" instance=ExtResource("1_41m0w")]
+layout_mode = 2

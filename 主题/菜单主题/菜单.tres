@@ -1,0 +1,17 @@
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://dytvesdnhjnpa"]
+
+[ext_resource type="FontFile" uid="uid://hhub7q5v0o7p" path="res://美术、音频/Uranus_Pixel_11Px.ttf" id="1_cdppe"]
+[ext_resource type="StyleBox" uid="uid://bjcetq8ussryt" path="res://主题/菜单主题/菜单按钮悬停主题.tres" id="2_dk6kx"]
+[ext_resource type="StyleBox" uid="uid://ds4stprk4y64h" path="res://主题/菜单主题/菜单按钮主题.tres" id="3_syhli"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cdppe"]
+
+[resource]
+Button/colors/font_color = Color(0, 0, 0, 1)
+Button/colors/font_hover_color = Color(0.537708, 0.368502, 0.174007, 1)
+Button/fonts/font = ExtResource("1_cdppe")
+Button/styles/focus = SubResource("StyleBoxEmpty_cdppe")
+Button/styles/hover = ExtResource("2_dk6kx")
+Button/styles/normal = ExtResource("3_syhli")
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.52549)
+RichTextLabel/colors/font_shadow_color = Color(0, 0, 0, 0.576471)

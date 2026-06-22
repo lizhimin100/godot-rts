@@ -1,0 +1,230 @@
+[gd_scene load_steps=16 format=4 uid="uid://dckvmga6hdcv3"]
+
+[ext_resource type="TileSet" uid="uid://ckprlv4mqbbho" path="res://设置好的图层/营地层.tres" id="1_mv3gq"]
+[ext_resource type="Script" uid="uid://dlu525c05jgps" path="res://代码/UI/棋子库.gd" id="1_qo4jb"]
+[ext_resource type="Script" uid="uid://bdq00jl2xdlj4" path="res://代码/组件代码/游戏瓦片层组件.gd" id="2_1xugs"]
+[ext_resource type="Texture2D" uid="uid://c2d435qxpeon4" path="res://小剑资源/UI/Buttons/Button_Disable_3Slides.png" id="2_3d3im"]
+[ext_resource type="Script" uid="uid://df5ca8tntufcf" path="res://代码/组件代码/单位网格组件.gd" id="3_3d3im"]
+[ext_resource type="Script" uid="uid://cnyb4s4fmd1t7" path="res://代码/组件代码/瓦片高亮组件.gd" id="4_svpjx"]
+[ext_resource type="PackedScene" uid="uid://clh3tmnsxuqwm" path="res://单位/单位拖放/单位.tscn" id="5_ywui0"]
+[ext_resource type="Texture2D" uid="uid://4i2xoeoqy27s" path="res://小剑资源/UI/Buttons/Button_Hover_9Slides.png" id="7_1xugs"]
+[ext_resource type="FontFile" uid="uid://8di0jvr25vat" path="res://assets/font/m5x7.ttf" id="9_svpjx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3d3im"]
+bg_color = Color(0.337255, 0.635294, 0.882353, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.6, 0.862745, 1, 0.729412)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+expand_margin_left = 10.0
+expand_margin_top = 4.0
+expand_margin_right = 10.0
+expand_margin_bottom = 4.0
+shadow_color = Color(0, 0.0823529, 0.12549, 1)
+shadow_size = 4
+
+[sub_resource type="LabelSettings" id="LabelSettings_ywui0"]
+font = ExtResource("9_svpjx")
+font_size = 32
+
+[sub_resource type="Animation" id="Animation_ywui0"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("棋子格子:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-620, 10)]
+}
+
+[sub_resource type="Animation" id="Animation_svpjx"]
+resource_name = "弹出"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("棋子格子:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-620, 10), Vector2(-620, -300), Vector2(-620, -220)]
+}
+
+[sub_resource type="Animation" id="Animation_lba0h"]
+resource_name = "隐藏"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("棋子格子:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-620, -196), Vector2(-620, -300), Vector2(-620, 10)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_tkv3g"]
+_data = {
+&"RESET": SubResource("Animation_ywui0"),
+&"弹出": SubResource("Animation_svpjx"),
+&"隐藏": SubResource("Animation_lba0h")
+}
+
+[node name="棋子库" type="Control" node_paths=PackedStringArray("单位悬停介绍")]
+show_behind_parent = true
+z_index = 5
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("1_qo4jb")
+"单位悬停介绍" = NodePath("棋子格子/悬停介绍")
+
+[node name="棋子格子" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -15.5
+anchor_top = -0.9
+anchor_right = -15.5
+anchor_bottom = -0.9
+offset_top = 46.0
+offset_right = 1280.0
+offset_bottom = 296.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_3d3im")
+patch_margin_left = 10
+patch_margin_top = 10
+patch_margin_right = 10
+patch_margin_bottom = 10
+metadata/_edit_use_anchors_ = true
+
+[node name="长凳区域" type="TileMapLayer" parent="棋子格子" node_paths=PackedStringArray("unit_grid", "tile_highlighter") groups=["棋子库层"]]
+unique_name_in_owner = true
+z_index = 99
+position = Vector2(64, 78)
+tile_map_data = PackedByteArray("AAAAAAAAAgAAAAAAAAABAAAAAgAAAAAAAAACAAAAAgAAAAAAAAADAAAAAgAAAAAAAAAEAAAAAgAAAAAAAAAFAAAAAgAAAAAAAAAGAAAAAgAAAAAAAAAHAAAAAgAAAAAAAAAIAAAAAgAAAAAAAAAJAAAAAgAAAAAAAAAKAAAAAgAAAAAAAAALAAAAAgAAAAAAAAA=")
+tile_set = ExtResource("1_mv3gq")
+script = ExtResource("2_1xugs")
+unit_grid = NodePath("替补席单位网格")
+tile_highlighter = NodePath("瓦片高亮")
+
+[node name="高光层" type="TileMapLayer" parent="棋子格子/长凳区域"]
+tile_set = ExtResource("1_mv3gq")
+
+[node name="替补席单位网格" type="Node2D" parent="棋子格子/长凳区域"]
+z_index = 99
+position = Vector2(128, -384)
+script = ExtResource("3_3d3im")
+size = Vector2i(12, 1)
+
+[node name="瓦片高亮" type="Node" parent="棋子格子/长凳区域" node_paths=PackedStringArray("play_area", "highlight_layer")]
+script = ExtResource("4_svpjx")
+enabled = false
+play_area = NodePath("..")
+highlight_layer = NodePath("../高光层")
+
+[node name="单位" parent="棋子格子/长凳区域" instance=ExtResource("5_ywui0")]
+
+[node name="单位2" parent="棋子格子/长凳区域" instance=ExtResource("5_ywui0")]
+position = Vector2(66, 0)
+
+[node name="悬停介绍" type="NinePatchRect" parent="棋子格子"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -401.0
+offset_top = -89.0
+offset_right = -201.0
+offset_bottom = 61.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = ExtResource("7_1xugs")
+patch_margin_left = 18
+patch_margin_top = 15
+patch_margin_right = 18
+patch_margin_bottom = 26
+
+[node name="名字" type="Label" parent="棋子格子/悬停介绍"]
+layout_mode = 0
+offset_left = 141.0
+offset_top = 30.0
+offset_right = 219.0
+offset_bottom = 75.0
+
+[node name="图片" type="TextureRect" parent="棋子格子/悬停介绍"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 113.0
+offset_bottom = 90.0
+expand_mode = 2
+stretch_mode = 4
+
+[node name="介绍" type="RichTextLabel" parent="棋子格子/悬停介绍"]
+visible = false
+layout_mode = 0
+offset_left = 25.0
+offset_top = 119.0
+offset_right = 222.0
+offset_bottom = 256.0
+scroll_active = false
+
+[node name="背景" type="PanelContainer" parent="棋子格子"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 9.6375
+anchor_top = -0.239
+anchor_right = 9.6375
+anchor_bottom = -0.239
+offset_left = -11841.0
+offset_top = 15.75
+offset_right = -11737.0
+offset_bottom = 65.75
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3d3im")
+metadata/_edit_use_anchors_ = true
+
+[node name="文本" type="Label" parent="棋子格子/背景"]
+layout_mode = 2
+text = "备战席"
+label_settings = SubResource("LabelSettings_ywui0")
+
+[node name="按钮" type="Button" parent="棋子格子/背景"]
+layout_mode = 2
+icon_alignment = 1
+expand_icon = true
+
+[node name="动画" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_tkv3g")
+}
+
+[connection signal="pressed" from="棋子格子/背景/按钮" to="." method="_on_按钮_pressed"]

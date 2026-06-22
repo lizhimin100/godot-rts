@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dxe1rs6iqj2ap"]
+
+[ext_resource type="Script" uid="uid://d4ey2pmmib5wa" path="res://代码/组件代码/属性组件.gd" id="1_rxahn"]
+
+[node name="属性组件" type="Node"]
+script = ExtResource("1_rxahn")

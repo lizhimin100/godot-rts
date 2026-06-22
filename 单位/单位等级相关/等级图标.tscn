@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://dhq0tkuuf2tcr"]
+
+[ext_resource type="Texture2D" uid="uid://cj1cl8jdui60n" path="res://assets/sprites/level1.png" id="1_fd603"]
+[ext_resource type="Script" uid="uid://jg2qg3qs2j0r" path="res://代码/单位/单位等级/等级图标.gd" id="2_5q7wx"]
+[ext_resource type="Resource" uid="uid://dat6dna0am8y7" path="res://单位/单位数据/士兵.tres" id="3_5q7wx"]
+
+[node name="等级图标" type="TextureRect"]
+custom_minimum_size = Vector2(20, 20)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_fd603")
+stretch_mode = 5
+script = ExtResource("2_5q7wx")
+stats = ExtResource("3_5q7wx")

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://4r6fq3otr2qt"]
+
+[ext_resource type="Script" uid="uid://fpb8csmb8c8v" path="res://代码/rts—node.gd" id="1_6ngd4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_knel3"]
+
+[node name="rts——node" type="Node2D"]
+script = ExtResource("1_6ngd4")
+
+[node name="选择检查" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="框选碰撞" type="CollisionShape2D" parent="选择检查"]
+shape = SubResource("RectangleShape2D_knel3")

@@ -1,0 +1,12 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://5thg40yu3mr7"]
+
+[ext_resource type="Texture2D" uid="uid://dnkto7p444soc" path="res://小剑资源/Terrain/Water/Water.png" id="1_q2r7s"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2q3n6"]
+texture = ExtResource("1_q2r7s")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_2q3n6")

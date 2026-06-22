@@ -1,0 +1,337 @@
+[gd_scene load_steps=23 format=3 uid="uid://6vlqyri3tebf"]
+
+[ext_resource type="Script" uid="uid://mv3wb26h3ah0" path="res://代码/士兵.gd" id="1_un01f"]
+[ext_resource type="Shader" uid="uid://b8uakkj22ld0y" path="res://shader学习/shader/角色描边.gdshader" id="2_oq3ne"]
+[ext_resource type="Texture2D" uid="uid://ds2tj2d7e2kpm" path="res://小剑资源/兵种/Knights/Troops/Warrior/Blue/Warrior_Blue.png" id="2_pahdm"]
+[ext_resource type="Texture2D" uid="uid://c3ui2306rur8h" path="res://资源/gdb-keyboard-2.png" id="3_gqlrw"]
+[ext_resource type="Theme" uid="uid://7roeiv0sw6d5" path="res://主题/任务面板主题.tres" id="5_c0twt"]
+[ext_resource type="PackedScene" uid="uid://dwrn6h0uesms7" path="res://组件/交互组件.tscn" id="5_t6xuw"]
+[ext_resource type="Script" uid="uid://box4v7sfi0k83" path="res://代码/组件代码/受伤框组件.gd" id="7_034eo"]
+[ext_resource type="Script" uid="uid://cds57d1vfh0ng" path="res://代码/组件代码/伤害框组件.gd" id="8_mfkmn"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mfkmn"]
+shader = ExtResource("2_oq3ne")
+shader_parameter/outline_with = 2.0
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1n3l5"]
+size = Vector2(28, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5dgef"]
+atlas = ExtResource("3_gqlrw")
+region = Rect2(144, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_px6uk"]
+atlas = ExtResource("3_gqlrw")
+region = Rect2(144, 176, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_61jj1"]
+atlas = ExtResource("3_gqlrw")
+region = Rect2(144, 288, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a25yl"]
+atlas = ExtResource("3_gqlrw")
+region = Rect2(144, 400, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6w47s"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5dgef")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_px6uk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_61jj1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a25yl")
+}],
+"loop": true,
+"name": &"default",
+"speed": 6.0
+}]
+
+[sub_resource type="Environment" id="Environment_oq3ne"]
+background_mode = 3
+glow_enabled = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mfkmn"]
+size = Vector2(42, 59)
+
+[sub_resource type="Animation" id="Animation_q2bos"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("角色图像:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 1152, 190)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("角色图像:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("角色图像:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_buuir"]
+resource_name = "待机动画"
+length = 0.6
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("角色图像:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 1152, 190)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("角色图像:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("角色图像:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5]
+}
+
+[sub_resource type="Animation" id="Animation_1y1n8"]
+resource_name = "攻击动画"
+length = 0.6
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("角色图像:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 380, 1152, 190)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("角色图像:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("角色图像:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5]
+}
+
+[sub_resource type="Animation" id="Animation_2wxtu"]
+resource_name = "移动动画"
+length = 0.6
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("角色图像:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 190, 1152, 190)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("角色图像:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("角色图像:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_r414p"]
+_data = {
+&"RESET": SubResource("Animation_q2bos"),
+&"待机动画": SubResource("Animation_buuir"),
+&"攻击动画": SubResource("Animation_1y1n8"),
+&"移动动画": SubResource("Animation_2wxtu")
+}
+
+[node name="操作角色" type="CharacterBody2D"]
+collision_layer = 3
+script = ExtResource("1_un01f")
+"移动速度" = null
+"最大速度" = null
+"加速度" = null
+"停止阈值" = null
+
+[node name="角色图像" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_mfkmn")
+position = Vector2(4, -1)
+texture = ExtResource("2_pahdm")
+hframes = 6
+region_enabled = true
+region_rect = Rect2(0, 0, 1152, 190)
+
+[node name="角色碰撞" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(8, 6)
+shape = SubResource("RectangleShape2D_1n3l5")
+
+[node name="交互动画" type="AnimatedSprite2D" parent="."]
+z_index = 3
+position = Vector2(0.999999, -85)
+scale = Vector2(3, 2.625)
+sprite_frames = SubResource("SpriteFrames_6w47s")
+autoplay = "default"
+frame_progress = 0.328579
+
+[node name="交互提示界面" type="CanvasLayer" parent="交互动画"]
+visible = false
+
+[node name="交互文本介绍容器" type="PanelContainer" parent="交互动画/交互提示界面"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -24.0
+offset_right = 24.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme = ExtResource("5_c0twt")
+
+[node name="边距容器" type="MarginContainer" parent="交互动画/交互提示界面/交互文本介绍容器"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="网格容器" type="GridContainer" parent="交互动画/交互提示界面/交互文本介绍容器/边距容器"]
+layout_mode = 2
+
+[node name="文本" type="Label" parent="交互动画/交互提示界面/交互文本介绍容器/边距容器/网格容器"]
+layout_mode = 2
+text = "请按        键，可进行各种互动，如对话、
+采集和前往不同地区"
+
+[node name="交互动画2" type="AnimatedSprite2D" parent="交互动画/交互提示界面/交互文本介绍容器/边距容器/网格容器"]
+position = Vector2(90, 13)
+scale = Vector2(3, 2.625)
+sprite_frames = SubResource("SpriteFrames_6w47s")
+autoplay = "default"
+frame_progress = 0.328579
+
+[node name="选中标签" type="Label" parent="."]
+visible = false
+offset_left = -11.0
+offset_top = 36.0
+offset_right = 71.0
+offset_bottom = 119.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 20
+text = "🔺"
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_oq3ne")
+
+[node name="交互管理器" parent="." instance=ExtResource("5_t6xuw")]
+visible = false
+
+[node name="受伤框判定" type="Area2D" parent="."]
+visible = false
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("7_034eo")
+metadata/_custom_type_script = "uid://box4v7sfi0k83"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="受伤框判定"]
+position = Vector2(2, 5.5)
+shape = SubResource("RectangleShape2D_mfkmn")
+
+[node name="伤害框判定" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 16
+script = ExtResource("8_mfkmn")
+metadata/_custom_type_script = "uid://cds57d1vfh0ng"
+
+[node name="角色动画2" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_r414p")
+}

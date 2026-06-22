@@ -1,0 +1,107 @@
+[gd_scene load_steps=16 format=3 uid="uid://clh3tmnsxuqwm"]
+
+[ext_resource type="Script" uid="uid://dkko6ehixsvqu" path="res://代码/单位/单位.gd" id="1_ui1r5"]
+[ext_resource type="Texture2D" uid="uid://ciiyiu2ljkvxm" path="res://美术、音频/建筑/单位合集（人，三）.png" id="2_doub1"]
+[ext_resource type="Resource" uid="uid://di618tm3dt1rf" path="res://单位/单位数据/工人.tres" id="2_hrqy8"]
+[ext_resource type="Shader" uid="uid://cyv24a5tb8h7q" path="res://shader学习/shader/轮廓高亮.gdshader" id="2_jea5g"]
+[ext_resource type="Script" uid="uid://dsvr4xqfk5aha" path="res://代码/组件代码/拿起_和_放下.gd" id="3_doub1"]
+[ext_resource type="Script" uid="uid://cyt4ng5dfbf6v" path="res://代码/组件代码/角色旋转速度组件.gd" id="4_s2f74"]
+[ext_resource type="PackedScene" uid="uid://dhq0tkuuf2tcr" path="res://单位/单位等级相关/等级图标.tscn" id="5_qmb5s"]
+[ext_resource type="Script" uid="uid://bqj5smwyxquwc" path="res://代码/组件代码/轮廓高亮组件.gd" id="6_gh8mr"]
+[ext_resource type="Script" uid="uid://btcf3ocw3l855" path="res://代码/组件代码/单位动画组件.gd" id="9_1be26"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gh8mr"]
+resource_local_to_scene = true
+shader = ExtResource("2_jea5g")
+shader_parameter/line_color = Color(1, 1, 1, 1)
+shader_parameter/line_thickness = 0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ui1r5"]
+size = Vector2(78, 87)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_doub1"]
+bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s2f74"]
+bg_color = Color(0, 0.733333, 0.313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jea5g"]
+bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gh8mr"]
+bg_color = Color(0, 0.654902, 0.937255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[node name="单位" type="Area2D" groups=["units"]]
+script = ExtResource("1_ui1r5")
+stats = ExtResource("2_hrqy8")
+metadata/_edit_group_ = true
+
+[node name="visuals" type="CanvasGroup" parent="."]
+material = SubResource("ShaderMaterial_gh8mr")
+
+[node name="皮肤" type="Sprite2D" parent="visuals"]
+position = Vector2(32, 16)
+texture = ExtResource("2_doub1")
+region_enabled = true
+region_rect = Rect2(384, 0, 192, 192)
+
+[node name="碰撞" type="CollisionShape2D" parent="."]
+position = Vector2(32, 8)
+shape = SubResource("RectangleShape2D_ui1r5")
+
+[node name="血条" type="ProgressBar" parent="."]
+offset_left = 2.0
+offset_top = -58.0
+offset_right = 62.0
+offset_bottom = -46.0
+theme_override_styles/background = SubResource("StyleBoxFlat_doub1")
+theme_override_styles/fill = SubResource("StyleBoxFlat_s2f74")
+value = 22.32
+show_percentage = false
+
+[node name="蓝条" type="ProgressBar" parent="."]
+offset_left = 2.0
+offset_top = -48.0
+offset_right = 62.0
+offset_bottom = -40.0
+theme_override_styles/background = SubResource("StyleBoxFlat_jea5g")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gh8mr")
+show_percentage = false
+
+[node name="等级图标" parent="." instance=ExtResource("5_qmb5s")]
+offset_left = -13.0
+offset_top = -40.0
+offset_right = 22.0
+offset_bottom = -5.0
+stats = ExtResource("2_hrqy8")
+
+[node name="拖放组件" type="Node" parent="." node_paths=PackedStringArray("拖放组件目标")]
+script = ExtResource("3_doub1")
+"拖放组件目标" = NodePath("..")
+
+[node name="基于速度旋转组件" type="Node" parent="." node_paths=PackedStringArray("target")]
+script = ExtResource("4_s2f74")
+target = NodePath("../visuals/皮肤")
+
+[node name="轮廓高亮组件" type="Node" parent="." node_paths=PackedStringArray("visuals")]
+script = ExtResource("6_gh8mr")
+visuals = NodePath("../visuals")
+outline_color = Color(1, 1, 1, 1)
+outline_thickness = 4
+
+[node name="单位合成动画组件" type="Node" parent="." node_paths=PackedStringArray("unit")]
+script = ExtResource("9_1be26")
+unit = NodePath("..")
+metadata/_custom_type_script = "uid://btcf3ocw3l855"
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

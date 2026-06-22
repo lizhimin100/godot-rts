@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UnitStats" load_steps=2 format=3 uid="uid://di618tm3dt1rf"]
+
+[ext_resource type="Script" uid="uid://dqe0ps78updlw" path="res://单位/单位数据/单位分类.gd" id="1_wlb2f"]
+
+[resource]
+resource_name = "工人"
+script = ExtResource("1_wlb2f")
+"单位名称" = "工人"
+"稀有度" = 0
+"金币费用" = 3
+"单位等级" = 1
+pool_count = 10
+"皮肤坐标" = Vector2i(2, 0)
+metadata/_custom_type_script = "uid://dqe0ps78updlw"

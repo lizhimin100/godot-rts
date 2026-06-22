@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://c7l8r5vrvpm7g"]
+
+[ext_resource type="Shader" uid="uid://c2t7in66w5a1s" path="res://shader学习/shader/第一个shader(shader_0).gdshader" id="1_ut43f"]
+[ext_resource type="Shader" uid="uid://bmxakqfsne27d" path="res://shader学习/shader/第一个shader(shader_1).gdshader" id="2_ydmca"]
+[ext_resource type="Texture2D" uid="uid://bgc3qcqde1x0f" path="res://icon.svg" id="3_vcteh"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m7nyc"]
+shader = ExtResource("1_ut43f")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gsbjb"]
+shader = ExtResource("2_ydmca")
+
+[node name="Shader学习创建的地图" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_m7nyc")
+offset_right = 424.0
+offset_bottom = 294.0
+
+[node name="TextureRect" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_gsbjb")
+offset_left = 431.0
+offset_top = 6.0
+offset_right = 836.0
+offset_bottom = 297.0
+texture = ExtResource("3_vcteh")

@@ -1,0 +1,296 @@
+[gd_scene load_steps=14 format=3 uid="uid://bh0jqtepu5gul"]
+
+[ext_resource type="Script" uid="uid://dxbxcw7ve8220" path="res://代码/UI/商店.gd" id="1_3b2m8"]
+[ext_resource type="Resource" uid="uid://dqk7nx3o21qu1" path="res://玩家/玩家状态（测试）.tres" id="2_0nw2x"]
+[ext_resource type="PackedScene" uid="uid://bxp3o8k3snwjt" path="res://单位/单位卡/角色卡.tscn" id="2_3b2m8"]
+[ext_resource type="Resource" uid="uid://b7ot8p00ox52s" path="res://单位/单位池/单位池（测试）.tres" id="2_hnqe2"]
+[ext_resource type="FontFile" uid="uid://8di0jvr25vat" path="res://assets/font/m5x7.ttf" id="3_ij41w"]
+[ext_resource type="PackedScene" uid="uid://b70iqynctevhy" path="res://UI组件/商店UI组件/重掷按钮.tscn" id="4_0nw2x"]
+[ext_resource type="Texture2D" uid="uid://dktqcnhitk3ps" path="res://小剑资源/UI/Banners/Carved_9Slides.png" id="4_3b2m8"]
+[ext_resource type="PackedScene" uid="uid://cfhldsmxpg3ot" path="res://UI组件/商店UI组件/购买经验.tscn" id="8_0nw2x"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3b2m8"]
+bg_color = Color(0.151626, 0.302197, 0.297065, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.337255, 0.635294, 0.882353, 1)
+corner_radius_top_left = 60
+corner_radius_top_right = 60
+corner_radius_bottom_right = 60
+corner_radius_bottom_left = 60
+shadow_color = Color(0.417383, 0.259523, 0.173528, 0.737255)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0nw2x"]
+bg_color = Color(0.280619, 0.315927, 0.380744, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.6, 0.862745, 1, 0.729412)
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_top_right = 5
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_hnqe2"]
+font = ExtResource("3_ij41w")
+font_size = 32
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 8
+shadow_color = Color(0.689153, 0.181302, 0.251218, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hnqe2"]
+bg_color = Color(0.531941, 0.469104, 0.212644, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.0221002, 0.252876, 0.140254, 1)
+border_blend = true
+corner_radius_top_left = 25
+corner_radius_bottom_right = 25
+corner_detail = 12
+
+[sub_resource type="LabelSettings" id="LabelSettings_0nw2x"]
+font = ExtResource("3_ij41w")
+font_size = 32
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="商店" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_3b2m8")
+unit_pool = ExtResource("2_hnqe2")
+player_stats = ExtResource("2_0nw2x")
+
+[node name="外边距" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(1040, 580)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -541.0
+offset_top = -311.0
+offset_right = 541.0
+offset_bottom = 311.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="背景" type="PanelContainer" parent="外边距"]
+custom_minimum_size = Vector2(1000, 540)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3b2m8")
+
+[node name="内边距" type="MarginContainer" parent="外边距/背景"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="酒馆选项（竖）" type="VBoxContainer" parent="外边距/背景/内边距"]
+custom_minimum_size = Vector2(960, 500)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="退出按钮" type="PanelContainer" parent="外边距/背景/内边距/酒馆选项（竖）"]
+custom_minimum_size = Vector2(96, 64)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_0nw2x")
+
+[node name="退出按钮" type="Button" parent="外边距/背景/内边距/酒馆选项（竖）/退出按钮"]
+layout_mode = 2
+
+[node name="文字" type="Label" parent="外边距/背景/内边距/酒馆选项（竖）/退出按钮"]
+layout_mode = 2
+text = "退出酒馆 ◀"
+label_settings = SubResource("LabelSettings_hnqe2")
+
+[node name="横" type="HBoxContainer" parent="外边距/背景/内边距/酒馆选项（竖）"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="图形" type="TextureRect" parent="外边距/背景/内边距/酒馆选项（竖）/横"]
+layout_mode = 2
+
+[node name="横板" type="HBoxContainer" parent="外边距/背景/内边距/酒馆选项（竖）/横"]
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_constants/separation = 45
+alignment = 2
+
+[node name="招募按钮" type="PanelContainer" parent="外边距/背景/内边距/酒馆选项（竖）/横/横板"]
+custom_minimum_size = Vector2(160, 192)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_hnqe2")
+
+[node name="文本" type="Label" parent="外边距/背景/内边距/酒馆选项（竖）/横/横板/招募按钮"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "招募与采购◀"
+label_settings = SubResource("LabelSettings_0nw2x")
+
+[node name="招募的按钮" type="Button" parent="外边距/背景/内边距/酒馆选项（竖）/横/横板/招募按钮"]
+layout_mode = 2
+
+[node name="打探消息与任务栏" type="PanelContainer" parent="外边距/背景/内边距/酒馆选项（竖）/横/横板"]
+custom_minimum_size = Vector2(160, 192)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_hnqe2")
+
+[node name="文本" type="Label" parent="外边距/背景/内边距/酒馆选项（竖）/横/横板/打探消息与任务栏"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "打探消息与任务栏◀"
+label_settings = SubResource("LabelSettings_0nw2x")
+
+[node name="任务栏按钮" type="Button" parent="外边距/背景/内边距/酒馆选项（竖）/横/横板/打探消息与任务栏"]
+layout_mode = 2
+
+[node name="招募购买" type="VBoxContainer" parent="外边距/背景/内边距"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(840, 500)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="横板" type="HBoxContainer" parent="外边距/背景/内边距/招募购买"]
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+
+[node name="返回按钮" type="PanelContainer" parent="外边距/背景/内边距/招募购买/横板"]
+custom_minimum_size = Vector2(96, 64)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_0nw2x")
+
+[node name="返回按钮" type="Button" parent="外边距/背景/内边距/招募购买/横板/返回按钮"]
+layout_mode = 2
+
+[node name="文字" type="Label" parent="外边距/背景/内边距/招募购买/横板/返回按钮"]
+layout_mode = 2
+text = "返回 ◀"
+label_settings = SubResource("LabelSettings_hnqe2")
+
+[node name="退出按钮" type="PanelContainer" parent="外边距/背景/内边距/招募购买/横板"]
+custom_minimum_size = Vector2(96, 64)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_0nw2x")
+
+[node name="退出按钮" type="Button" parent="外边距/背景/内边距/招募购买/横板/退出按钮"]
+layout_mode = 2
+
+[node name="文字" type="Label" parent="外边距/背景/内边距/招募购买/横板/退出按钮"]
+layout_mode = 2
+text = "退出酒馆 ◀"
+label_settings = SubResource("LabelSettings_hnqe2")
+
+[node name="单位棋子合集" type="NinePatchRect" parent="外边距/背景/内边距/招募购买"]
+custom_minimum_size = Vector2(960, 410)
+layout_mode = 2
+texture = ExtResource("4_3b2m8")
+patch_margin_left = 10
+patch_margin_top = 10
+patch_margin_right = 10
+patch_margin_bottom = 10
+
+[node name="网格容器" type="GridContainer" parent="外边距/背景/内边距/招募购买/单位棋子合集"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.677604
+anchor_top = 0.207317
+anchor_right = 0.680729
+anchor_bottom = 0.207317
+offset_left = -561.0
+offset_top = -40.0
+offset_right = 219.0
+offset_bottom = 220.0
+grow_horizontal = 2
+theme_override_constants/h_separation = 45
+theme_override_constants/v_separation = 25
+columns = 4
+metadata/_edit_use_anchors_ = true
+
+[node name="角色卡" parent="外边距/背景/内边距/招募购买/单位棋子合集/网格容器" instance=ExtResource("2_3b2m8")]
+layout_mode = 2
+
+[node name="角色卡2" parent="外边距/背景/内边距/招募购买/单位棋子合集/网格容器" instance=ExtResource("2_3b2m8")]
+layout_mode = 2
+
+[node name="角色卡3" parent="外边距/背景/内边距/招募购买/单位棋子合集/网格容器" instance=ExtResource("2_3b2m8")]
+layout_mode = 2
+
+[node name="角色卡4" parent="外边距/背景/内边距/招募购买/单位棋子合集/网格容器" instance=ExtResource("2_3b2m8")]
+layout_mode = 2
+
+[node name="角色卡5" parent="外边距/背景/内边距/招募购买/单位棋子合集/网格容器" instance=ExtResource("2_3b2m8")]
+layout_mode = 2
+
+[node name="角色卡6" parent="外边距/背景/内边距/招募购买/单位棋子合集/网格容器" instance=ExtResource("2_3b2m8")]
+layout_mode = 2
+
+[node name="底部横板" type="HBoxContainer" parent="外边距/背景/内边距/招募购买/单位棋子合集"]
+layout_mode = 2
+offset_top = 324.0
+offset_right = 960.0
+offset_bottom = 384.0
+mouse_filter = 2
+theme_override_constants/separation = 15
+alignment = 2
+
+[node name="重掷按钮" parent="外边距/背景/内边距/招募购买/单位棋子合集/底部横板" instance=ExtResource("4_0nw2x")]
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+
+[node name="购买经验" parent="外边距/背景/内边距/招募购买/单位棋子合集/底部横板" instance=ExtResource("8_0nw2x")]
+layout_mode = 2
+
+[node name="重掷和经验条" type="VBoxContainer" parent="外边距/背景/内边距/招募购买/单位棋子合集/底部横板"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[connection signal="pressed" from="外边距/背景/内边距/酒馆选项（竖）/退出按钮/退出按钮" to="." method="_on_退出按钮_pressed"]
+[connection signal="pressed" from="外边距/背景/内边距/酒馆选项（竖）/横/横板/招募按钮/招募的按钮" to="." method="_on_招募的按钮_pressed"]
+[connection signal="pressed" from="外边距/背景/内边距/招募购买/横板/返回按钮/返回按钮" to="." method="_on_返回按钮_pressed"]
+[connection signal="pressed" from="外边距/背景/内边距/招募购买/横板/退出按钮/退出按钮" to="." method="_on_退出按钮_pressed"]
+[connection signal="pressed" from="外边距/背景/内边距/招募购买/单位棋子合集/底部横板/重掷按钮" to="." method="_on_重掷按钮_pressed"]

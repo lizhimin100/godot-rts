@@ -1,0 +1,57 @@
+[gd_scene load_steps=8 format=3 uid="uid://l4nnn1tut8dj"]
+
+[ext_resource type="Texture2D" uid="uid://pntr1rorsvil" path="res://小剑资源/Resources/Trees/Tree.png" id="1_tiy3g"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tqvba"]
+atlas = ExtResource("1_tiy3g")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ggqqd"]
+atlas = ExtResource("1_tiy3g")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4qaw2"]
+atlas = ExtResource("1_tiy3g")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ykbn"]
+atlas = ExtResource("1_tiy3g")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3360e"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tqvba")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ggqqd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4qaw2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2ykbn")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lhqjd"]
+radius = 15.0
+height = 54.0
+
+[node name="树木" type="StaticBody2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_3360e")
+autoplay = "default"
+metadata/_edit_lock_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(1, 53)
+shape = SubResource("CapsuleShape2D_lhqjd")
+debug_color = Color(0.657993, 0.515727, 0, 0.42)
+metadata/_edit_lock_ = true

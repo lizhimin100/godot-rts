@@ -1,0 +1,82 @@
+[gd_scene load_steps=12 format=3 uid="uid://tsxuxfh0kbpc"]
+
+[ext_resource type="Texture2D" uid="uid://cg1otekstqgpi" path="res://小剑资源/Terrain/Water/Rocks/Rocks_03.png" id="1_817lt"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3tcf1"]
+atlas = ExtResource("1_817lt")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hrkbb"]
+atlas = ExtResource("1_817lt")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7gu4t"]
+atlas = ExtResource("1_817lt")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5svq8"]
+atlas = ExtResource("1_817lt")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_alwrx"]
+atlas = ExtResource("1_817lt")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3oof2"]
+atlas = ExtResource("1_817lt")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_naeys"]
+atlas = ExtResource("1_817lt")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1qo8h"]
+atlas = ExtResource("1_817lt")
+region = Rect2(896, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_okuqx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3tcf1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hrkbb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7gu4t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5svq8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_alwrx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3oof2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_naeys")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1qo8h")
+}],
+"loop": true,
+"name": &"水花",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_e41o1"]
+radius = 28.1603
+
+[node name="水岸岩石" type="CharacterBody2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_okuqx")
+animation = &"水花"
+autoplay = "水花"
+frame_progress = 0.240097
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+shape = SubResource("CircleShape2D_e41o1")

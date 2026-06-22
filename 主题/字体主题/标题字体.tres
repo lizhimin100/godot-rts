@@ -1,0 +1,11 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://ctkvknk1o4sev"]
+
+[ext_resource type="FontFile" uid="uid://8di0jvr25vat" path="res://assets/font/m5x7.ttf" id="1_6uol2"]
+
+[resource]
+font = ExtResource("1_6uol2")
+font_size = 48
+outline_size = 16
+outline_color = Color(0.10748, 0.10748, 0.10748, 1)
+shadow_size = 8
+shadow_color = Color(0, 0, 0, 0.960784)

@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://cyo71l347pj28"]
+
+[ext_resource type="Texture2D" uid="uid://bgc3qcqde1x0f" path="res://icon.svg" id="1_qmf3o"]
+[ext_resource type="Script" uid="uid://dt47spuwgevgu" path="res://代码/智能移动.gd" id="2_ns8qu"]
+
+[node name="Icon" type="Sprite2D"]
+scale = Vector2(0.53125, 0.546875)
+texture = ExtResource("1_qmf3o")
+script = ExtResource("2_ns8qu")

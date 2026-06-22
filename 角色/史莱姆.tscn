@@ -1,0 +1,214 @@
+[gd_scene load_steps=32 format=3 uid="uid://20ywfbkme06n"]
+
+[ext_resource type="Texture2D" uid="uid://66k54gxostwd" path="res://忍者地形/Slimer.png" id="1_0bfxt"]
+[ext_resource type="Script" uid="uid://creqadrektsnv" path="res://代码/兵种/敌人.gd" id="1_uh5pa"]
+[ext_resource type="Texture2D" uid="uid://dw0iupwtjsdf5" path="res://美术、音频/Sprites/SlimerDeath.png" id="2_itlbr"]
+[ext_resource type="Script" uid="uid://cds57d1vfh0ng" path="res://代码/组件代码/伤害框组件.gd" id="2_na1tf"]
+[ext_resource type="Script" uid="uid://box4v7sfi0k83" path="res://代码/组件代码/受伤框组件.gd" id="3_na1tf"]
+[ext_resource type="PackedScene" uid="uid://dxe1rs6iqj2ap" path="res://组件/属性组件.tscn" id="7_cqp2l"]
+[ext_resource type="Script" uid="uid://b1jly8n24psf7" path="res://代码/属性/Attribute.gd" id="8_1w1pw"]
+[ext_resource type="Script" uid="uid://bic3pxjbx57ts" path="res://代码/属性/AttributeSet.gd" id="9_ru632"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_inwwp"]
+atlas = ExtResource("2_itlbr")
+region = Rect2(0, 0, 64, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ed08q"]
+atlas = ExtResource("2_itlbr")
+region = Rect2(64, 0, 64, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4a7ss"]
+atlas = ExtResource("2_itlbr")
+region = Rect2(128, 0, 64, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x1g8h"]
+atlas = ExtResource("2_itlbr")
+region = Rect2(192, 0, 64, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pt523"]
+atlas = ExtResource("2_itlbr")
+region = Rect2(256, 0, 64, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tcxp6"]
+atlas = ExtResource("2_itlbr")
+region = Rect2(320, 0, 64, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ld6b2"]
+atlas = ExtResource("2_itlbr")
+region = Rect2(384, 0, 64, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uh5pa"]
+atlas = ExtResource("1_0bfxt")
+region = Rect2(0, 0, 41, 38)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_igpre"]
+atlas = ExtResource("1_0bfxt")
+region = Rect2(41, 0, 41, 38)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_itlbr"]
+atlas = ExtResource("1_0bfxt")
+region = Rect2(82, 0, 41, 38)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cqp2l"]
+atlas = ExtResource("1_0bfxt")
+region = Rect2(123, 0, 41, 38)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iir61"]
+atlas = ExtResource("1_0bfxt")
+region = Rect2(164, 0, 41, 38)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1w1pw"]
+atlas = ExtResource("1_0bfxt")
+region = Rect2(205, 0, 41, 38)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ru632"]
+atlas = ExtResource("1_0bfxt")
+region = Rect2(246, 0, 41, 38)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l0nlw"]
+atlas = ExtResource("1_0bfxt")
+region = Rect2(287, 0, 41, 38)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_inwwp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_inwwp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ed08q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4a7ss")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x1g8h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pt523")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tcxp6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ld6b2")
+}],
+"loop": false,
+"name": &"死亡",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uh5pa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_igpre")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_itlbr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cqp2l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iir61")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1w1pw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ru632")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l0nlw")
+}],
+"loop": true,
+"name": &"移动",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_itlbr"]
+size = Vector2(15.3333, 16.6667)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4a7ss"]
+radius = 13.0384
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cqp2l"]
+size = Vector2(24, 20.6667)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_81qud"]
+radius = 7.2111
+
+[sub_resource type="Resource" id="Resource_l0nlw"]
+script = ExtResource("8_1w1pw")
+attribute_name = "最大血量"
+base_value = 100.0
+metadata/_custom_type_script = "uid://b1jly8n24psf7"
+
+[sub_resource type="Resource" id="Resource_inwwp"]
+script = ExtResource("8_1w1pw")
+attribute_name = "当前血量"
+base_value = 10.0
+metadata/_custom_type_script = "uid://b1jly8n24psf7"
+
+[sub_resource type="Resource" id="Resource_iir61"]
+resource_local_to_scene = true
+script = ExtResource("9_ru632")
+attributes = Array[ExtResource("8_1w1pw")]([SubResource("Resource_l0nlw"), SubResource("Resource_inwwp")])
+metadata/_custom_type_script = "uid://bic3pxjbx57ts"
+
+[node name="史莱姆" type="CharacterBody2D"]
+scale = Vector2(1.5, 1.5)
+collision_layer = 19
+collision_mask = 3
+script = ExtResource("1_uh5pa")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -24)
+sprite_frames = SubResource("SpriteFrames_inwwp")
+animation = &"移动"
+autoplay = "移动"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.333333, -14.3334)
+shape = SubResource("RectangleShape2D_itlbr")
+
+[node name="伤害框判定" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("2_na1tf")
+metadata/_custom_type_script = "uid://cds57d1vfh0ng"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="伤害框判定"]
+visible = false
+position = Vector2(1, -13)
+shape = SubResource("CircleShape2D_4a7ss")
+
+[node name="受伤框判定" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("3_na1tf")
+metadata/_custom_type_script = "uid://box4v7sfi0k83"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="受伤框判定"]
+visible = false
+position = Vector2(0.666667, -15.6667)
+shape = SubResource("RectangleShape2D_cqp2l")
+
+[node name="索敌区域" type="Area2D" parent="."]
+position = Vector2(0, -14)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="索敌区域"]
+position = Vector2(0, -0.666667)
+shape = SubResource("CircleShape2D_81qud")
+
+[node name="移动计时器" type="Timer" parent="."]
+
+[node name="目光" type="RayCast2D" parent="."]
+position = Vector2(-1.33333, -12)
+target_position = Vector2(-45.3333, 0.666666)
+
+[node name="属性组件" parent="." instance=ExtResource("7_cqp2l")]
+"属性集" = SubResource("Resource_iir61")
+
+[connection signal="受到伤害" from="受伤框判定" to="." method="_on_受伤框判定_受到伤害"]

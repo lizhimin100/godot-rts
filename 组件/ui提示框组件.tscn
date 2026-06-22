@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://rdrtjgca6hy"]
+
+[ext_resource type="Script" uid="uid://dkkssgukou7fp" path="res://ui提示框.gd" id="1_upmgs"]
+
+[node name="UI提示框" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_upmgs")
+
+[node name="介绍文本" type="Label" parent="."]
+z_index = 1
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 33.0

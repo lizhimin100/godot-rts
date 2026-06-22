@@ -1,0 +1,59 @@
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://ckprlv4mqbbho"]
+
+[ext_resource type="Texture2D" uid="uid://bn4ityw0b3ub4" path="res://小剑资源/Terrain/Ground/Tilemap_Flat.png" id="1_4f6fn"]
+[ext_resource type="Texture2D" uid="uid://duem0w7bmxonj" path="res://美术、音频/建筑/高亮瓦片.png" id="2_18il5"]
+[ext_resource type="Texture2D" uid="uid://cgsgx074v5bpq" path="res://小剑资源/UI/Buttons/Button_Hover.png" id="3_nah8i"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_18il5"]
+texture = ExtResource("1_4f6fn")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+8:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+8:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+8:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nah8i"]
+texture = ExtResource("2_18il5")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vp8kq"]
+texture = ExtResource("3_nah8i")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_18il5")
+sources/1 = SubResource("TileSetAtlasSource_nah8i")
+sources/2 = SubResource("TileSetAtlasSource_vp8kq")

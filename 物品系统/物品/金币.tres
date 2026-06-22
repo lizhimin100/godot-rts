@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="物品" load_steps=3 format=3 uid="uid://btch54sh5airp"]
+
+[ext_resource type="Script" uid="uid://do7v5mc2jgmdm" path="res://物品系统/物品/物品系统.gd" id="1_vgwyx"]
+[ext_resource type="Texture2D" uid="uid://d3wdh6yl0hcah" path="res://小剑资源/Resources/Resources/G_Idle.png" id="2_pyw6i"]
+
+[resource]
+script = ExtResource("1_vgwyx")
+"物品名字" = "金币"
+"数量" = 1
+"物品描述" = ""
+"物品图片" = ExtResource("2_pyw6i")
+"是否可数" = true
+metadata/_custom_type_script = "uid://do7v5mc2jgmdm"

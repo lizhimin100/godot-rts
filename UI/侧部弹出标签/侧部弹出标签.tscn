@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://c5bes14xre2xp"]
+
+[ext_resource type="FontFile" uid="uid://hhub7q5v0o7p" path="res://美术、音频/Uranus_Pixel_11Px.ttf" id="1_r2xab"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_blqnt"]
+bg_color = Color(0.53172, 0.925806, 0.886939, 0.862745)
+
+[node name="侧部弹出标签" type="Label"]
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 4
+theme_override_fonts/font = ExtResource("1_r2xab")
+theme_override_font_sizes/font_size = 36
+theme_override_styles/normal = SubResource("StyleBoxFlat_blqnt")
+text = "侧部弹出"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,899 @@
+[gd_scene load_steps=23 format=3 uid="uid://b4clh88t3nqul"]
+
+[ext_resource type="Script" uid="uid://tvoj2vfm5pvb" path="res://代码/UI/面板.gd" id="1_onpma"]
+[ext_resource type="Theme" uid="uid://dytvesdnhjnpa" path="res://主题/菜单主题/菜单.tres" id="1_ydtk5"]
+[ext_resource type="Texture2D" uid="uid://bpk4iccli5blj" path="res://美术、音频/兵种/长枪兵.png" id="3_kjshf"]
+[ext_resource type="Texture2D" uid="uid://b0ouu0qdf58dc" path="res://美术、音频/兵种/人类农民图片.png" id="4_6m6im"]
+[ext_resource type="Texture2D" uid="uid://dhym2uak3yqfv" path="res://小剑资源/UI/Buttons/Button_Disable_9Slides.png" id="4_ayb4x"]
+[ext_resource type="Texture2D" uid="uid://cq7g55gqkxnot" path="res://小剑资源/UI/Buttons/Button_Blue_9Slides_Pressed.png" id="5_jigu2"]
+[ext_resource type="PackedScene" uid="uid://dht5nqlych3ww" path="res://UI/存储UI/背包格子.tscn" id="5_wts1j"]
+[ext_resource type="Texture2D" uid="uid://4i2xoeoqy27s" path="res://小剑资源/UI/Buttons/Button_Hover_9Slides.png" id="6_lwfim"]
+[ext_resource type="Resource" uid="uid://c73kvcncbj8uq" path="res://物品系统/物品/金子.tres" id="6_uu4xy"]
+[ext_resource type="Resource" uid="uid://b4nnf6uyf37cy" path="res://物品系统/物品/蘑菇.tres" id="7_6e5vv"]
+[ext_resource type="Resource" uid="uid://btch54sh5airp" path="res://物品系统/物品/金币.tres" id="8_f7ogf"]
+[ext_resource type="Texture2D" uid="uid://03fy0sj7dshy" path="res://小剑资源/UI/Buttons/Button_Blue.png" id="10_6e5vv"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_famh4"]
+font_size = 56
+outline_size = 3
+outline_color = Color(0, 0.654902, 0.937255, 1)
+shadow_size = 2
+shadow_color = Color(0, 0.733333, 0.313726, 1)
+
+[sub_resource type="Animation" id="Animation_f7ogf"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("背包栏:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-320, -200)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("背包栏:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("背包栏:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("菜单:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(498.5, 168.5)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("菜单:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("菜单:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("菜单:modulate")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("背包栏:scale")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("logo1:scale")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("logo1:modulate")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("logo1/文字:visible_ratio")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("logo2:scale")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("logo2:modulate")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_kjshf"]
+resource_name = "唤出背包"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("背包栏:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.5),
+"transitions": PackedFloat32Array(0.5, 0.5, 1),
+"update": 0,
+"values": [Vector2(320, -500), Vector2(320, 180), Vector2(320, 160)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("背包栏:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("背包栏:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.498039), Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("背包栏:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.2, 0.5),
+"transitions": PackedFloat32Array(1, 2),
+"update": 0,
+"values": [Vector2(1.25, 1.25), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_10bl2"]
+resource_name = "唤出菜单"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("菜单:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 1),
+"update": 0,
+"values": [Vector2(1280, -496.998), Vector2(498.5, 168.5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("菜单:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0.4, 0.4), Vector2(0.8, 0.8), Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("菜单:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.166667),
+"transitions": PackedFloat32Array(2, 0.6),
+"update": 1,
+"values": [false, true]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("菜单:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.588235), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_6m6im"]
+resource_name = "隐藏背包栏"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("背包栏:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.5),
+"transitions": PackedFloat32Array(1, 1.5, 1),
+"update": 0,
+"values": [Vector2(320, 160), Vector2(320, 180), Vector2(320, -500)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("背包栏:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("背包栏:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.498039)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("背包栏:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.85, 0.85), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_famh4"]
+resource_name = "隐藏菜单"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("菜单:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 2),
+"update": 0,
+"values": [Vector2(498.5, 168.5), Vector2(1280, -497)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("菜单:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.8, 0.8), Vector2(0.4, 0.4)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("菜单:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(0.6, 2),
+"update": 1,
+"values": [true, false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("菜单:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 2),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0.588235)]
+}
+
+[sub_resource type="Animation" id="Animation_put3n"]
+resource_name = "logo1"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("logo1:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 2.5, 3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05), Vector2(1, 1), Vector2(1, 1), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("logo1:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.75, 2.5, 3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("logo1/文字:visible_ratio")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.8, 1.85),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(3),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["logo2"],
+"method": &"_player_UI"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_owwie"]
+resource_name = "logo2"
+length = 2.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("logo2:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.75),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(4, 4)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("logo2:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.5, 2.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(2.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["UI"],
+"method": &"_player_UI"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_8v43q"]
+resource_name = "UI"
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("背包栏:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-320, -200)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("背包栏:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("背包栏:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("菜单:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(498.5, 168.5)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("菜单:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("菜单:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("菜单:modulate")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("背包栏:scale")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_put3n"]
+_data = {
+&"RESET": SubResource("Animation_f7ogf"),
+&"UI": SubResource("Animation_8v43q"),
+&"logo1": SubResource("Animation_put3n"),
+&"logo2": SubResource("Animation_owwie"),
+&"唤出背包": SubResource("Animation_kjshf"),
+&"唤出菜单": SubResource("Animation_10bl2"),
+&"隐藏背包": SubResource("Animation_6m6im"),
+&"隐藏菜单": SubResource("Animation_famh4")
+}
+
+[node name="面板" type="Control" node_paths=PackedStringArray("物品悬停介绍")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("1_ydtk5")
+script = ExtResource("1_onpma")
+"物品悬停介绍" = NodePath("背包栏/悬停介绍")
+
+[node name="背景" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0.0823529, 0.12549, 1)
+
+[node name="logo1" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(192, 192)
+mouse_filter = 2
+texture = ExtResource("3_kjshf")
+
+[node name="文字" type="Label" parent="logo1"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -216.0
+offset_top = 217.0
+offset_right = 223.0
+offset_bottom = 266.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Bilibli @计算机蜜思李"
+label_settings = SubResource("LabelSettings_famh4")
+
+[node name="logo2" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(80, 80)
+mouse_filter = 2
+texture = ExtResource("4_6m6im")
+expand_mode = 1
+
+[node name="菜单" type="NinePatchRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -141.5
+offset_top = -191.5
+offset_right = 141.5
+offset_bottom = 191.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_jigu2")
+region_rect = Rect2(0, 0, 192, 192)
+patch_margin_left = 42
+patch_margin_top = 41
+patch_margin_right = 37
+patch_margin_bottom = 42
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[node name="横向" type="VBoxContainer" parent="菜单"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -126.5
+offset_top = -115.5
+offset_right = 51.5
+offset_bottom = 8.5
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.38, 1.79)
+
+[node name="开始按钮" type="Button" parent="菜单/横向"]
+layout_mode = 2
+focus_neighbor_top = NodePath("../退出按钮")
+text = "开始游戏"
+
+[node name="选择按钮" type="Button" parent="菜单/横向"]
+layout_mode = 2
+text = "设置"
+
+[node name="退出按钮" type="Button" parent="菜单/横向"]
+layout_mode = 2
+focus_neighbor_bottom = NodePath("../开始按钮")
+text = "退出游戏"
+
+[node name="背包栏" type="NinePatchRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -560.0
+offset_right = -320.0
+offset_bottom = -160.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(320, 200)
+texture = ExtResource("4_ayb4x")
+patch_margin_left = 27
+patch_margin_top = 22
+patch_margin_right = 24
+patch_margin_bottom = 27
+
+[node name="网格容器" type="GridContainer" parent="背包栏"]
+layout_mode = 0
+anchor_left = 0.0839286
+anchor_top = 0.0975
+anchor_right = 0.601786
+anchor_bottom = 0.8225
+theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 30
+columns = 4
+metadata/_edit_use_anchors_ = true
+
+[node name="背包格子" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+item = ExtResource("6_uu4xy")
+
+[node name="背包格子2" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+item = ExtResource("7_6e5vv")
+
+[node name="背包格子3" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+item = ExtResource("8_f7ogf")
+
+[node name="背包格子4" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子5" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子6" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子7" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子8" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子9" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子10" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子11" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子12" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子13" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子14" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子15" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="背包格子16" parent="背包栏/网格容器" instance=ExtResource("5_wts1j")]
+layout_mode = 2
+
+[node name="悬停介绍" type="NinePatchRect" parent="背包栏"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -274.0
+offset_top = -167.0
+offset_right = -29.0
+offset_bottom = 155.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = ExtResource("6_lwfim")
+patch_margin_left = 18
+patch_margin_top = 15
+patch_margin_right = 18
+patch_margin_bottom = 26
+
+[node name="名字" type="Label" parent="背包栏/悬停介绍"]
+layout_mode = 0
+offset_left = 141.0
+offset_top = 30.0
+offset_right = 219.0
+offset_bottom = 75.0
+
+[node name="图片" type="TextureRect" parent="背包栏/悬停介绍"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 113.0
+offset_bottom = 90.0
+expand_mode = 2
+stretch_mode = 4
+
+[node name="介绍" type="RichTextLabel" parent="背包栏/悬停介绍"]
+visible = false
+layout_mode = 0
+offset_left = 25.0
+offset_top = 119.0
+offset_right = 222.0
+offset_bottom = 256.0
+scroll_active = false
+
+[node name="UI动画" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_put3n")
+}
+
+[node name="菜单按钮" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -62.0
+offset_bottom = 58.0
+grow_horizontal = 0
+theme = ExtResource("1_ydtk5")
+theme_override_font_sizes/font_size = 16
+text = "菜单
+
+"
+icon = ExtResource("10_6e5vv")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="背包按钮" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -135.0
+offset_right = -70.0
+offset_bottom = 58.0
+grow_horizontal = 0
+theme = ExtResource("1_ydtk5")
+theme_override_font_sizes/font_size = 16
+text = "背包
+
+"
+icon = ExtResource("10_6e5vv")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[connection signal="pressed" from="菜单/横向/开始按钮" to="." method="_on_开始按钮_pressed"]
+[connection signal="pressed" from="菜单/横向/选择按钮" to="." method="_on_选择按钮_pressed"]
+[connection signal="pressed" from="菜单/横向/退出按钮" to="." method="_on_退出按钮_pressed"]
+[connection signal="pressed" from="菜单按钮" to="." method="_on_菜单按钮_pressed"]
+[connection signal="pressed" from="背包按钮" to="." method="_on_背包按钮_pressed"]

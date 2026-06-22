@@ -1,0 +1,146 @@
+[gd_scene load_steps=19 format=3 uid="uid://bl1ig4h44ut3c"]
+
+[ext_resource type="Script" uid="uid://cobksd4r84l4r" path="res://角色/敌人.gd" id="1_edwxx"]
+[ext_resource type="Texture2D" uid="uid://cfydiyskreo00" path="res://小剑资源/兵种/Goblins/Troops/Torch/Blue/Torch_Blue.png" id="2_v0hr1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dk2xl"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tdt3k"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ww7ag"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ax2hg"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q3pa0"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(768, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_miugi"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(960, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_536nn"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(1152, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_66dsg"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(0, 192, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_itmwl"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(192, 192, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ydjs"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(384, 192, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w4gvm"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(576, 192, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fpw6e"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(768, 192, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_octgv"]
+atlas = ExtResource("2_v0hr1")
+region = Rect2(960, 192, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vgjcn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dk2xl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tdt3k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ww7ag")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ax2hg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q3pa0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_miugi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_536nn")
+}],
+"loop": true,
+"name": &"待机动画",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_66dsg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_itmwl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4ydjs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w4gvm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fpw6e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_octgv")
+}],
+"loop": true,
+"name": &"移动动画",
+"speed": 10.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_px6uk"]
+radius = 28.1603
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_edwxx"]
+radius = 153.701
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("1_edwxx")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_vgjcn")
+animation = &"移动动画"
+autoplay = "待机动画"
+frame_progress = 0.454748
+
+[node name="角色碰撞" type="CollisionShape2D" parent="."]
+visible = false
+shape = SubResource("CircleShape2D_px6uk")
+
+[node name="导航" type="Node2D" parent="."]
+
+[node name="自动寻路组件" type="NavigationAgent2D" parent="导航"]
+debug_enabled = true
+
+[node name="Timer" type="Timer" parent="导航"]
+wait_time = 0.1
+autostart = true
+
+[node name="检测玩家的扇形区域" type="Area2D" parent="."]
+position = Vector2(1, -1)
+
+[node name="检测范围形状" type="CollisionShape2D" parent="检测玩家的扇形区域"]
+visible = false
+scale = Vector2(2.5, 2.5)
+shape = SubResource("CircleShape2D_edwxx")
+
+[connection signal="timeout" from="导航/Timer" to="." method="_on_timer_timeout"]

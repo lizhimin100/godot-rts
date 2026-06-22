@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="物品" load_steps=3 format=3 uid="uid://b4nnf6uyf37cy"]
+
+[ext_resource type="Script" uid="uid://do7v5mc2jgmdm" path="res://物品系统/物品/物品系统.gd" id="1_ohiim"]
+[ext_resource type="Texture2D" uid="uid://c23w1k4k4ddt3" path="res://小剑资源/Deco/03.png" id="2_4fmfj"]
+
+[resource]
+script = ExtResource("1_ohiim")
+"物品名字" = "蘑菇"
+"数量" = 1
+"物品描述" = ""
+"物品图片" = ExtResource("2_4fmfj")
+"是否可数" = true
+metadata/_custom_type_script = "uid://do7v5mc2jgmdm"

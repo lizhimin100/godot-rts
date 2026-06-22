@@ -1,0 +1,80 @@
+[gd_scene load_steps=7 format=3 uid="uid://brw0uayd8g15p"]
+
+[ext_resource type="Script" uid="uid://dkpdipovntxxf" path="res://代码/UI/经验值追踪器.gd" id="1_8r61r"]
+[ext_resource type="Resource" uid="uid://dqk7nx3o21qu1" path="res://玩家/玩家状态（测试）.tres" id="2_acnwa"]
+[ext_resource type="FontFile" uid="uid://8di0jvr25vat" path="res://assets/font/m5x7.ttf" id="2_nyeri"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6q3lt"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+shadow_color = Color(0.6, 0.862745, 1, 0.729412)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nisru"]
+bg_color = Color(0.337255, 0.635294, 0.882353, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+shadow_color = Color(0.145022, 0.309224, 0.250297, 1)
+shadow_size = 5
+
+[sub_resource type="LabelSettings" id="LabelSettings_acnwa"]
+font = ExtResource("2_nyeri")
+font_size = 24
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="经验值追踪器" type="VBoxContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(120, 35)
+anchors_preset = -1
+anchor_left = -0.0234375
+anchor_right = -0.0234375
+offset_left = 8.0
+offset_right = 158.0
+offset_bottom = 35.0
+theme_override_constants/separation = 0
+alignment = 1
+script = ExtResource("1_8r61r")
+player_stats = ExtResource("2_acnwa")
+metadata/_edit_use_anchors_ = true
+
+[node name="进度条" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 15)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_6q3lt")
+theme_override_styles/fill = SubResource("StyleBoxFlat_nisru")
+value = 30.0
+show_percentage = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(120, 15)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="经验标签" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "999/999"
+label_settings = SubResource("LabelSettings_acnwa")
+
+[node name="等级标签" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+text = "lvl: 1"
+label_settings = SubResource("LabelSettings_acnwa")
+horizontal_alignment = 2

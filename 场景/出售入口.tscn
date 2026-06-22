@@ -1,0 +1,85 @@
+[gd_scene load_steps=10 format=3 uid="uid://lklfrudyiqg4"]
+
+[ext_resource type="Shader" uid="uid://cyv24a5tb8h7q" path="res://shader学习/shader/轮廓高亮.gdshader" id="1_g6wrg"]
+[ext_resource type="Script" uid="uid://pbx6kvdldad8" path="res://代码/场景/出售入口场景.gd" id="1_vw4iq"]
+[ext_resource type="Texture2D" uid="uid://bekyo665v82hj" path="res://忍者地形/TilesetDesert.png" id="2_uoisf"]
+[ext_resource type="Texture2D" uid="uid://dhmc4tlq7i0w2" path="res://小剑资源/Deco/17.png" id="3_vw4iq"]
+[ext_resource type="Script" uid="uid://bqj5smwyxquwc" path="res://代码/组件代码/轮廓高亮组件.gd" id="4_s4ayd"]
+[ext_resource type="Texture2D" uid="uid://d3wdh6yl0hcah" path="res://小剑资源/Resources/Resources/G_Idle.png" id="6_s4ayd"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_jitcc"]
+radius = 48.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8k48w"]
+shader = ExtResource("1_g6wrg")
+shader_parameter/line_color = Color(1, 1, 1, 1)
+shader_parameter/line_thickness = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_jitcc"]
+font_size = 32
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 0.921569)
+
+[node name="出售入口" type="Area2D"]
+script = ExtResource("1_vw4iq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+shape = SubResource("CircleShape2D_jitcc")
+
+[node name="visuals" type="CanvasGroup" parent="."]
+material = SubResource("ShaderMaterial_8k48w")
+position = Vector2(32, 32)
+
+[node name="入口" type="Sprite2D" parent="visuals"]
+texture = ExtResource("2_uoisf")
+region_enabled = true
+region_rect = Rect2(32, 128, 64, 64)
+region_filter_clip_enabled = true
+
+[node name="指示牌" type="Sprite2D" parent="visuals"]
+position = Vector2(74, 1)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_vw4iq")
+
+[node name="轮廓高亮组件" type="Node" parent="." node_paths=PackedStringArray("visuals")]
+script = ExtResource("4_s4ayd")
+visuals = NodePath("../visuals")
+outline_color = Color(0.887599, 0.326551, 0.743086, 1)
+outline_thickness = 3
+
+[node name="Label" type="Label" parent="."]
+offset_left = -32.0
+offset_top = 72.0
+offset_right = 96.0
+offset_bottom = 105.0
+theme_override_font_sizes/font_size = 44
+text = "出售入口"
+label_settings = SubResource("LabelSettings_jitcc")
+horizontal_alignment = 1
+
+[node name="金钱显示" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+offset_left = -16.0
+offset_top = 88.0
+offset_right = 84.0
+offset_bottom = 152.0
+
+[node name="金钱标签" type="Label" parent="金钱显示"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "50"
+label_settings = SubResource("LabelSettings_jitcc")
+horizontal_alignment = 1
+
+[node name="金钱图标" type="TextureRect" parent="金钱显示"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("6_s4ayd")
+expand_mode = 1
+stretch_mode = 5
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="area_exited" from="." to="." method="_on_area_exited"]

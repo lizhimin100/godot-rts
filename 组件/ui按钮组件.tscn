@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dujda0p3gle3q"]
+
+[ext_resource type="Script" uid="uid://cob7xee5gk6g6" path="res://代码/自定义父类与子类/ui按钮.gd" id="1_nlg8w"]
+
+[node name="ui按钮" type="Button"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_nlg8w")
+metadata/_custom_type_script = "uid://cob7xee5gk6g6"

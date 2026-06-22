@@ -1,0 +1,148 @@
+[gd_scene load_steps=10 format=3 uid="uid://c70ar5gsj2kxf"]
+
+[ext_resource type="Script" uid="uid://dvhf1spf05awc" path="res://代码/UI/资源ui显示.gd" id="1_5gh2j"]
+[ext_resource type="Resource" uid="uid://dqk7nx3o21qu1" path="res://玩家/玩家状态（测试）.tres" id="2_dcnlq"]
+[ext_resource type="PackedScene" uid="uid://brw0uayd8g15p" path="res://UI组件/商店UI组件/经验值追踪器.tscn" id="3_tpup2"]
+[ext_resource type="Texture2D" uid="uid://c4awhqfup7o2k" path="res://assets/sprites/gold.png" id="4_tlct7"]
+[ext_resource type="LabelSettings" uid="uid://bskfebg6nwr6m" path="res://主题/字体主题/字体资源.tres" id="5_j77mk"]
+[ext_resource type="Texture2D" uid="uid://btfco2rg0ysxw" path="res://小剑资源/Resources/Resources/W_Idle_(NoShadow).png" id="6_sg8so"]
+[ext_resource type="Texture2D" uid="uid://cgqlrv50c3027" path="res://小剑资源/Resources/Resources/M_Idle_(NoShadow).png" id="7_fiwxp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_82q0j"]
+bg_color = Color(0.270588, 0.266667, 0.309804, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.6, 0.862745, 1, 0.729412)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+expand_margin_left = 4.0
+expand_margin_right = 4.0
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 10
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5gh2j"]
+size = Vector2(1280, 480)
+
+[node name="UI" type="CanvasLayer"]
+follow_viewport_enabled = true
+
+[node name="资源（边距）" type="MarginContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 88.0
+grow_horizontal = 2
+size_flags_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+script = ExtResource("1_5gh2j")
+player_stats = ExtResource("2_dcnlq")
+
+[node name="背景" type="PanelContainer" parent="资源（边距）"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_82q0j")
+
+[node name="内边距" type="MarginContainer" parent="资源（边距）/背景"]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 2
+
+[node name="整体竖排版" type="HBoxContainer" parent="资源（边距）/背景/内边距"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 45
+
+[node name="经验值追踪器" parent="资源（边距）/背景/内边距/整体竖排版" instance=ExtResource("3_tpup2")]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="1横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = -5
+alignment = 2
+
+[node name="金钱" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/1横排版"]
+custom_minimum_size = Vector2(32, 25)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_tlct7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="金钱数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/1横排版"]
+custom_minimum_size = Vector2(64, 25)
+layout_mode = 2
+text = "999"
+label_settings = ExtResource("5_j77mk")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="2横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = -5
+alignment = 2
+
+[node name="木材" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/2横排版"]
+custom_minimum_size = Vector2(32, 25)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("6_sg8so")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="木材数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/2横排版"]
+custom_minimum_size = Vector2(96, 25)
+layout_mode = 2
+text = "999"
+label_settings = ExtResource("5_j77mk")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="3横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = -5
+alignment = 2
+
+[node name="人口" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/3横排版"]
+custom_minimum_size = Vector2(32, 25)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("7_fiwxp")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="人口数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/3横排版"]
+custom_minimum_size = Vector2(96, 25)
+layout_mode = 2
+text = "999"
+label_settings = ExtResource("5_j77mk")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardDropArea" type="Area2D" parent="."]
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CardDropArea"]
+position = Vector2(640, 240)
+shape = SubResource("RectangleShape2D_5gh2j")

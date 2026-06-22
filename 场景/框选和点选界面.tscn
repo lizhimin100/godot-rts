@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://gtfugqyfdgyu"]
+
+[ext_resource type="Script" uid="uid://ccumw567stbic" path="res://代码/框选和点选控制.gd" id="1_tnqqt"]
+
+[node name="框选和点选界面" type="Node2D"]
+script = ExtResource("1_tnqqt")
+"选框颜色" = Color(0.34245, 0.678394, 0.486949, 0.2)
+"选框边框颜色" = Color(0.705803, 0.700429, 0.358496, 1)

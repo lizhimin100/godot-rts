@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dj2d0bdsxc6vp"]
+
+[ext_resource type="Script" uid="uid://dmgjv1gooitcx" path="res://代码/自动加载/防建筑重叠.gd" id="1_tpuug"]
+
+[node name="防建造重叠" type="Node2D"]
+script = ExtResource("1_tpuug")

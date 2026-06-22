@@ -1,0 +1,24 @@
+class_name XPButton extends Button
+
+@export var player_stats : PlayerStats
+
+@onready var v_box_container: VBoxContainer = $VBoxContainer
+
+func _ready() -> void:
+	player_stats.changed.connect(_on_player_stats_changed)
+	_on_player_stats_changed()
+
+func _on_player_stats_changed() -> void:
+	var has_enough_gold := player_stats.金钱 >= 10
+	var level_10 := player_stats.等级 == 10
+	disabled = not has_enough_gold or level_10
+	
+	if has_enough_gold and not level_10 :v_box_container.modulate.a = 1.0
+	else : v_box_container.modulate.a = 0.5
+
+func _on_pressed() -> void:
+	player_stats.金钱 -= 10
+	player_stats.经验 += 10
+	#prints("当前金币：" , player_stats.金钱)
+	#prints("当前经验：" , player_stats.经验)
+	#prints("当前等级:" , player_stats.等级)

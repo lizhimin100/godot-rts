@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="UnitPool" load_steps=6 format=3 uid="uid://b7ot8p00ox52s"]
+
+[ext_resource type="Script" uid="uid://dqe0ps78updlw" path="res://单位/单位数据/单位分类.gd" id="1_xp5k3"]
+[ext_resource type="Resource" uid="uid://di618tm3dt1rf" path="res://单位/单位数据/工人.tres" id="2_2tagq"]
+[ext_resource type="Script" uid="uid://d3i4ed6hm10ba" path="res://单位/单位池/单位池.gd" id="2_r7flt"]
+[ext_resource type="Resource" uid="uid://dat6dna0am8y7" path="res://单位/单位数据/士兵.tres" id="3_de2vb"]
+[ext_resource type="Resource" uid="uid://gq382nljvm62" path="res://单位/单位数据/弓箭手.tres" id="4_rxngx"]
+
+[resource]
+script = ExtResource("2_r7flt")
+available_units = Array[ExtResource("1_xp5k3")]([ExtResource("2_2tagq"), ExtResource("3_de2vb"), ExtResource("4_rxngx")])
+metadata/_custom_type_script = "uid://d3i4ed6hm10ba"

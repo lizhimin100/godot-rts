@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="物品" load_steps=3 format=3 uid="uid://c73kvcncbj8uq"]
+
+[ext_resource type="Script" uid="uid://do7v5mc2jgmdm" path="res://物品系统/物品/物品系统.gd" id="1_cb3ck"]
+[ext_resource type="Texture2D" uid="uid://d3wdh6yl0hcah" path="res://小剑资源/Resources/Resources/G_Idle.png" id="2_8ppaa"]
+
+[resource]
+script = ExtResource("1_cb3ck")
+"物品名字" = "金子"
+"数量" = 1
+"物品描述" = "一大把金币，由王国炼制而成，具有一定的购买力。"
+"物品图片" = ExtResource("2_8ppaa")
+"是否可数" = true
+metadata/_custom_type_script = "uid://do7v5mc2jgmdm"

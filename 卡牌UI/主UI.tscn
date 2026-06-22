@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://dk0uxwd4yf7db"]
+
+[ext_resource type="PackedScene" uid="uid://dax8py5wosqcm" path="res://卡牌UI/拖放卡牌UI.tscn" id="1_3ckw2"]
+[ext_resource type="Script" uid="uid://ufkfn4txwbch" path="res://代码/拖放UI/拖放主ui.gd" id="1_dy1xt"]
+[ext_resource type="PackedScene" uid="uid://bsnky0tm55bxp" path="res://角色/人族步兵.tscn" id="3_udik2"]
+[ext_resource type="Texture2D" uid="uid://b0ouu0qdf58dc" path="res://美术、音频/兵种/人类农民图片.png" id="4_gx4sl"]
+
+[node name="拖放" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dy1xt")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 40.0
+grow_vertical = 0
+
+[node name="PanelContainer" parent="HBoxContainer" instance=ExtResource("1_3ckw2")]
+layout_mode = 2
+"单位场景" = ExtResource("3_udik2")
+"图标" = ExtResource("4_gx4sl")

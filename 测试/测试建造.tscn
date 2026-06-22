@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://cns8ogi2klhbw"]
+
+[ext_resource type="Script" uid="uid://do0cd0psvutww" path="res://代码/测试/测试建造.gd" id="1_4rofj"]
+[ext_resource type="Texture2D" uid="uid://cm88t5scfqqxx" path="res://美术、音频/建筑/建筑合集.png" id="1_s60bw"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4rofj"]
+texture = ExtResource("1_s60bw")
+81:67/size_in_atlas = Vector2i(18, 12)
+81:67/0 = 0
+112:69/size_in_atlas = Vector2i(9, 9)
+112:69/0 = 0
+135:67/size_in_atlas = Vector2i(8, 12)
+135:67/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_jg03q"]
+sources/0 = SubResource("TileSetAtlasSource_4rofj")
+
+[node name="测试建造" type="Node2D"]
+script = ExtResource("1_4rofj")
+
+[node name="建造" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_jg03q")
+
+[node name="建造预览" type="TileMapLayer" parent="."]
+modulate = Color(1, 1, 1, 0.435294)
+tile_set = SubResource("TileSet_jg03q")

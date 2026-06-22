@@ -1,0 +1,45 @@
+[gd_scene load_steps=8 format=3 uid="uid://dh4h4i1wlakvq"]
+
+[ext_resource type="Shader" uid="uid://bk7bxol2tgdh2" path="res://shader学习/shader/放大镜.gdshader" id="1_23c1i"]
+[ext_resource type="Texture2D" uid="uid://b4gnh1d2y8a2p" path="res://资源/放大镜镜片.png" id="2_tghta"]
+[ext_resource type="Script" uid="uid://1ventvxj2kun" path="res://代码/放大缩小.gd" id="3_os5gr"]
+[ext_resource type="Texture2D" uid="uid://nqeh7nu7iyq2" path="res://资源/放大镜.png" id="4_vf37k"]
+[ext_resource type="Theme" uid="uid://d21vd3nni5n2y" path="res://主题/布局主题.tres" id="5_os5gr"]
+[ext_resource type="Script" uid="uid://cpepu1xb8a8yu" path="res://UI组件/镜片按钮.gd" id="5_tghta"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bfhll"]
+shader = ExtResource("1_23c1i")
+shader_parameter/scale_factor = 2.0
+
+[node name="镜片" type="Sprite2D"]
+material = SubResource("ShaderMaterial_bfhll")
+texture = ExtResource("2_tghta")
+script = ExtResource("3_os5gr")
+
+[node name="镜框" type="Sprite2D" parent="."]
+z_index = 3
+texture = ExtResource("4_vf37k")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="镜片按钮" type="Button" parent="CanvasLayer"]
+unique_name_in_owner = true
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -73.0
+offset_right = 2.0
+offset_bottom = 73.0
+grow_horizontal = 0
+grow_vertical = 2
+theme = ExtResource("5_os5gr")
+text = "查看"
+script = ExtResource("5_tghta")
+"提示文本" = "点击可使用/取消“查看镜”"
+"快捷键" = "Q"
+"悬停缩放" = 1.2
+
+[connection signal="button_down" from="CanvasLayer/镜片按钮" to="." method="点击按钮"]

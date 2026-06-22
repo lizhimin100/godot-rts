@@ -1,0 +1,80 @@
+[gd_scene load_steps=10 format=3 uid="uid://b87xk77ucgijb"]
+
+[ext_resource type="FontFile" uid="uid://8di0jvr25vat" path="res://assets/font/m5x7.ttf" id="1_1vyb2"]
+[ext_resource type="Script" uid="uid://cqoy1vpe1hefr" path="res://代码/卡牌/卡牌UI.gd" id="1_cq88j"]
+[ext_resource type="Script" uid="uid://d2jeywirs11j4" path="res://代码/组件代码/卡牌状态机组件.gd" id="3_ckhci"]
+[ext_resource type="Script" uid="uid://cofji7c7d2uda" path="res://代码/卡牌/卡牌状态/card_base_state.gd" id="4_l4vh4"]
+[ext_resource type="Script" uid="uid://ck66ygquxkqq5" path="res://代码/卡牌/卡牌状态/card_clicked_state.gd" id="5_cuapa"]
+[ext_resource type="Script" uid="uid://ce4wvbhd82fw7" path="res://代码/卡牌/卡牌状态/card_dragging_state.gd" id="6_dk13o"]
+[ext_resource type="Script" uid="uid://bfdnmrukqb2d6" path="res://代码/卡牌/卡牌状态/card_released_state.gd" id="7_lxon0"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_cq88j"]
+font = ExtResource("1_1vyb2")
+font_size = 24
+outline_size = 4
+outline_color = Color(0.270588, 0.266667, 0.309804, 1)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1vyb2"]
+size = Vector2(98, 118)
+
+[node name="卡牌UI" type="Control"]
+custom_minimum_size = Vector2(100, 120)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1180.0
+offset_bottom = -600.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cq88j")
+
+[node name="调试区域" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.105734, 0.499246, 0.273853, 1)
+
+[node name="状态" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "状态"
+label_settings = SubResource("LabelSettings_cq88j")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="使用检测" type="Area2D" parent="."]
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="使用检测"]
+position = Vector2(50, 60)
+shape = SubResource("RectangleShape2D_1vyb2")
+
+[node name="卡牌状态机组件" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("3_ckhci")
+initial_state = NodePath("CardBaseState")
+
+[node name="CardBaseState" type="Node" parent="卡牌状态机组件"]
+script = ExtResource("4_l4vh4")
+
+[node name="CardClickedState" type="Node" parent="卡牌状态机组件"]
+script = ExtResource("5_cuapa")
+state = 1
+
+[node name="CardDraggingState" type="Node" parent="卡牌状态机组件"]
+script = ExtResource("6_dk13o")
+state = 2
+
+[node name="CardReleasedState" type="Node" parent="卡牌状态机组件"]
+script = ExtResource("7_lxon0")
+state = 3

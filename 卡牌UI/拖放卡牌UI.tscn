@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dax8py5wosqcm"]
+
+[ext_resource type="Texture2D" uid="uid://b0ouu0qdf58dc" path="res://美术、音频/兵种/人类农民图片.png" id="1_c2t41"]
+[ext_resource type="Script" uid="uid://nanya4j80d1n" path="res://代码/拖放UI/拖放卡牌ui.gd" id="1_ybblr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ybblr"]
+bg_color = Color(0.6, 0.6, 0.6, 0.392157)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+
+[node name="兵种拖放UI" type="PanelContainer"]
+offset_right = 204.0
+offset_bottom = 197.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ybblr")
+script = ExtResource("1_ybblr")
+
+[node name="纹理矩形" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("1_c2t41")

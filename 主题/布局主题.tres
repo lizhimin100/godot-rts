@@ -1,0 +1,27 @@
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://d21vd3nni5n2y"]
+
+[ext_resource type="FontFile" uid="uid://hhub7q5v0o7p" path="res://美术、音频/Uranus_Pixel_11Px.ttf" id="1_ugcck"]
+[ext_resource type="Texture2D" uid="uid://bluoclwbn6etr" path="res://小剑资源/UI/Buttons/Button_Blue_3Slides.png" id="3_2a2vf"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6do24"]
+texture_margin_top = 20.0
+texture_margin_bottom = 20.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2a2vf"]
+texture = ExtResource("3_2a2vf")
+expand_margin_right = 100.0
+region_rect = Rect2(7.94237, 0.106796, 177.245, 59.2698)
+
+[resource]
+Button/colors/font_color = Color(0, 0, 0, 1)
+Button/colors/font_outline_color = Color(1, 1, 1, 1)
+Button/font_sizes/font_size = 32
+Button/fonts/font = ExtResource("1_ugcck")
+Button/icons/icon = null
+Button/styles/normal = SubResource("StyleBoxTexture_6do24")
+Label/colors/font_color = Color(0, 0, 0, 1)
+Label/colors/font_outline_color = Color(0, 0, 0, 1)
+Label/colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+Label/font_sizes/font_size = 100
+Label/fonts/font = ExtResource("1_ugcck")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_2a2vf")

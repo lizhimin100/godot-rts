@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://q87ehvoj8j07"]
+
+[ext_resource type="Script" uid="uid://rg80ilmu0okt" path="res://代码/角色基础/敌人基础类.gd" id="1_67tko"]
+
+[node name="敌人基础类" type="CharacterBody2D"]
+script = ExtResource("1_67tko")
+
+[node name="图形" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="图形"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]

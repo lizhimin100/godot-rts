@@ -1,0 +1,56 @@
+[gd_scene load_steps=9 format=3 uid="uid://b70iqynctevhy"]
+
+[ext_resource type="StyleBox" uid="uid://5qdjlavnhcfk" path="res://assets/theme/shop_button_hover.tres" id="1_j86bl"]
+[ext_resource type="StyleBox" uid="uid://mgcn15cjl08u" path="res://assets/theme/shop_button_pressed.tres" id="2_oot20"]
+[ext_resource type="StyleBox" uid="uid://c3ias4kwkl52j" path="res://assets/theme/shop_button_normal.tres" id="3_v58i0"]
+[ext_resource type="Script" uid="uid://de1i4gocfsvyf" path="res://代码/UI/重掷按钮.gd" id="4_wa3gx"]
+[ext_resource type="Resource" uid="uid://dqk7nx3o21qu1" path="res://玩家/玩家状态（测试）.tres" id="5_r678t"]
+[ext_resource type="Texture2D" uid="uid://c4awhqfup7o2k" path="res://assets/sprites/gold.png" id="6_yaxk4"]
+[ext_resource type="Texture2D" uid="uid://b8ht5o2amn6iw" path="res://assets/sprites/refresh.png" id="7_7d5ms"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_8fhmp"]
+font_size = 32
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="重掷按钮" type="Button"]
+custom_minimum_size = Vector2(160, 48)
+offset_right = 40.0
+offset_bottom = 40.0
+focus_mode = 0
+theme_override_styles/hover = ExtResource("1_j86bl")
+theme_override_styles/pressed = ExtResource("2_oot20")
+theme_override_styles/normal = ExtResource("3_v58i0")
+script = ExtResource("4_wa3gx")
+player_stats = ExtResource("5_r678t")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="文本" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "重掷 15"
+label_settings = SubResource("LabelSettings_8fhmp")
+
+[node name="金币图标" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("6_yaxk4")
+stretch_mode = 5
+
+[node name="重掷图标" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(28, 32)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("7_7d5ms")
+stretch_mode = 5
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

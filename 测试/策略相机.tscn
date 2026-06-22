@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bdjr4vjh2x7e6"]
+
+[ext_resource type="Script" uid="uid://d1afp1i0ln1m2" path="res://代码/测试/相机.gd" id="1_1ron1"]
+
+[node name="策略相机" type="Camera2D"]
+script = ExtResource("1_1ron1")
+metadata/_edit_lock_ = true

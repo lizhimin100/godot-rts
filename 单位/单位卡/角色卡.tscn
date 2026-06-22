@@ -1,0 +1,167 @@
+[gd_scene load_steps=14 format=3 uid="uid://bxp3o8k3snwjt"]
+
+[ext_resource type="Script" uid="uid://bmlmvvdkctwnm" path="res://代码/单位/单位卡/角色卡.gd" id="1_6lve1"]
+[ext_resource type="Theme" uid="uid://crbiguxpaeyrd" path="res://主题/单位卡牌主题/单位卡牌主题.tres" id="1_caeon"]
+[ext_resource type="LabelSettings" uid="uid://bxq0gwjnis62n" path="res://主题/字体主题/单位卡牌底部字体.tres" id="2_6lve1"]
+[ext_resource type="Resource" uid="uid://dqk7nx3o21qu1" path="res://玩家/玩家状态（测试）.tres" id="2_a2ho2"]
+[ext_resource type="Resource" uid="uid://dat6dna0am8y7" path="res://单位/单位数据/士兵.tres" id="3_xwhbm"]
+[ext_resource type="Texture2D" uid="uid://ciiyiu2ljkvxm" path="res://美术、音频/建筑/单位合集（人，三）.png" id="4_a2ho2"]
+[ext_resource type="FontFile" uid="uid://8di0jvr25vat" path="res://assets/font/m5x7.ttf" id="5_xwhbm"]
+[ext_resource type="Texture2D" uid="uid://c4awhqfup7o2k" path="res://assets/sprites/gold.png" id="7_xwhbm"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_xwhbm"]
+line_spacing = 0.0
+font = ExtResource("5_xwhbm")
+font_color = Color(0.6, 0.862745, 1, 0.729412)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1lci1"]
+resource_local_to_scene = true
+bg_color = Color(0.0705882, 0.290196, 0.180392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jl7nc"]
+resource_local_to_scene = true
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.0705882, 0.290196, 0.180392, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f3xdg"]
+resource_local_to_scene = true
+atlas = ExtResource("4_a2ho2")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r32l1"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="角色卡" type="Button"]
+custom_minimum_size = Vector2(162, 104)
+offset_right = 40.0
+offset_bottom = 40.0
+focus_mode = 0
+script = ExtResource("1_6lve1")
+player_stats = ExtResource("2_a2ho2")
+unit_stats = ExtResource("3_xwhbm")
+
+[node name="背景" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0.0823529, 0.12549, 1)
+
+[node name="特性" type="Label" parent="背景"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 20)
+layout_mode = 0
+offset_left = 7.0
+offset_top = 16.0
+offset_right = 71.0
+offset_bottom = 50.0
+theme = ExtResource("1_caeon")
+text = "普通
+战斗单位"
+label_settings = SubResource("LabelSettings_xwhbm")
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="底部" type="Panel" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1lci1")
+
+[node name="MarginContainer" type="MarginContainer" parent="底部"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="底部/MarginContainer"]
+custom_minimum_size = Vector2(156, 0)
+layout_mode = 2
+mouse_filter = 2
+alignment = 2
+
+[node name="单位名称" type="Label" parent="底部/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+text = "士兵"
+label_settings = ExtResource("2_6lve1")
+
+[node name="金币容器" type="HBoxContainer" parent="底部/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(56, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+alignment = 2
+
+[node name="金币消耗" type="Label" parent="底部/MarginContainer/HBoxContainer/金币容器"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1"
+label_settings = ExtResource("2_6lve1")
+
+[node name="金币图标" type="TextureRect" parent="底部/MarginContainer/HBoxContainer/金币容器"]
+custom_minimum_size = Vector2(16, 32)
+layout_mode = 2
+texture = ExtResource("7_xwhbm")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="边框" type="Panel" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_jl7nc")
+
+[node name="单位图标" type="TextureRect" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_left = 48.0
+offset_top = -30.0
+offset_right = 176.0
+offset_bottom = 98.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_f3xdg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="空占位符" type="Panel" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_r32l1")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="pressed" from="." to="." method="_on_pressed"]

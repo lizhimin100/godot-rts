@@ -1,0 +1,77 @@
+[gd_scene load_steps=6 format=3 uid="uid://i0x0g7m64en1"]
+
+[ext_resource type="Theme" uid="uid://7roeiv0sw6d5" path="res://主题/任务面板主题.tres" id="1_8di0q"]
+[ext_resource type="Texture2D" uid="uid://5gvy1o0gdmtt" path="res://小剑资源/兵种/Knights/Buildings/Castle/Castle_Blue.png" id="2_3rksu"]
+[ext_resource type="Script" uid="uid://dpaby8iety2xe" path="res://代码/测试/建造UI按钮.gd" id="2_68gnd"]
+[ext_resource type="Texture2D" uid="uid://ckwunckr84spj" path="res://小剑资源/兵种/Knights/Buildings/House/House_Blue.png" id="3_68gnd"]
+[ext_resource type="Texture2D" uid="uid://bkc68pg0y13w3" path="res://小剑资源/兵种/Knights/Buildings/Tower/Tower_Blue.png" id="4_ul5rp"]
+
+[node name="建造UI" type="Control"]
+layout_mode = 3
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -1153.0
+offset_top = -338.0
+offset_right = -1153.0
+offset_bottom = -338.0
+grow_horizontal = 0
+grow_vertical = 2
+theme = ExtResource("1_8di0q")
+script = ExtResource("2_68gnd")
+
+[node name="面板容器" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_right = 392.0
+offset_bottom = 304.0
+
+[node name="MarginContainer" type="MarginContainer" parent="面板容器"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="网格容器" type="GridContainer" parent="面板容器/MarginContainer"]
+layout_mode = 2
+
+[node name="横向" type="HBoxContainer" parent="面板容器/MarginContainer/网格容器"]
+layout_mode = 2
+alignment = 1
+
+[node name="1" type="Button" parent="面板容器/MarginContainer/网格容器/横向"]
+layout_mode = 2
+text = "
+
+
+
+城     堡"
+icon = ExtResource("2_3rksu")
+icon_alignment = 1
+expand_icon = true
+
+[node name="2" type="Button" parent="面板容器/MarginContainer/网格容器/横向"]
+layout_mode = 2
+text = "
+
+
+
+房     子"
+icon = ExtResource("3_68gnd")
+icon_alignment = 1
+expand_icon = true
+
+[node name="3" type="Button" parent="面板容器/MarginContainer/网格容器/横向"]
+layout_mode = 2
+text = "
+
+
+
+防御塔"
+icon = ExtResource("4_ul5rp")
+icon_alignment = 1
+expand_icon = true
+
+[connection signal="pressed" from="面板容器/MarginContainer/网格容器/横向/1" to="." method="建造城堡"]
+[connection signal="pressed" from="面板容器/MarginContainer/网格容器/横向/2" to="." method="建造房子"]
+[connection signal="pressed" from="面板容器/MarginContainer/网格容器/横向/3" to="." method="建造防御塔"]

@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bkc68pg0y13w3" path="res://小剑资源/兵种/Knights/Buildings/Tower/Tower_Blue.png" id="4_ul5rp"]
 
 [node name="建造UI" type="Control"]
+visible = false
 layout_mode = 3
 anchors_preset = 6
 anchor_left = 1.0

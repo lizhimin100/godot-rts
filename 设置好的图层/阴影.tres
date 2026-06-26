@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://b72cd6jvaspfi"]
+[gd_resource type="TileSet" format=3 uid="uid://b72cd6jvaspfi"]
 
 [ext_resource type="Texture2D" uid="uid://if7lasys8bdi" path="res://小剑资源/Terrain/Ground/Shadows.png" id="1_712vq"]
 

@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dlu525c05jgps" path="res://代码/UI/棋子库.gd" id="1_qo4jb"]
 [ext_resource type="Script" uid="uid://bdq00jl2xdlj4" path="res://代码/组件代码/游戏瓦片层组件.gd" id="2_1xugs"]
 [ext_resource type="Texture2D" uid="uid://c2d435qxpeon4" path="res://小剑资源/UI/Buttons/Button_Disable_3Slides.png" id="2_3d3im"]
+[ext_resource type="Texture2D" uid="uid://b4nfo3cg3wmd7" path="res://小剑资源/UI/Banners/Carved_9Slides.png" id="10_qo4jb"]
 [ext_resource type="Script" uid="uid://df5ca8tntufcf" path="res://代码/组件代码/单位网格组件.gd" id="3_3d3im"]
 [ext_resource type="Script" uid="uid://cnyb4s4fmd1t7" path="res://代码/组件代码/瓦片高亮组件.gd" id="4_svpjx"]
 [ext_resource type="PackedScene" uid="uid://clh3tmnsxuqwm" path="res://单位/单位拖放/单位.tscn" id="5_ywui0"]
@@ -12,21 +13,6 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3d3im"]
 bg_color = Color(0.337255, 0.635294, 0.882353, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.6, 0.862745, 1, 0.729412)
-corner_radius_top_left = 40
-corner_radius_top_right = 40
-corner_radius_bottom_right = 40
-corner_radius_bottom_left = 40
-expand_margin_left = 10.0
-expand_margin_top = 4.0
-expand_margin_right = 10.0
-expand_margin_bottom = 4.0
-shadow_color = Color(0, 0.0823529, 0.12549, 1)
-shadow_size = 4
 
 [sub_resource type="LabelSettings" id="LabelSettings_ywui0"]
 font = ExtResource("9_svpjx")
@@ -115,11 +101,11 @@ offset_right = 1280.0
 offset_bottom = 296.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_3d3im")
-patch_margin_left = 10
-patch_margin_top = 10
-patch_margin_right = 10
-patch_margin_bottom = 10
+texture = ExtResource("10_qo4jb")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
 metadata/_edit_use_anchors_ = true
 
 [node name="长凳区域" type="TileMapLayer" parent="棋子格子" node_paths=PackedStringArray("unit_grid", "tile_highlighter") groups=["棋子库层"]]

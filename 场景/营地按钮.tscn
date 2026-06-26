@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dqcjmeo37bbri"]
+
+[node name="营地按钮" type="Button" unique_id=1257924829]
+text = "  营  地  "
+
+[node name="TestUI" type="CanvasLayer" parent="." unique_id=1322137151]

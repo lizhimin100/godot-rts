@@ -9,7 +9,7 @@ script = ExtResource("1_6ngd4")
 
 [node name="选择检查" type="Area2D" parent="."]
 collision_layer = 0
-collision_mask = 2
+collision_mask = 12
 
 [node name="框选碰撞" type="CollisionShape2D" parent="选择检查"]
 shape = SubResource("RectangleShape2D_knel3")

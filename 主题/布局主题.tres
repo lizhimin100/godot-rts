@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=5 format=3 uid="uid://d21vd3nni5n2y"]
+[gd_resource type="Theme" format=3 uid="uid://d21vd3nni5n2y"]
 
 [ext_resource type="FontFile" uid="uid://hhub7q5v0o7p" path="res://美术、音频/Uranus_Pixel_11Px.ttf" id="1_ugcck"]
 [ext_resource type="Texture2D" uid="uid://bluoclwbn6etr" path="res://小剑资源/UI/Buttons/Button_Blue_3Slides.png" id="3_2a2vf"]

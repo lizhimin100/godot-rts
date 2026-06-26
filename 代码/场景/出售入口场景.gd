@@ -8,7 +8,7 @@ class_name SellPortal extends Area2D#节点放在最下面，不然在该节点�
 
 var current_unit : Unit
 
-static var initialized = false#静态变量标记初始化状态
+var initialized = false#非静态，每次场景加载重新初始化
 
 func _ready() -> void:
 	if not initialized:#不用静态变量标记初始化状态会导致下面信号重复连接
@@ -23,6 +23,10 @@ func setup_unit(unit : Unit) -> void:
 
 func _sell_unit(unit : Unit) -> void:
 	player_stats.金钱 += unit.stats.get_gold_value()
+	# 记录售出单位，防止重入营地时复活
+	var 全局变量 = get_node("/root/全局")
+	if 全局变量 and unit.name not in 全局变量.售出单位列表:
+		全局变量.售出单位列表.append(unit.name)
 	#TODO 以后出售单位有物品将返回物品
 	#TODO 以后出售单位后，该单位要回到单位池
 	prints(player_stats.金钱)

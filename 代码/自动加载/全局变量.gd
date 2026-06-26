@@ -20,6 +20,14 @@ var 新指令id = null
 var 敌方单位 = 0
 var 我方单位 = 0
 
+# 营地售出单位跟踪（按节点名称）
+var 售出单位列表 := []
+
+# 场景切换用 — 存储世界场景中的主角位置
+var 存储_主角位置 := Vector2(1072, 650)
+var 存储_相机位置 := Vector2(1072, 650)
+var 存储_相机缩放 := 1.3
+
 
 
 
@@ -27,12 +35,30 @@ var 我方单位 = 0
 func _process(delta: float) -> void:
 	pass
 
+# 全局通知弹窗 — 在世界坐标位置显示浮动文字
+func 显示通知(消息: String, 位置: Vector2 = Vector2(640, 360)) -> void:
+	var label := Label.new()
+	label.text = 消息
+	label.add_theme_font_size_override("font_size", 24)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 8)
+	label.add_theme_color_override("font_color", Color(1, 0.9, 0.2, 1))
+	label.position = 位置 - Vector2(label.get_minimum_size().x / 2, 0)
+	label.z_index = 200
+	get_tree().current_scene.add_child(label)
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "position:y", label.position.y - 60, 1.2)
+	tween.tween_property(label, "modulate:a", 0.0, 1.2)
+	tween.chain().tween_callback(label.queue_free)
+
 func 重置全局变量 ():
 	可通过 = PackedVector2Array()
 	不可通过 = PackedVector2Array()
 	选中工人 = false
 	选中建筑 = false
 
+	售出单位列表 = []
 
 	金钱 = 1200
 	木材 = 1200

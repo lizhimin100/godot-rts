@@ -3,7 +3,7 @@ class_name UnitMover extends Node
 
 @export var play_areas : Array[游戏瓦片层组件]
 
-static var initialized = false#静态变量标记初始化状态
+var initialized = false#非静态，每次场景加载重新初始化
 
 
 func _ready() -> void:

@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://gupu3swobqhm"]
+[gd_resource type="TileSet" format=3 uid="uid://gupu3swobqhm"]
 
 [ext_resource type="Texture2D" uid="uid://ysd0b6s1xlbn" path="res://小剑资源/Terrain/Ground/Tilemap_Elevation.png" id="1_8sxx2"]
 
@@ -9,23 +9,23 @@ texture = ExtResource("1_8sxx2")
 1:0/0 = 0
 1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -4.5, 8, -8, -8, -8, -8, -0.5, -0.5, -4)
 2:0/0 = 0
-2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 3:0/0 = 0
-3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:0/0 = 0
-4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:0/0 = 0
-5:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+5:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 6:0/0 = 0
-6:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+6:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 7:0/0 = 0
-7:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+7:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 8:0/0 = 0
-8:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+8:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 9:0/0 = 0
-9:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+9:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 10:0/0 = 0
-10:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, -5, 8, -8, -8, -8, -8, -5)
+10:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 11:0/0 = 0
 11:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(8, 8, 8, -8, -8, -8, -8, 0, -1.5, 2.5, 1.5, 8)
 12:0/0 = 0
@@ -654,5 +654,5 @@ texture = ExtResource("1_8sxx2")
 15:31/0 = 0
 
 [resource]
-physics_layer_0/collision_layer = 1
+physics_layer_0/collision_layer = 0
 sources/2 = SubResource("TileSetAtlasSource_uvbab")

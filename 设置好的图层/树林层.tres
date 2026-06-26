@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://cfcoynvdn1k6d"]
+[gd_resource type="TileSet" format=3 uid="uid://cfcoynvdn1k6d"]
 
 [ext_resource type="Texture2D" uid="uid://pntr1rorsvil" path="res://小剑资源/Resources/Trees/Tree.png" id="1_0x4bb"]
 
@@ -14,4 +14,5 @@ texture_region_size = Vector2i(128, 192)
 
 [resource]
 tile_size = Vector2i(128, 192)
+physics_layer_0/collision_layer = 32
 sources/0 = SubResource("TileSetAtlasSource_sc8jy")

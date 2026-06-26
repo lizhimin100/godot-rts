@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://bc6q18qbf0o43"]
+
+[ext_resource type="Theme" uid="uid://7roeiv0sw6d5" path="res://主题/任务面板主题.tres" id="1_441ki"]
+
+[node name="任务面板" type="PanelContainer" unique_id=479422070]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -275.5
+offset_top = -297.5
+offset_right = 275.5
+offset_bottom = 297.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_441ki")
+
+[node name="垂直" type="VBoxContainer" parent="." unique_id=1546074168]
+layout_mode = 2
+
+[node name="任务标题" type="Label" parent="垂直" unique_id=1384425180]
+layout_mode = 2
+theme_type_variation = &"HeaderLarge"
+text = "标题"
+horizontal_alignment = 1
+
+[node name="任务内容" type="Label" parent="垂直" unique_id=752206352]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+text = "萨芬骄傲思想支持可就吉萨法律上女女 爱上你的履历萨克美女按"
+autowrap_mode = 2
+
+[node name="间隔控件" type="Control" parent="垂直" unique_id=1204375661]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="水平" type="HBoxContainer" parent="垂直" unique_id=1848399638]
+layout_mode = 2
+
+[node name="间隔控件2" type="Control" parent="垂直/水平" unique_id=822987932]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
+
+[node name="接受按钮" type="Button" parent="垂直/水平" unique_id=102030210]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.5
+text = "接受"
+
+[node name="拒绝按钮" type="Button" parent="垂直/水平" unique_id=1606826878]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.5
+text = "拒绝"
+
+[node name="间隔控件3" type="Control" parent="垂直/水平" unique_id=1791635923]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4

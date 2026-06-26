@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://hamfjxe4h2w"]
+[gd_resource type="TileSet" format=3 uid="uid://hamfjxe4h2w"]
 
 [ext_resource type="Texture2D" uid="uid://dmk4r3or5ev5s" path="res://小剑资源/Terrain/Bridge/Bridge_All.png" id="1_te2wa"]
 

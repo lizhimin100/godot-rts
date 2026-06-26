@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://dncr3syxblek2"]
+[gd_resource type="TileSet" format=3 uid="uid://dncr3syxblek2"]
 
 [ext_resource type="Texture2D" uid="uid://c4gjxtrbqm5si" path="res://忍者地形/TilesetFloorDetail.png" id="1_kqnyu"]
 

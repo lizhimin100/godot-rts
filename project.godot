@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="类魔兽"
-run/main_scene="uid://b4clh88t3nqul"
+run/main_scene="res://场景/平面.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.270588, 0.266667, 0.309804, 1)
 boot_splash/show_image=false
@@ -29,6 +29,7 @@ Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 "防建筑重叠"="*res://自动加载/防建筑重叠.tscn"
 "全局变量"="*res://代码/自动加载/全局变量.gd"
 "资源ui显示"="*res://UI组件/总UI/资源和经验谈UI显示.tscn"
+"阵营管理器"="*res://代码/自动加载/阵营管理器.gd"
 MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 
 [dialogic]

@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://ckprlv4mqbbho"]
+[gd_resource type="TileSet" format=3 uid="uid://ckprlv4mqbbho"]
 
 [ext_resource type="Texture2D" uid="uid://bn4ityw0b3ub4" path="res://小剑资源/Terrain/Ground/Tilemap_Flat.png" id="1_4f6fn"]
 [ext_resource type="Texture2D" uid="uid://duem0w7bmxonj" path="res://美术、音频/建筑/高亮瓦片.png" id="2_18il5"]

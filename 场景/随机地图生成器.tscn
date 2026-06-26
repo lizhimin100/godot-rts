@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://代码/场景/随机地图生成器.gd" id="1_generator"]
+[ext_resource type="TileSet" uid="uid://b5hj8m718ipyb" path="res://设置好的图层/草地.tres" id="2_ground"]
+[ext_resource type="TileSet" uid="uid://cfcoynvdn1k6d" path="res://设置好的图层/树林层.tres" id="3_forest"]
+
+[node name="随机地图生成器" type="Node2D"]
+script = ExtResource("1_generator")
+
+[node name="地形" type="Node2D" parent="."]
+
+[node name="地面" type="TileMapLayer" parent="地形"]
+tile_set = ExtResource("2_ground")
+
+[node name="树" type="TileMapLayer" parent="地形"]
+z_index = 1
+tile_set = ExtResource("3_forest")
+
+[node name="跟随相机" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+zoom = Vector2(0.75, 0.75)
+enabled = true

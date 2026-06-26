@@ -22,7 +22,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Rect2(0, 0, 1536, 192)]
+"values": [Rect2(0, 0, 1152, 192)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -195,7 +195,7 @@ material = SubResource("ShaderMaterial_reset")
 texture = ExtResource("2_archer")
 hframes = 6
 region_enabled = true
-region_rect = Rect2(0, 0, 1536, 192)
+region_rect = Rect2(0, 0, 1152, 192)
 
 [node name="角色动画" type="AnimationPlayer" parent="." unique_id=298990745]
 libraries/ = SubResource("AnimationLibrary_archer")

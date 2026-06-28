@@ -1,0 +1,10 @@
+InputEventKey:
+		if event.is_action_pressed("移动") and event.is_pressed():
+			# 按 A 键进入 A-move 模式（复用"移动"动作可能有冲突，单独检测）
+			pass
+		if event.is_action_pressed("空格") and event.is_pressed():
+			_amove模式中 = true
+			print("⚔️ A-move 模式已激活，左键点击地面发送攻击移动命令")
+
+
+f

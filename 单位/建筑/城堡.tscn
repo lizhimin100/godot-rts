@@ -1,8 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://d1k2m3n4o5p6q"]
+[gd_scene format=3 uid="uid://d1k2m3n4o5p6q"]
 
-[ext_resource type="Script" path="res://单位/建筑/城堡.gd" id="1_6ngd4"]
-[ext_resource type="Texture2D" path="res://小剑资源/兵种/Knights/Buildings/Castle/Castle_Blue.png" id="2_6ngd4"]
-[ext_resource type="Texture2D" path="res://小剑资源/兵种/Knights/Buildings/Castle/Castle_Destroyed.png" id="3_6ngd4"]
+[ext_resource type="Script" uid="uid://dqvrmbkuxpy64" path="res://单位/建筑/城堡.gd" id="1_6ngd4"]
+[ext_resource type="Texture2D" uid="uid://5gvy1o0gdmtt" path="res://小剑资源/兵种/Knights/Buildings/Castle/Castle_Blue.png" id="2_6ngd4"]
+[ext_resource type="Texture2D" uid="uid://dwsat58e5tqrv" path="res://小剑资源/兵种/Knights/Buildings/Castle/Castle_Destroyed.png" id="3_6ngd4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_castle"]
+size = Vector2(288, 195)
 
 [sub_resource type="Animation" id="Animation_foe1q"]
 resource_name = "受击"
@@ -25,31 +28,22 @@ _data = {
 &"受击": SubResource("Animation_foe1q")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_castle"]
-size = Vector2(160, 128)
-
-[node name="城堡" type="StaticBody2D"]
+[node name="城堡" type="StaticBody2D" unique_id=1167517112]
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("1_6ngd4")
-建筑名称 = "城堡"
-最大生命值 = 500.0
-阵营 = null
 
-[node name="建筑图像" type="Sprite2D" parent="."]
+[node name="建筑图像" type="Sprite2D" parent="." unique_id=509772962]
 texture = ExtResource("2_6ngd4")
-centered = true
 
-[node name="已摧毁图像" type="Sprite2D" parent="."]
-texture = ExtResource("3_6ngd4")
-centered = true
+[node name="已摧毁图像" type="Sprite2D" parent="." unique_id=1314113380]
 visible = false
+texture = ExtResource("3_6ngd4")
 
-[node name="碰撞" type="CollisionShape2D" parent="."]
-position = Vector2(0, 0)
+[node name="碰撞" type="CollisionShape2D" parent="." unique_id=1236568928]
+visible = false
+position = Vector2(0, 13.5)
 shape = SubResource("RectangleShape2D_castle")
 
-[node name="动画" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_foe1q")
-}
+[node name="动画" type="AnimationPlayer" parent="." unique_id=658756952]
+libraries/ = SubResource("AnimationLibrary_foe1q")

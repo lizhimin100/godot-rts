@@ -53,8 +53,16 @@ func _ready() -> void:
 
 
 func _on_unit_selected(unit: Node) -> void:
-	print("🖥️ _on_unit_selected: %s (%s)" % [unit.name, unit.get_class()])
-	当前选中单位 = [unit]
+	_on_selection_changed([unit])
+
+
+## 选中变更 — 接受选中单位数组（多选支持）
+func _on_selection_changed(units: Array) -> void:
+	if units.is_empty():
+		_clear_selection()
+		return
+
+	当前选中单位 = units.duplicate()
 	操作面板.visible = true
 	_当前选中建筑 = false
 	_当前选中城堡 = false
@@ -68,19 +76,18 @@ func _on_unit_selected(unit: Node) -> void:
 		建筑名称标签.visible = false
 	_隐藏状态标签()
 
-	# 检测选中单位类型
-	print("🖥️   单位组: ", unit.get_groups())
+	# 检测选中单位类型（以第一个为主）
+	var unit = units[0]
+	if not is_instance_valid(unit):
+		return
+
 	if unit.is_in_group("建筑"):
 		_当前选中建筑 = true
 		_当前建筑节点 = unit
-		print("🖥️   检测为建筑")
 		if unit is 城堡:
 			_当前选中城堡 = true
-			print("🖥️   检测为城堡 -> 将显示训练面板")
-		else:
-			print("🖥️   非城堡建筑 (is 城堡 = %s)" % str(unit is 城堡))
 	else:
-		print("🖥️   非建筑单位")
+		pass
 
 	_更新按钮()
 

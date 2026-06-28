@@ -15,6 +15,8 @@ var 对话中: bool = false  # 标记是否处于对话状态
 @onready var 交互管理器: Node2D = $交互管理器
 @onready var 交互提示界面: CanvasLayer = $交互动画/交互提示界面
 
+var 移动中: bool = false
+
 
 
 # ███ 状态变量 ███

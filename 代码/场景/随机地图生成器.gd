@@ -89,7 +89,7 @@ func 清除地图() -> void:
 func _获取第一个图源(图层: TileMapLayer) -> int:
 	if not 图层.tile_set:
 		return -1
-	var 图源列表 := 图层.tile_set.get_source_list()
+	var 图源列表: Array = 图层.tile_set.get_source_list()
 	if 图源列表.is_empty():
 		return -1
 	return 图源列表[0]

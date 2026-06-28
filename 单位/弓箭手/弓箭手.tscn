@@ -104,7 +104,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Rect2(0, 384, 1152, 192)]
+"values": [Rect2(0, 576, 1152, 192)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -182,7 +182,26 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_col"]
-size = Vector2(20, 40)
+size = Vector2(40, 48)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp"]
+bg_color = Color(0, 0.733333, 0.313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mp"]
+bg_color = Color(0, 0.654902, 0.937255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
 
 [node name="弓箭手" type="CharacterBody2D" unique_id=1449831379]
 scale = Vector2(0.5, 0.5)
@@ -201,7 +220,7 @@ region_rect = Rect2(0, 0, 1152, 192)
 libraries/ = SubResource("AnimationLibrary_archer")
 
 [node name="碰撞" type="CollisionShape2D" parent="." unique_id=337220909]
-position = Vector2(4, 8)
+position = Vector2(-2, 2)
 shape = SubResource("RectangleShape2D_col")
 
 [node name="选中标签" type="Label" parent="." unique_id=1145472894]
@@ -214,3 +233,23 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 10
 theme_override_font_sizes/font_size = 20
 text = "▼"
+
+[node name="血条" type="ProgressBar" parent="." unique_id=287187415]
+offset_left = -35.0
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -42.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp")
+value = 100.0
+show_percentage = false
+
+[node name="蓝条" type="ProgressBar" parent="." unique_id=1418435491]
+offset_left = -35.0
+offset_top = -42.0
+offset_right = 35.0
+offset_bottom = -34.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp")
+value = 100.0
+show_percentage = false

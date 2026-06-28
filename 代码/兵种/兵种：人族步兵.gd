@@ -1,8 +1,7 @@
 extends 移动基类
 
-
-
-
+@onready var 选中标签: Label = $选中标签
+@onready var 动画: AnimatedSprite2D = $角色动画
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

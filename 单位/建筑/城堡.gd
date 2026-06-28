@@ -15,6 +15,9 @@ var _训练计时器: Timer
 var 集结点: Vector2 = Vector2.ZERO
 var _集结点标记 = null
 
+# 城门位置（相对城堡中心，朝南）
+const 城门偏移 := Vector2(0, 130)
+
 # 可训练单位配置
 const 可训练单位 := {
 	"剑士": { "花费": { "金钱": 100, "木材": 0 }, "时间": 3.0 },
@@ -151,13 +154,8 @@ func _生成单位(类型: String) -> void:
 		return
 
 	var 实例 = 场景.instantiate()
-	# 从城堡右下侧散开生成，不重叠不卡位
-	var 偏移方向 := Vector2(80, 40)
-	var 同类型计数 := 0
-	for child in get_parent().get_children():
-		if child.is_in_group("移动单位") and child.阵营 == 阵营:
-			同类型计数 += 1
-	实例.position = global_position + 偏移方向 + Vector2(同类型计数 % 5 * 25, int(同类型计数 / 5) * 25)
+	# 从城门位置生成
+	实例.position = _获取安全生成位置()
 	if 阵营 == 阵营管理器.阵营.敌人:
 		实例.collision_layer = 16
 	实例.阵营 = 阵营
@@ -182,6 +180,27 @@ func 取消训练() -> bool:
 	全局变量.显示通知("已取消训练 " + 取消项["类型"], global_position + Vector2(0, -120))
 	return true
 
+
+
+
+## 获取安全生成位置：优先从城门（底部中央）生成，检测障碍后回退
+func _获取安全生成位置() -> Vector2:
+	# 1）优先从城门位置生成
+	var 城门位置 = global_position + 城门偏移
+	if not 流场寻路.是障碍(城门位置):
+		return 城门位置
+
+	# 2）城门被阻挡，尝试城门附近偏移
+	var 候选偏移 = [
+		Vector2(0, 140), Vector2(30, 135), Vector2(-30, 135),
+		Vector2(170, 0), Vector2(-170, 0), Vector2(0, -140),
+		Vector2(150, 110), Vector2(-150, 110), Vector2(150, -110), Vector2(-150, -110),
+	]
+	for 偏移 in 候选偏移:
+		var 候选位置 = global_position + 偏移
+		if not 流场寻路.是障碍(候选位置):
+			return 候选位置
+	return global_position + Vector2(randf_range(120, 200), randf_range(80, 150))
 
 func 获取队列大小() -> int:
 	return _训练队列.size()

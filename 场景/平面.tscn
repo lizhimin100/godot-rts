@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" uid="uid://d1k2m3n4o5p6r" path="res://单位/农民/农民.tscn" id="11_farmer"]
 [ext_resource type="PackedScene" uid="uid://i0x0g7m64en1" path="res://UI/建造ui/建造ui.tscn" id="12_buildui"]
 [ext_resource type="Script" uid="uid://bjy40hyi8dfj3" path="res://代码/测试/建筑放置管理器.gd" id="13_placement"]
+[ext_resource type="Script" path="res://代码/world/NavigationWorld.gd" id="14_nav"]
+[ext_resource type="Script" path="res://systems/FFManager.gd" id="15_ffmgr"]
 [ext_resource type="TileSet" uid="uid://cfcoynvdn1k6d" path="res://设置好的图层/树林层.tres" id="21_forest"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8ykcf"]
@@ -40,6 +42,7 @@ tile_map_data = PackedByteArray("AAAAAAEAAgAAAAAAAAAAAAIAAgAAAAEAAAAAAAMAAgAAAAI
 tile_set = ExtResource("1_e2ydd")
 
 [node name="树" type="TileMapLayer" parent="地形" unique_id=1354817605]
+z_index = 1
 tile_map_data = PackedByteArray("AAAHAAEAAAAAAAAAAAAIAAAAAAAAAAAAAAAKAAEAAAAAAAAAAAACAAMAAAAAAAAAAAAAAAIAAAAAAAAAAAAFAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAYAAAAAAAAAAAAJAAYAAAAAAAAAAAANAAQAAAAAAAAAAAAOAAQAAAAAAAAAAAAPAAQAAAAAAAAAAAAKAAQAAAAAAAAAAAAOAAYAAAAAAAAAAAATAAYAAAAAAAAAAAAQAAIAAAAAAAAAAAARAAIAAAAAAAAAAAA=")
 tile_set = ExtResource("21_forest")
 
@@ -53,7 +56,7 @@ editor_draw_drag_margin = true
 script = ExtResource("2_rpxdi")
 
 [node name="战争迷雾（要在最下面）" type="Sprite2D" parent="." unique_id=533869498]
-z_index = 2
+z_index = 100
 material = SubResource("ShaderMaterial_8ykcf")
 position = Vector2(500, 290)
 script = ExtResource("4_eu7sg")
@@ -61,6 +64,7 @@ script = ExtResource("4_eu7sg")
 "视野单位组" = "可选单位"
 
 [node name="单位" type="Node2D" parent="." unique_id=708731266]
+y_sort_enabled = true
 
 [node name="剑士" parent="单位" unique_id=769071568 instance=ExtResource("5_2oxns")]
 position = Vector2(346, 146)
@@ -72,15 +76,15 @@ position = Vector2(772, 99)
 position = Vector2(113, 288)
 
 [node name="敌人1" parent="单位" unique_id=1801394194 instance=ExtResource("5_2oxns")]
-position = Vector2(760, 360)
+position = Vector2(189, 865)
 collision_layer = 16
 
 [node name="敌人2" parent="单位" unique_id=1572463249 instance=ExtResource("5_2oxns")]
-position = Vector2(800, 400)
+position = Vector2(717, 858)
 collision_layer = 16
 
 [node name="敌人3" parent="单位" unique_id=1793410851 instance=ExtResource("5_2oxns")]
-position = Vector2(100, 440)
+position = Vector2(466, 862)
 collision_layer = 16
 
 [node name="弓箭手1" parent="单位" unique_id=1753509449 instance=ExtResource("8_archer")]
@@ -90,11 +94,11 @@ position = Vector2(450, 170)
 position = Vector2(660, 140)
 
 [node name="敌人弓箭手1" parent="单位" unique_id=1435218344 instance=ExtResource("8_archer")]
-position = Vector2(720, 410)
+position = Vector2(773, 963)
 collision_layer = 16
 
 [node name="敌人弓箭手2" parent="单位" unique_id=1573002040 instance=ExtResource("8_archer")]
-position = Vector2(180, 460)
+position = Vector2(227, 999)
 collision_layer = 16
 
 [node name="玩家农民1" parent="单位" unique_id=576328288 instance=ExtResource("11_farmer")]
@@ -111,6 +115,12 @@ position = Vector2(458, 1263)
 collision_layer = 16
 
 [node name="rts——node" parent="." unique_id=1198587590 instance=ExtResource("6_kdqec")]
+
+[node name="NavigationWorld" type="Node" parent="."]
+script = ExtResource("14_nav")
+
+[node name="FFManager" type="Node" parent="."]
+script = ExtResource("15_ffmgr")
 
 [node name="胜负UI" type="CanvasLayer" parent="." unique_id=1112280517]
 script = ExtResource("7_debug")
@@ -135,6 +145,9 @@ vertical_alignment = 1
 [node name="操作UI" parent="UI层" unique_id=1843837432 instance=ExtResource("10_ui")]
 
 [node name="建造UI" parent="UI层" unique_id=1744832989 instance=ExtResource("12_buildui")]
+anchors_preset = 11
+offset_left = 0.0
+grow_vertical = 0
 
 [node name="建筑放置管理器" type="Node2D" parent="." unique_id=1903833801]
 script = ExtResource("13_placement")

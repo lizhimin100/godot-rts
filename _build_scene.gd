@@ -1,3 +1,5 @@
+extends Node
+
 # 1) Read the backup scene
 var f = FileAccess.open("res://场景/平面.tscn.bak", FileAccess.READ)
 var txt = f.get_as_text(true)

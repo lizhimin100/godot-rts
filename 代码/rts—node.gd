@@ -18,7 +18,7 @@ static func 获取实例() -> Node2D:
 	return _全局实例
 
 var 开始选择 = Vector2.ZERO
-var 鼠标按住中 := false
+var 鼠标按住中: bool = false
 
 # 右键标记
 var _右键标记位置: Vector2 = Vector2.ZERO
@@ -26,14 +26,17 @@ var _右键标记时长: float = 0.0
 var _右键标记攻击: bool = false
 
 # 鼠标光标
-var _光标帧计数 := 0
-var _光标是攻击 := false
+var _光标帧计数: int = 0
+var _光标是攻击: bool = false
 
 # A-move 模式
-var _amove模式中 := false
+var _amove模式中: bool = false
 
 # 当前选中单位列表
 var _选中单位列表: Array[Node] = []
+
+# ⭐ 框选优先级设置：true=单位优先于建筑，false=建筑优先于单位
+@export var 框选优先单位: bool = true
 
 @onready var 选择检查: Area2D = $选择检查
 @onready var 框选碰撞: CollisionShape2D = $选择检查/框选碰撞
@@ -86,15 +89,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			# 右键 → 命令
 			if event.is_pressed():
 				var 点击位置 = get_global_mouse_position()
-				var 是攻击指令 := 判断右键是否为攻击(点击位置)
+				var 是攻击指令: bool = 判断右键是否为攻击(点击位置)
 				_显示右键标记(点击位置, 是攻击指令)
 				_发送命令(点击位置, 是攻击指令)
 
 	elif event is InputEventKey:
 		if event.is_action_pressed("移动") and event.is_pressed():
-			# 按 A 键进入 A-move 模式（复用"移动"动作可能有冲突，单独检测）
-			pass
-		if event.is_action_pressed("空格") and event.is_pressed():
 			_amove模式中 = true
 			print("⚔️ A-move 模式已激活，左键点击地面发送攻击移动命令")
 
@@ -126,13 +126,13 @@ func _更新鼠标光标() -> void:
 	if 鼠标按住中:
 		return
 	var 结果 = 空间.intersect_point(查询)
-	var 发现敌人 := false
+	var 发现敌人: bool = false
 	for 碰撞 in 结果:
 		var 目标 = 碰撞.collider
 		if 目标 and 目标.has_method("_是敌人") and 目标._是敌人():
 			if 目标.当前生命值 > 0:
 				发现敌人 = true
-				break
+			break
 	if 发现敌人 != _光标是攻击:
 		_光标是攻击 = 发现敌人
 		if 发现敌人:
@@ -143,7 +143,7 @@ func _更新鼠标光标() -> void:
 
 ## 发送命令到所有选中单位
 func _发送命令(点击位置: Vector2, 是攻击: bool) -> void:
-	var 目标 = _获取点击目标(点击位置)
+	var 目标: Node2D = _获取点击目标(点击位置)
 	var 有选中单位 = false
 
 	# 获取当前所有选中单位
@@ -163,9 +163,14 @@ func _发送命令(点击位置: Vector2, 是攻击: bool) -> void:
 				单位.命令攻击(目标)
 	else:
 		# 右键点到空地 → 移动
-		for 单位 in _选中单位列表:
+		var total: int = _选中单位列表.size()
+		for i in range(total):
+			var 单位 = _选中单位列表[i]
 			if 单位.has_method("命令移动"):
 				单位.命令移动(点击位置)
+				# 分配阵型 slot，锁住直到下次新命令
+				var slot: Vector2 = UnitFormation.get_slot_offset(i, total)
+				if "unit_controller" in 单位 and 单位.unit_controller: 单位.unit_controller.formation_offset = slot
 
 
 ## 发送攻击移动命令（A-move）
@@ -175,9 +180,14 @@ func _发送攻击移动命令(点击位置: Vector2) -> void:
 		if 单位.选择状态:
 			_选中单位列表.append(单位)
 
-	for 单位 in _选中单位列表:
+	var total: int = _选中单位列表.size()
+	for i in range(total):
+		var 单位 = _选中单位列表[i]
 		if 单位.has_method("命令移动"):
-			单位.命令移动(点击位置)
+			单位.命令移动(点击位置, true)
+			# 分配阵型 slot（A-move 也保持阵型）
+			var slot: Vector2 = UnitFormation.get_slot_offset(i, total)
+			if "unit_controller" in 单位 and 单位.unit_controller: 单位.unit_controller.formation_offset = slot
 
 
 ## 获取点击位置的目标节点
@@ -259,7 +269,8 @@ func 选择单位() -> void:
 	var 鼠标位置 = get_global_mouse_position()
 	var 大小 = abs(鼠标位置 - 开始选择)
 
-	if 大小.length() < 15.0:
+	# ⭐ 极小拖动→当作点选，防误触
+	if 大小.length() < 15.0 or (大小.x < 20 and 大小.y < 20):
 		_点选单位(鼠标位置)
 	else:
 		await _框选单位(开始选择, 大小)
@@ -297,18 +308,34 @@ func _点选单位(点击位置: Vector2) -> void:
 	查询.collision_mask = 12  # 8(操作单位) + 4(建筑)
 	var 结果 = 空间.intersect_point(查询)
 
+	# 点选：优先选移动单位，建筑次之（建筑靠点选，保持大碰撞体积）
+	var 选中的单位 = null
+	var 选中的建筑 = null
+
 	for 碰撞结果 in 结果:
-		var 单位 = 碰撞结果.collider
-		if 单位 and 单位.is_in_group("可选单位"):
-			单位.选择状态 = true
-			var ui = _获取操作UI()
-			if ui:
-				ui._on_unit_selected(单位)
-			return
+		var 目标 = 碰撞结果.collider
+		if not 目标 or not 目标.is_in_group("可选单位"):
+			continue
+		if 目标.is_in_group("移动单位") and 选中的单位 == null:
+			选中的单位 = 目标
+		elif 目标.is_in_group("建筑") and 选中的建筑 == null:
+			选中的建筑 = 目标
+
+	var 最终选中 = 选中的单位 if 选中的单位 != null else 选中的建筑
+	if 最终选中 != null:
+		最终选中.选择状态 = true
+		var ui = _获取操作UI()
+		if ui:
+			ui._on_selection_changed([最终选中])
+		return
 
 	_清除选择UI()
 
 func _框选单位(起点: Vector2, 大小: Vector2) -> void:
+	# ⭐ 立即清除所有选择，防止 await 期间旧选择被右键命令读取
+	for 单位 in get_tree().get_nodes_in_group("可选单位"):
+		单位.选择状态 = false
+
 	var 框选区域位置 = 选择区域起始位置()
 	选择检查.global_position = 框选区域位置
 	框选碰撞.global_position = 框选区域位置 + 大小 / 2
@@ -316,24 +343,45 @@ func _框选单位(起点: Vector2, 大小: Vector2) -> void:
 
 	await get_tree().create_timer(0.04).timeout
 
-	var 所有单位 = get_tree().get_nodes_in_group("可选单位")
-	var 已选中的单位 := []
+	var 所有可选 = get_tree().get_nodes_in_group("可选单位")
+	var 框选单位列表: Array = []
+	var 框选建筑列表: Array = []
 
-	for 单位 in 选择检查.get_overlapping_bodies():
-		if 单位 in get_tree().get_nodes_in_group("可选单位"):
-			单位.选择状态 = true
-			已选中的单位.append(单位)
-			所有单位.erase(单位)
+	# 分离重叠体为"单位"和"建筑"
+	for 目标 in 选择检查.get_overlapping_bodies():
+		if not 目标 in 所有可选:
+			continue
+		if 目标.is_in_group("建筑"):
+			框选建筑列表.append(目标)
+		elif 目标.is_in_group("移动单位"):
+			框选单位列表.append(目标)
+		所有可选.erase(目标)
 
-	for 单位 in 所有单位:
-		单位.选择状态 = false
+	# ⭐ 根据优先级决定最终选中
+	var 最终选中: Array
+	var 被排除的: Array  # 框选范围内但未选中的（需要强制取消选择）
+	if 框选优先单位:
+		# 单位优先：有单位时只选单位，无单位时才选建筑
+		最终选中 = 框选单位列表 if not 框选单位列表.is_empty() else 框选建筑列表
+		被排除的 = 框选建筑列表 if not 框选单位列表.is_empty() else []
+	else:
+		# 建筑优先
+		最终选中 = 框选建筑列表 if not 框选建筑列表.is_empty() else 框选单位列表
+		被排除的 = 框选单位列表 if not 框选建筑列表.is_empty() else []
 
-	if 已选中的单位.is_empty():
+	for 目标 in 所有可选:
+		目标.选择状态 = false
+	for 目标 in 被排除的:
+		目标.选择状态 = false
+	for 目标 in 最终选中:
+		目标.选择状态 = true
+
+	if 最终选中.is_empty():
 		_清除选择UI()
 	else:
 		var ui = _获取操作UI()
 		if ui:
-			ui._on_unit_selected(已选中的单位[0])
+			ui._on_selection_changed(最终选中)
 
 
 func 选择区域起始位置() -> Vector2:

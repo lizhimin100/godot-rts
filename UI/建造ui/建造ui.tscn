@@ -7,72 +7,83 @@
 [ext_resource type="Texture2D" uid="uid://bkc68pg0y13w3" path="res://小剑资源/兵种/Knights/Buildings/Tower/Tower_Blue.png" id="4_ul5rp"]
 
 [node name="建造UI" type="Control"]
-visible = false
+visible = true
 layout_mode = 3
-anchors_preset = 6
+anchors_preset = 7
 anchor_left = 1.0
-anchor_top = 0.5
+anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -1153.0
-offset_top = -338.0
-offset_right = -1153.0
-offset_bottom = -338.0
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_right = 0.0
 grow_horizontal = 0
-grow_vertical = 2
 theme = ExtResource("1_8di0q")
 script = ExtResource("2_68gnd")
 
-[node name="面板容器" type="PanelContainer" parent="."]
+[node name="切换按钮" type="Button" parent="."]
 layout_mode = 0
-offset_right = 392.0
-offset_bottom = 304.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -150.0
+offset_right = 0.0
+offset_bottom = 50.0
+grow_horizontal = 0
+text = "🏗️ 建造"
 
-[node name="MarginContainer" type="MarginContainer" parent="面板容器"]
+[node name="面板" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -300.0
+offset_top = 55.0
+offset_right = 0.0
+offset_bottom = 350.0
+grow_horizontal = 0
+theme = ExtResource("1_8di0q")
+
+[node name="MarginContainer" type="MarginContainer" parent="面板"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
 
-[node name="网格容器" type="GridContainer" parent="面板容器/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="面板/MarginContainer"]
 layout_mode = 2
+alignment = 0
 
-[node name="横向" type="HBoxContainer" parent="面板容器/MarginContainer/网格容器"]
+[node name="1" type="Button" parent="面板/MarginContainer/VBoxContainer"]
 layout_mode = 2
-alignment = 1
-
-[node name="1" type="Button" parent="面板容器/MarginContainer/网格容器/横向"]
-layout_mode = 2
-text = "
-
-
-
-城     堡"
+custom_minimum_size = Vector2(200, 100)
+text = "城 堡"
 icon = ExtResource("2_3rksu")
-icon_alignment = 1
+icon_alignment = 0
 expand_icon = true
 
-[node name="2" type="Button" parent="面板容器/MarginContainer/网格容器/横向"]
+[node name="2" type="Button" parent="面板/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "
-
-
-
-房     子"
+custom_minimum_size = Vector2(200, 100)
+text = "房 子"
 icon = ExtResource("3_68gnd")
-icon_alignment = 1
+icon_alignment = 0
 expand_icon = true
 
-[node name="3" type="Button" parent="面板容器/MarginContainer/网格容器/横向"]
+[node name="3" type="Button" parent="面板/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "
-
-
-
-防御塔"
+custom_minimum_size = Vector2(200, 100)
+text = "防御塔"
 icon = ExtResource("4_ul5rp")
-icon_alignment = 1
+icon_alignment = 0
 expand_icon = true
 
-[connection signal="pressed" from="面板容器/MarginContainer/网格容器/横向/1" to="." method="建造城堡"]
-[connection signal="pressed" from="面板容器/MarginContainer/网格容器/横向/2" to="." method="建造房子"]
-[connection signal="pressed" from="面板容器/MarginContainer/网格容器/横向/3" to="." method="建造防御塔"]
+[connection signal="pressed" from="切换按钮" to="." method="_on_切换按钮_pressed"]
+[connection signal="pressed" from="面板/MarginContainer/VBoxContainer/1" to="." method="建造城堡"]
+[connection signal="pressed" from="面板/MarginContainer/VBoxContainer/2" to="." method="建造房子"]
+[connection signal="pressed" from="面板/MarginContainer/VBoxContainer/3" to="." method="建造防御塔"]

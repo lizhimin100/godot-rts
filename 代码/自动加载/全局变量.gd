@@ -28,7 +28,20 @@ var 存储_主角位置 := Vector2(1072, 650)
 var 存储_相机位置 := Vector2(1072, 650)
 var 存储_相机缩放 := 1.3
 
+# ========== 建筑类型数据（供建筑放置管理器 + 农民使用） ==========
+enum 建筑类型 { 城堡, 房子, 防御塔 }
 
+const 建筑场景 := {
+	建筑类型.城堡: preload("res://单位/建筑/城堡.tscn"),
+	建筑类型.房子: preload("res://单位/建筑/房子.tscn"),
+	建筑类型.防御塔: preload("res://单位/建筑/防御塔.tscn"),
+}
+
+const 建筑碰撞尺寸 := {
+	建筑类型.城堡: Vector2(300, 240),
+	建筑类型.房子: Vector2(120, 180),
+	建筑类型.防御塔: Vector2(120, 240),
+}
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

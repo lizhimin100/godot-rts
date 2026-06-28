@@ -35,8 +35,8 @@ MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 [dialogic]
 
 directories/dch_directory={
-"世界意识": "res://角色/角色名称.dch",
-"主角": "res://角色/主角.dch"
+"主角": "res://角色/主角.dch",
+"角色名称": "res://角色/角色名称.dch"
 }
 directories/dtl_directory={
 "开场": "res://对话文件/对话时间线/开场.dtl",

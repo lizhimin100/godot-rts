@@ -26,7 +26,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
-size = Vector2(96, 80)
+size = Vector2(120, 180)
 
 [node name="房子" type="StaticBody2D"]
 collision_layer = 4

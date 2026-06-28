@@ -7,5 +7,9 @@ extends 建筑基类
 func _ready() -> void:
 	super._ready()
 	建筑名称 = "房子"
-	最大生命值 = 300.0
-	当前生命值 = 最大生命值
+
+	# 配置 HealthComponent
+	var hc: HealthComponent = _get_health()
+	if hc:
+		hc.max_hp = 300.0
+		hc.set_hp(300.0)

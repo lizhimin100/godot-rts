@@ -1,8 +1,11 @@
 [gd_scene format=3 uid="uid://csc6jproph11e"]
 
-[ext_resource type="Script" path="res://单位/建筑/房子.gd" id="1_6ngd4"]
-[ext_resource type="Texture2D" path="res://小剑资源/兵种/Knights/Buildings/House/House_Blue.png" id="2_6ngd4"]
-[ext_resource type="Texture2D" path="res://小剑资源/兵种/Knights/Buildings/House/House_Destroyed.png" id="3_6ngd4"]
+[ext_resource type="Script" uid="uid://bgb4bfkqpxa7i" path="res://单位/建筑/房子.gd" id="1_6ngd4"]
+[ext_resource type="Texture2D" uid="uid://ckwunckr84spj" path="res://小剑资源/兵种/Knights/Buildings/House/House_Blue.png" id="2_6ngd4"]
+[ext_resource type="Texture2D" uid="uid://dm1jsdlpvqvji" path="res://小剑资源/兵种/Knights/Buildings/House/House_Destroyed.png" id="3_6ngd4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
+size = Vector2(89, 72)
 
 [sub_resource type="Animation" id="Animation_house_hit"]
 resource_name = "受击"
@@ -25,30 +28,21 @@ _data = {
 &"受击": SubResource("Animation_house_hit")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_house"]
-size = Vector2(120, 180)
-
-[node name="房子" type="StaticBody2D"]
+[node name="房子" type="StaticBody2D" unique_id=1185866235]
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("1_6ngd4")
-建筑名称 = "房子"
-最大生命值 = 300.0
 
-[node name="建筑图像" type="Sprite2D" parent="."]
+[node name="建筑图像" type="Sprite2D" parent="." unique_id=2038456974]
 texture = ExtResource("2_6ngd4")
-centered = true
 
-[node name="已摧毁图像" type="Sprite2D" parent="."]
-texture = ExtResource("3_6ngd4")
-centered = true
+[node name="已摧毁图像" type="Sprite2D" parent="." unique_id=1776648335]
 visible = false
+texture = ExtResource("3_6ngd4")
 
-[node name="碰撞" type="CollisionShape2D" parent="."]
-position = Vector2(0, 0)
+[node name="碰撞" type="CollisionShape2D" parent="." unique_id=553760029]
+position = Vector2(1.5, 32)
 shape = SubResource("RectangleShape2D_house")
 
-[node name="动画" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_house")
-}
+[node name="动画" type="AnimationPlayer" parent="." unique_id=1372501691]
+libraries/ = SubResource("AnimationLibrary_house")

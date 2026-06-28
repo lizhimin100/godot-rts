@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dwsat58e5tqrv" path="res://小剑资源/兵种/Knights/Buildings/Castle/Castle_Destroyed.png" id="3_6ngd4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_castle"]
-size = Vector2(288, 195)
+size = Vector2(261, 97)
 
 [sub_resource type="Animation" id="Animation_foe1q"]
 resource_name = "受击"
@@ -41,8 +41,7 @@ visible = false
 texture = ExtResource("3_6ngd4")
 
 [node name="碰撞" type="CollisionShape2D" parent="." unique_id=1236568928]
-visible = false
-position = Vector2(0, 13.5)
+position = Vector2(-0.5, 60.5)
 shape = SubResource("RectangleShape2D_castle")
 
 [node name="动画" type="AnimationPlayer" parent="." unique_id=658756952]

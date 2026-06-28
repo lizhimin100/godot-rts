@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://c70ar5gsj2kxf"]
+[gd_scene format=3 uid="uid://c70ar5gsj2kxf"]
 
 [ext_resource type="Script" uid="uid://dvhf1spf05awc" path="res://代码/UI/资源ui显示.gd" id="1_5gh2j"]
 [ext_resource type="Resource" uid="uid://dqk7nx3o21qu1" path="res://玩家/玩家状态（测试）.tres" id="2_dcnlq"]
@@ -27,10 +27,10 @@ shadow_size = 10
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5gh2j"]
 size = Vector2(1280, 480)
 
-[node name="UI" type="CanvasLayer"]
+[node name="UI" type="CanvasLayer" unique_id=320724724]
 follow_viewport_enabled = true
 
-[node name="资源（边距）" type="MarginContainer" parent="."]
+[node name="资源（边距）" type="MarginContainer" parent="." unique_id=630854809]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 88.0
@@ -43,32 +43,32 @@ theme_override_constants/margin_right = 10
 script = ExtResource("1_5gh2j")
 player_stats = ExtResource("2_dcnlq")
 
-[node name="背景" type="PanelContainer" parent="资源（边距）"]
+[node name="背景" type="PanelContainer" parent="资源（边距）" unique_id=551178820]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 size_flags_vertical = 0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_82q0j")
 
-[node name="内边距" type="MarginContainer" parent="资源（边距）/背景"]
+[node name="内边距" type="MarginContainer" parent="资源（边距）/背景" unique_id=155785370]
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_filter = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_right = 2
 
-[node name="整体竖排版" type="HBoxContainer" parent="资源（边距）/背景/内边距"]
+[node name="整体竖排版" type="HBoxContainer" parent="资源（边距）/背景/内边距" unique_id=1043515166]
 custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 45
 
-[node name="经验值追踪器" parent="资源（边距）/背景/内边距/整体竖排版" instance=ExtResource("3_tpup2")]
+[node name="经验值追踪器" parent="资源（边距）/背景/内边距/整体竖排版" unique_id=1718264582 instance=ExtResource("3_tpup2")]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="1横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版"]
+[node name="1横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版" unique_id=2048147611]
 custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -76,7 +76,7 @@ size_flags_vertical = 4
 theme_override_constants/separation = -5
 alignment = 2
 
-[node name="金钱" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/1横排版"]
+[node name="金钱" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/1横排版" unique_id=766175725]
 custom_minimum_size = Vector2(32, 25)
 layout_mode = 2
 size_flags_vertical = 4
@@ -84,7 +84,7 @@ texture = ExtResource("4_tlct7")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="金钱数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/1横排版"]
+[node name="金钱数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/1横排版" unique_id=1440403247]
 custom_minimum_size = Vector2(64, 25)
 layout_mode = 2
 text = "999"
@@ -92,7 +92,7 @@ label_settings = ExtResource("5_j77mk")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="2横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版"]
+[node name="2横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版" unique_id=1718392637]
 custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -100,7 +100,7 @@ size_flags_vertical = 4
 theme_override_constants/separation = -5
 alignment = 2
 
-[node name="木材" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/2横排版"]
+[node name="木材" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/2横排版" unique_id=214631499]
 custom_minimum_size = Vector2(32, 25)
 layout_mode = 2
 size_flags_vertical = 4
@@ -108,7 +108,7 @@ texture = ExtResource("6_sg8so")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="木材数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/2横排版"]
+[node name="木材数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/2横排版" unique_id=1574102977]
 custom_minimum_size = Vector2(96, 25)
 layout_mode = 2
 text = "999"
@@ -116,7 +116,7 @@ label_settings = ExtResource("5_j77mk")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="3横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版"]
+[node name="3横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版" unique_id=2005785661]
 custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -124,7 +124,7 @@ size_flags_vertical = 4
 theme_override_constants/separation = -5
 alignment = 2
 
-[node name="人口" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/3横排版"]
+[node name="人口" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/3横排版" unique_id=1527592265]
 custom_minimum_size = Vector2(32, 25)
 layout_mode = 2
 size_flags_vertical = 4
@@ -132,7 +132,7 @@ texture = ExtResource("7_fiwxp")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="人口数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/3横排版"]
+[node name="人口数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/3横排版" unique_id=177362158]
 custom_minimum_size = Vector2(96, 25)
 layout_mode = 2
 text = "999"
@@ -140,9 +140,10 @@ label_settings = ExtResource("5_j77mk")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CardDropArea" type="Area2D" parent="."]
+[node name="CardDropArea" type="Area2D" parent="." unique_id=649919438]
+visible = false
 collision_layer = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CardDropArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CardDropArea" unique_id=1598682880]
 position = Vector2(640, 240)
 shape = SubResource("RectangleShape2D_5gh2j")

@@ -2,8 +2,15 @@ class_name 建筑基类
 extends StaticBody2D
 
 ## 建筑基类 — 所有 RTS 建筑的基类
-## 不与 移动基类 共享继承（建筑不需要移动逻辑）
-## 但实现相同的战斗接口（受伤、_是敌人、当前生命值）
+##
+## 不继承 UnitBase（建筑使用 StaticBody2D，不需要移动逻辑）
+## 但通过组件组合复用相同的战斗系统：
+##   HealthComponent     — HP 管理 + 死亡信号
+##   CombatComponent     — 攻击冷却 + 触发（用于防御塔等可攻击建筑）
+##   TargetingComponent  — 目标选择（用于防御塔等自动索敌建筑）
+##   UnitStatusBar       — 选中时显示 HP 条（自动创建 ProgressBar）
+##
+## 保留建筑特有的：摧毁精灵切换、受击动画
 
 signal 建筑被摧毁(建筑: 建筑基类)
 
@@ -12,9 +19,21 @@ signal 建筑被摧毁(建筑: 建筑基类)
 @export var 最大生命值: float = 500.0
 @export var 阵营: 阵营管理器.阵营 = 阵营管理器.阵营.玩家
 
-var 当前生命值: float = 500.0
+# 向后兼容 shim
+var 当前生命值: float:
+	get:
+		var hc: HealthComponent = _get_health()
+		return hc.hp if hc else 最大生命值
+	set(v):
+		var hc: HealthComponent = _get_health()
+		if hc: hc.set_hp(v)
+
 var 已摧毁 := false
-var 选择状态 := false  # 让 rts—node 可选/取消选中
+var 选择状态 := false:
+	set(v):
+		if 选择状态 != v:
+			选择状态 = v
+			_on_selection_changed()
 
 # 节点
 @onready var 建筑图像: Sprite2D = $建筑图像
@@ -22,107 +41,153 @@ var 选择状态 := false  # 让 rts—node 可选/取消选中
 @onready var 碰撞: CollisionShape2D = $碰撞
 @onready var 动画: AnimationPlayer = $动画
 
+# 缓存
+var _cached_health: HealthComponent = null
+var _cached_combat: CombatComponent = null
+var _cached_targeting: TargetingComponent = null
+
 
 func _ready() -> void:
-	当前生命值 = 最大生命值
+	# 初始化战斗组件
+	_init_combat_components()
+
+	# 分组注册
 	add_to_group("建筑")
-	add_to_group("移动单位")  # 让胜负判定也能检测建筑
+	add_to_group("移动单位")
 
 	if 已摧毁图像:
 		已摧毁图像.visible = false
 
-	# 从 collision_layer 推断阵营（兼容 tscn 直接设置 collision_layer）
+	# 阵营推断
 	if collision_layer == 16:
 		阵营 = 阵营管理器.阵营.敌人
 	else:
-		collision_layer = 4  # 改为建筑层（层3=建筑, bit值4）
+		collision_layer = 4
 		阵营 = 阵营管理器.阵营.玩家
-	collision_mask = 0  # 建筑不需要主动碰撞别人
+	collision_mask = 0
 
-	# 玩家建筑可选
 	if 阵营 == 阵营管理器.阵营.玩家:
 		add_to_group("可选单位")
 
+	# 连接死亡信号
+	var hc = _get_health()
+	if hc:
+		hc.died.connect(_on_died)
 
-## 用阵营管理器判断阵营
+
+# ============================================================
+# 战斗组件初始化（子类可重写）
+# ============================================================
+
+func _init_combat_components() -> void:
+	# HealthComponent
+	var health := HealthComponent.new()
+	health.name = "HealthComponent"
+	health.max_hp = 最大生命值
+	add_child(health)
+
+	# CombatComponent（默认禁用，防御塔等子类会启用）
+	var combat := CombatComponent.new()
+	combat.name = "CombatComponent"
+	combat.attack_damage = 0.0  # 默认不攻击
+	combat.process_mode = PROCESS_MODE_DISABLED  # 默认不激活
+	add_child(combat)
+
+	# TargetingComponent（默认禁用，防御塔等子类会启用）
+	var targeting := TargetingComponent.new()
+	targeting.name = "TargetingComponent"
+	targeting.process_mode = PROCESS_MODE_DISABLED
+	add_child(targeting)
+
+	# UnitStatusBar（自动创建血条/蓝条 ProgressBar）
+	var bar := UnitStatusBar.new()
+	bar.name = "UnitStatusBar"
+	add_child(bar)
+
+
+# ============================================================
+# 组件访问
+# ============================================================
+
+func _get_health() -> HealthComponent:
+	if not _cached_health or not is_instance_valid(_cached_health):
+		_cached_health = find_child("HealthComponent") as HealthComponent
+	return _cached_health
+
+func _get_combat() -> CombatComponent:
+	if not _cached_combat or not is_instance_valid(_cached_combat):
+		_cached_combat = find_child("CombatComponent") as CombatComponent
+	return _cached_combat
+
+func _get_targeting() -> TargetingComponent:
+	if not _cached_targeting or not is_instance_valid(_cached_targeting):
+		_cached_targeting = find_child("TargetingComponent") as TargetingComponent
+	return _cached_targeting
+
+
+# ============================================================
+# 选择状态 → 通知 UnitStatusBar
+# ============================================================
+
+func _on_selection_changed() -> void:
+	var bar: UnitStatusBar = find_child("UnitStatusBar") as UnitStatusBar
+	if bar:
+		bar.set_selected(选择状态)
+
+
+# ============================================================
+# 阵营接口
+# ============================================================
+
 func _是敌人() -> bool:
 	return 阵营 == 阵营管理器.阵营.敌人
 
 func _是玩家() -> bool:
 	return 阵营 == 阵营管理器.阵营.玩家
 
-## 获取阵营
 func 获取阵营() -> int:
 	return 阵营
 
 
-## 受伤 — 被攻击时调用
+# ============================================================
+# 向后兼容 — 受伤接口（转发到 HealthComponent）
+# ============================================================
+
 func 受伤(伤害: float, 攻击来源 = null) -> void:
 	if 已摧毁:
 		return
-	当前生命值 -= 伤害
-	_播放受击效果()
-
-	# 浮动伤害数字
-	var 伤害数字 = _创建伤害数字(int(伤害))
-	if 伤害数字:
-		add_child(伤害数字)
-
-	if 当前生命值 <= 0:
-		死亡()
+	var hc = _get_health()
+	if hc:
+		hc.take_damage(伤害, 攻击来源)
 
 
-## 受击视觉反馈：闪红
-func _播放受击效果() -> void:
-	if not is_instance_valid(建筑图像):
-		return
-	if 动画 and 动画.has_animation("受击"):
-		动画.play("受击")
-	else:
-		# 无动画时的降级：闪红
-		var 原色调 = 建筑图像.modulate
-		建筑图像.modulate = Color(2, 0.2, 0.2, 1)
-		await get_tree().create_timer(0.08).timeout
-		if is_instance_valid(建筑图像):
-			建筑图像.modulate = 原色调
+# ============================================================
+# 死亡处理
+# ============================================================
 
-
-## 生成浮动伤害数字
-func _创建伤害数字(伤害: int) -> Label:
-	var label := Label.new()
-	label.text = str(伤害)
-	label.modulate = Color(1, 0.9, 0.1)
-	label.position = Vector2(-15, -40)
-	label.add_theme_font_size_override("font_size", 18)
-	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 4)
-	var tween := create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(label, "position:y", label.position.y - 30, 0.6)
-	tween.tween_property(label, "modulate:a", 0.0, 0.6)
-	tween.chain().tween_callback(label.queue_free)
-	return label
-
-
-## 死亡 — 切换摧毁精灵，淡出后删除
-func 死亡() -> void:
+func _on_died(_attacker) -> void:
 	if 已摧毁:
 		return
 	已摧毁 = true
 
-	# 切换为摧毁状态精灵
+	# 切换为摧毁精灵
 	if 建筑图像 and 已摧毁图像:
 		建筑图像.visible = false
 		已摧毁图像.visible = true
 
-	# 禁用碰撞
 	if 碰撞:
 		碰撞.disabled = true
 
 	建筑被摧毁.emit(self)
 
+	# 隐藏状态条
+	var bar: UnitStatusBar = find_child("UnitStatusBar") as UnitStatusBar
+	if bar:
+		bar.set_selected(false)
+
 	# 淡出
 	var tween := create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 1.0)
 	await tween.finished
-	queue_free()
+	if is_instance_valid(self):
+		queue_free()

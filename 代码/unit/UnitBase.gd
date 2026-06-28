@@ -1,16 +1,18 @@
 class_name UnitBase
 extends CharacterBody2D
 
-## 单位基类 — RTS 单位根基类
+## 单位基类 — RTS 单位根基类（组合式架构）
 ##
 ## 继承自 CharacterBody2D，提供：
 ##   - 阵营系统 + 关系判断
 ##   - 命令系统（移动/攻击/驻守/巡逻/停止）
 ##   - 移动控制器（UnitController: 流场 + 分离转向 + 停止检测 + 卡死解卡）
-##   - 战斗系统（受伤/死亡/伤害数字）
-##   - 索敌系统（寻找最近敌对目标）
+##   - 战斗组件组合（创建 HealthComponent / CombatComponent / TargetingComponent 等子节点）
 ##   - 驻守图标
-##   - 导航代理（保留，仅追敌使用）
+##   - 导航代理
+##
+## 战斗逻辑委托给组件，直接引用保存在：
+##   health_component / combat_component / targeting_component
 
 signal 避开友军
 
@@ -22,30 +24,41 @@ signal 避开友军
 @export var 最大速度: float = 350.0
 @export var 加速度: float = 800.0
 @export var 停止阈值: float = 16.0
-@export var 选择状态: bool = false
+@export var 选择状态: bool = false:
+	set(v):
+		if 选择状态 != v:
+			选择状态 = v
+			_on_selection_changed()
 ## 让路优先级（越大越优先）
 @export var move_priority: int = 0
 
-# ========== 战斗属性 ==========
+# ========== 生命值（向后兼容 shim，委托给 HealthComponent） ==========
 @export var 最大生命值: float = 100.0
-var 当前生命值: float = 100.0
-var _已死亡: bool = false
 
-# ========== 排斥力参数（旧接口保留） ==========
+# ========== 排斥力参数 ==========
 @export var 排斥距离: float = 32.0
 @export var 排斥强度: float = 150.0
+
+# ========== 战斗组件直接引用 ==========
+var health_component: HealthComponent
+var combat_component: CombatComponent
+var targeting_component: TargetingComponent
 
 # ========== 移动控制器（核心） ==========
 var unit_controller: UnitController
 
-# ========== 导航代理（保留，仅子类追敌使用） ==========
+# ========== 导航代理 ==========
 var 导航代理: NavigationAgent2D
 
 # ========== 命令状态 ==========
 var 目标位置: Vector2 = Vector2.ZERO
 var 点击位置: Vector2 = Vector2.ZERO
 var 移动方向: Vector2 = Vector2.ZERO
-var 攻击目标: Node2D = null
+var 攻击目标: Node2D:
+	get: return targeting_component.current_target if targeting_component else null
+	set(v):
+		if targeting_component:
+			targeting_component.set_target(v)
 var 巡逻路径: Array[Vector2] = []
 var 当前巡逻索引: int = 0
 
@@ -53,40 +66,57 @@ enum 命令类型 { 无, 移动, 攻击, 驻守, 巡逻 }
 var 当前命令: 命令类型 = 命令类型.无
 var _是攻击移动: bool = false
 
-# ========== 索敌与追击系统 ==========
-@export var 索敌范围: float = 250.0
-@export var 追击上限距离: float = 400.0
+# ========== A-move 追击参数 ==========
 var _原始目标位置: Vector2 = Vector2.ZERO
 var _追击起始位置: Vector2 = Vector2.ZERO
 var _是自动索敌攻击: bool = false
 
+var 索敌范围: float = 250.0:
+	get: return targeting_component.search_range if targeting_component else 250.0
+	set(v):
+		if targeting_component: targeting_component.search_range = v
+
+var 追击上限距离: float = 400.0:
+	get: return targeting_component.chase_range if targeting_component else 400.0
+	set(v):
+		if targeting_component: targeting_component.chase_range = v
+
+# ========== 向后兼容 shim — 委托给 HealthComponent ==========
+var 当前生命值: float:
+	get: return health_component.hp if health_component else 最大生命值
+	set(v):
+		if health_component: health_component.set_hp(v)
+
+var _已死亡: bool:
+	get: return health_component.is_dead() if health_component else false
+
 # ========== 驻守图标 ==========
 var _驻守图标: Sprite2D = null
 
-# ========== 流场缓存（旧接口） ==========
+# ========== 流场缓存（避免每帧重建） ==========
 var _流场上次目标: Vector2 = Vector2.ZERO
+var _上次流场目标位置: Vector2 = Vector2.ZERO
 
 # ========== 视觉分离系统 ==========
-## 视觉偏移向量 — 用于 Sprite2D 轻微错开，不参与物理碰撞
 var visual_offset: Vector2 = Vector2.ZERO
-## 视觉分离半径（像素），越大错开越明显
 const VISUAL_RADIUS: float = 10.0
 
 
 func _ready() -> void:
-	当前生命值 = 最大生命值
-
 	# 阵营判定（兼容旧碰撞层规则）
 	if collision_layer == 16:
 		阵营 = 阵营管理器.阵营.敌人
 	else:
 		阵营 = 阵营管理器.阵营.玩家
 
-	# 初始化移动控制器（作为子节点）
+	# 初始化移动控制器
 	_初始化移动控制器()
 
-	# 初始化导航代理（仅追敌用）
+	# 初始化导航代理
 	_初始化导航()
+
+	# 初始化战斗组件（先于分组注册）
+	_init_combat_components()
 
 	# 分组注册
 	add_to_group("移动单位")
@@ -98,7 +128,54 @@ func _ready() -> void:
 		collision_mask += 4
 
 
-## 初始化移动控制器
+# ============================================================
+# 战斗组件初始化（子类可重写以自定义配置）
+# ============================================================
+
+func _init_combat_components() -> void:
+	# HealthComponent
+	health_component = HealthComponent.new()
+	health_component.name = "HealthComponent"
+	health_component.max_hp = 最大生命值
+	add_child(health_component)
+
+	# TargetingComponent
+	targeting_component = TargetingComponent.new()
+	targeting_component.name = "TargetingComponent"
+	add_child(targeting_component)
+
+	# CombatComponent
+	combat_component = CombatComponent.new()
+	combat_component.name = "CombatComponent"
+	combat_component.attack_range = 45.0
+	combat_component.attack_damage = 10.0
+	combat_component.attack_cooldown = 1.0
+	combat_component.attack_initiated.connect(_on_default_attack)
+	add_child(combat_component)
+
+	# DeathHandler
+	var death := DeathHandler.new()
+	death.name = "DeathHandler"
+	add_child(death)
+
+	# UnitStatusBar
+	var bar := UnitStatusBar.new()
+	bar.name = "UnitStatusBar"
+	add_child(bar)
+
+
+# ============================================================
+# 默认攻击响应 — 直接通过 DamageSystem 造成伤害
+# ============================================================
+
+func _on_default_attack(_target: Node2D, packet: DamagePacket) -> void:
+	DamageSystem.apply_damage(packet)
+
+
+# ============================================================
+# 初始化
+# ============================================================
+
 func _初始化移动控制器() -> void:
 	unit_controller = UnitController.new()
 	unit_controller.name = "UnitController"
@@ -109,7 +186,6 @@ func _初始化移动控制器() -> void:
 	add_child(unit_controller)
 
 
-## 初始化导航代理（子类追敌使用）
 func _初始化导航() -> void:
 	if 导航代理:
 		return
@@ -160,7 +236,8 @@ func _是玩家() -> bool:
 # ============================================================
 
 func 命令移动(位置: Vector2, 攻击移动: bool = false) -> void:
-	攻击目标 = null
+	if targeting_component:
+		targeting_component.clear_target()
 	目标位置 = 位置
 	当前命令 = 命令类型.移动
 	_是攻击移动 = 攻击移动
@@ -177,7 +254,8 @@ func 命令移动(位置: Vector2, 攻击移动: bool = false) -> void:
 
 
 func 命令停止() -> void:
-	攻击目标 = null
+	if targeting_component:
+		targeting_component.clear_target()
 	当前命令 = 命令类型.无
 	_是攻击移动 = false
 	_是自动索敌攻击 = false
@@ -195,7 +273,8 @@ func 命令停止() -> void:
 
 
 func 命令驻守() -> void:
-	攻击目标 = null
+	if targeting_component:
+		targeting_component.clear_target()
 	当前命令 = 命令类型.驻守
 	_是自动索敌攻击 = false
 	_追击起始位置 = Vector2.ZERO
@@ -213,7 +292,8 @@ func 命令攻击(目标: Node2D) -> void:
 		return
 	if not 是敌对(目标):
 		return
-	攻击目标 = 目标
+	if targeting_component:
+		targeting_component.set_target(目标)
 	目标位置 = 目标.global_position
 	当前命令 = 命令类型.攻击
 	_是自动索敌攻击 = false
@@ -226,7 +306,8 @@ func 命令攻击(目标: Node2D) -> void:
 
 
 func 命令巡逻(位置: Vector2) -> void:
-	攻击目标 = null
+	if targeting_component:
+		targeting_component.clear_target()
 	巡逻路径 = [global_position, 位置]
 	当前巡逻索引 = 1
 	目标位置 = 位置
@@ -244,129 +325,39 @@ func _下一个巡逻点() -> void:
 	_通知移动控制器()
 
 
-## 通知移动控制器更换目标
 func _通知移动控制器() -> void:
 	if unit_controller and unit_controller.is_inside_tree():
 		unit_controller.set_target(目标位置)
 
 
-## 更新视觉分离偏移量
-## 每帧计算与周围单位的距离，推挤 Sprite2D 微幅错开
-func _update_visual_separation() -> void:
-	var push: Vector2 = Vector2.ZERO
-	var count: int = 0
-	var tree: SceneTree = get_tree()
-	if not tree:
+# ============================================================
+# 向后兼容 shim — 受伤/死亡接口
+# ============================================================
+
+func 受伤(伤害: float, 攻击来源 = null) -> void:
+	if not health_component or health_component.is_dead():
 		return
+	health_component.take_damage(伤害, 攻击来源)
 
 
-	for other_node in tree.get_nodes_in_group("移动单位"):
-		var other: Node2D = other_node
-		if other == self or not is_instance_valid(other):
-			continue
-
-		var offset: Vector2 = global_position - other.global_position
-		var dist: float = offset.length()
-
-		# 完全重叠或超出 60px → 跳过
-		if dist < 1 or dist > 60:
-			continue
-
-		var strength: float = 1.0 - (dist / 60.0)
-		push += offset.normalized() * strength
-		count += 1
-
-	if count > 0:
-		push /= count
-
-	visual_offset = visual_offset.lerp(push * VISUAL_RADIUS, 0.15)
+func 死亡() -> void:
+	if health_component:
+		health_component.take_damage(health_component.hp + 1, null)
 
 
-func _process(_delta: float) -> void:
-	_update_visual_separation()
-	if has_node("角色图像"):
-		$角色图像.position = visual_offset
-
-
-# ============================================================
-# 旧接口：_导航移动到（子类兼容，不调 move_and_slide）
-# ============================================================
-
-## 旧式导航移动 — 使用流场方向但不调 move_and_slide
-## 返回 true 表示已到达
-func _导航移动到(目标位置: Vector2, delta: float) -> bool:
-	var 剩余距离: float = global_position.distance_to(目标位置)
-	if 剩余距离 <= 停止阈值:
-		velocity = velocity.move_toward(Vector2.ZERO, 加速度 * delta)
-		if velocity.length() < 5.0:
-			velocity = Vector2.ZERO
-		return true
-
-	# 获取方向（流场 → 回退指向目标）
-	var 移动方向: Vector2 = 流场寻路.获取方向(global_position, 目标位置)
-	var 目标速度: Vector2 = 移动方向 * 移动速度
-
-	# 旧式排斥力（子类兼容）
-	var 排斥力: Vector2 = _计算排斥力()
-	if 排斥力 != Vector2.ZERO:
-		目标速度 += 排斥力
-
-	# 速度平滑
-	velocity = velocity.move_toward(目标速度.limit_length(最大速度), 加速度 * delta)
-	return false
-
-
-# ============================================================
-# 流场触发（旧接口）
-# ============================================================
-
-func _触发流场计算() -> void:
-	if 目标位置.distance_to(_流场上次目标) > 1.0:
-		流场寻路.计算流场(目标位置)
-		_流场上次目标 = 目标位置
-
-
-# ============================================================
-# 索敌
-# ============================================================
-
+## 索敌（向后兼容 shim）
 func _寻找最近的敌对目标(搜索范围: float) -> Node2D:
-	var 最近: Node2D = null
-	var 最近距离: float = 搜索范围
-
-	for 单位 in get_tree().get_nodes_in_group("移动单位"):
-		if 单位 == self or not is_instance_valid(单位):
-			continue
-		if not 是敌对(单位):
-			continue
-		if 单位.当前生命值 <= 0:
-			continue
-		var d = global_position.distance_squared_to(单位.global_position)
-		var 范围平方 = 搜索范围 * 搜索范围
-		if d <= 范围平方:
-			if d < 最近距离 * 最近距离:
-				最近距离 = sqrt(d)
-				最近 = 单位
-
-	for 建筑 in get_tree().get_nodes_in_group("建筑"):
-		if not is_instance_valid(建筑):
-			continue
-		if not 是敌对(建筑):
-			continue
-		if 建筑.当前生命值 <= 0:
-			continue
-		var d = global_position.distance_squared_to(建筑.global_position)
-		var 范围平方 = 搜索范围 * 搜索范围
-		if d <= 范围平方:
-			if d < 最近距离 * 最近距离:
-				最近距离 = sqrt(d)
-				最近 = 建筑
-
-	return 最近
+	if targeting_component:
+		var old_range = targeting_component.search_range
+		targeting_component.search_range = 搜索范围
+		var target = targeting_component.get_target()
+		targeting_component.search_range = old_range
+		return target
+	return null
 
 
 # ============================================================
-# 子类需要重写的方法
+# 子类可重写的方法
 # ============================================================
 
 func 执行攻击() -> void:
@@ -375,6 +366,16 @@ func 执行攻击() -> void:
 
 func _切换动画(动画名: String) -> void:
 	pass
+
+
+# ============================================================
+# 选择状态 → 通知 UnitStatusBar
+# ============================================================
+
+func _on_selection_changed() -> void:
+	var bar: UnitStatusBar = find_child("UnitStatusBar") as UnitStatusBar
+	if bar:
+		bar.set_selected(选择状态)
 
 
 # ============================================================
@@ -418,7 +419,7 @@ func _隐藏驻守图标() -> void:
 
 
 # ============================================================
-# 旧接口：排斥力（子类兼容，委托给 UnitSteering）
+# 排斥力（旧接口保留）
 # ============================================================
 
 func _计算总避障力(目标方向: Vector2) -> Vector2:
@@ -426,92 +427,82 @@ func _计算总避障力(目标方向: Vector2) -> Vector2:
 
 
 func _计算排斥力() -> Vector2:
-	# 委托给新的 Steering 系统（使用旧参数保持兼容）
-	var steer: Vector2 = UnitSteering.get_steering(self,
-			排斥距离, 排斥强度 / 100.0)
+	var steer: Vector2 = UnitSteering.get_steering(self, 排斥距离, 排斥强度 / 100.0)
 	return steer
 
 
 # ============================================================
-# 战斗系统
+# 视觉分离
 # ============================================================
 
-func 受伤(伤害: float, 攻击来源 = null) -> void:
-	当前生命值 -= 伤害
-	_播放受击效果(攻击来源)
-	var 伤害数字 = _创建伤害数字(int(伤害))
-	if 伤害数字:
-		add_child(伤害数字)
-	if 当前生命值 <= 0:
-		死亡()
-
-
-func _播放受击效果(攻击来源 = null) -> void:
-	_触发屏幕震动()
-
-	var 原色调 = modulate
-	var 原缩放 = scale
-	modulate = Color(2, 0.2, 0.2, 1)
-	scale = 原缩放 * 1.15
-	position += Vector2(randf_range(-5, 5), randf_range(-5, 5))
-	await get_tree().create_timer(0.06).timeout
-	if is_instance_valid(self):
-		modulate = Color(1.5, 0.4, 0.4, 1)
-		scale = 原缩放 * 1.08
-		await get_tree().create_timer(0.06).timeout
-		if is_instance_valid(self):
-			modulate = 原色调
-			scale = 原缩放
-
-
-func _触发屏幕震动() -> void:
-	var 相机 = get_viewport().get_camera_2d()
-	if 相机 and 相机.has_method("震屏"):
-		var 震级: float = 6.0 if (_是敌人() or 阵营 == 阵营管理器.阵营.敌人) else 4.0
-		相机.震屏(震级, 0.2)
-
-
-func _创建伤害数字(伤害: int) -> Label:
-	var label: Label = Label.new()
-	label.text = str(伤害)
-	label.modulate = Color(1, 0.95, 0.3)
-	label.position = Vector2(-20, -55)
-	label.add_theme_font_size_override("font_size", 24)
-	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
-	label.add_theme_constant_override("outline_size", 6)
-	label.add_theme_color_override("font_color", Color(1, 0.95, 0.4))
-	var tween: Tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(label, "position:y", label.position.y - 50, 0.8)
-	tween.tween_property(label, "position:x", label.position.x + randf_range(-10, 10), 0.8)
-	tween.tween_property(label, "modulate:a", 0.0, 0.6).set_delay(0.2)
-	tween.chain().tween_callback(label.queue_free)
-	return label
-
-
-func 死亡() -> void:
-	if _已死亡:
-		return
-	_已死亡 = true
-	set_process(false)
-	set_physics_process(false)
-	collision_layer = 0
-	collision_mask = 0
-
-	var 原缩放 = scale
-	var tween: Tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(self, "modulate", Color(1, 1, 1, 1), 0.08)
-	tween.tween_property(self, "scale", 原缩放 * 1.3, 0.1)
-	await tween.finished
-
-	if not is_instance_valid(self):
+func _update_visual_separation() -> void:
+	var push: Vector2 = Vector2.ZERO
+	var count: int = 0
+	var tree: SceneTree = get_tree()
+	if not tree:
 		return
 
-	var tween2: Tween = create_tween()
-	tween2.set_parallel(true)
-	tween2.tween_property(self, "modulate:a", 0.0, 0.35)
-	tween2.tween_property(self, "scale", 原缩放 * 0.3, 0.35)
-	tween2.tween_property(self, "rotation", randf_range(-0.3, 0.3), 0.35)
-	await tween2.finished
-	queue_free()
+	for other_node in tree.get_nodes_in_group("移动单位"):
+		var other: Node2D = other_node
+		if other == self or not is_instance_valid(other):
+			continue
+		var offset: Vector2 = global_position - other.global_position
+		var dist: float = offset.length()
+		if dist < 1 or dist > 60:
+			continue
+		var strength: float = 1.0 - (dist / 60.0)
+		push += offset.normalized() * strength
+		count += 1
+
+	if count > 0:
+		push /= count
+
+	visual_offset = visual_offset.lerp(push * VISUAL_RADIUS, 0.15)
+
+
+func _process(_delta: float) -> void:
+	_update_visual_separation()
+	if has_node("角色图像"):
+		$角色图像.position = visual_offset
+
+
+# ============================================================
+# 流场（仅在新目标时重建，减少每帧调用）
+# ============================================================
+
+func _使用流场移动(delta: float) -> bool:
+	# ⭐ 仅目标改变时才重建流场，但 move_toward 每帧都需要流场 + all_units
+	var 所有单位: Array = get_tree().get_nodes_in_group("移动单位")
+	var dist_since_last := _上次流场目标位置.distance_squared_to(目标位置)
+	if dist_since_last > 1.0:
+		_触发流场计算()
+		FFManager.update_target(目标位置, 所有单位)
+		_上次流场目标位置 = 目标位置
+
+	return unit_controller.move_toward(目标位置, delta, FFManager.get_flow_field(), 所有单位)
+
+
+func _触发流场计算() -> void:
+	if 目标位置.distance_to(_流场上次目标) > 1.0:
+		流场寻路.计算流场(目标位置)
+		_流场上次目标 = 目标位置
+
+
+# ============================================================
+# 旧接口：_导航移动到
+# ============================================================
+
+func _导航移动到(目标位置: Vector2, delta: float) -> bool:
+	var 剩余距离: float = global_position.distance_to(目标位置)
+	if 剩余距离 <= 停止阈值:
+		velocity = velocity.move_toward(Vector2.ZERO, 加速度 * delta)
+		if velocity.length() < 5.0:
+			velocity = Vector2.ZERO
+		return true
+	var 移动方向: Vector2 = 流场寻路.获取方向(global_position, 目标位置)
+	var 目标速度: Vector2 = 移动方向 * 移动速度
+	var 排斥力: Vector2 = _计算排斥力()
+	if 排斥力 != Vector2.ZERO:
+		目标速度 += 排斥力
+	velocity = velocity.move_toward(目标速度.limit_length(最大速度), 加速度 * delta)
+	return false

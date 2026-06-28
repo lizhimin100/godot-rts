@@ -2,8 +2,15 @@ extends UnitBase
 class_name 弓箭手
 
 ## 弓箭手 — RTS 可控制远程单位
+##
 ## 3 状态状态机：IDLE / MOVE / ATTACK
-## 移动使用流场控制器，远程射击带箭矢弹道
+## 远程射击带箭矢弹道
+##
+## 战斗逻辑委托给组件系统：
+##   targeting_component → 目标选择（直接引用）
+##   combat_component   → 攻击冷却 + 触发
+##   DamageSystem       → 箭矢命中时结算
+##   health_component   → HP/死亡
 
 enum State {
 	IDLE,
@@ -19,19 +26,29 @@ const 玩家纹理: Texture2D = preload("res://小剑资源/兵种/Knights/Troop
 const 敌人纹理: Texture2D = preload("res://小剑资源/兵种/Knights/Troops/Archer/Red/Archer_Red.png")
 
 var 当前状态: State = State.IDLE
-var _攻击冷却: float = 0.0
 
 const 箭矢场景: PackedScene = preload("res://单位/弓箭手/箭矢.tscn")
 
-@onready var 选中标签: Label = $选中标签
 @onready var 角色图像: Sprite2D = $角色图像
 @onready var 角色动画: AnimationPlayer = $角色动画
+@onready var 选中标签: Label = $选中标签
 
 
 func _ready() -> void:
 	super._ready()
-	当前状态 = State.IDLE
 
+	# 配置战斗组件（直接引用）
+	combat_component.attack_damage = 攻击力
+	combat_component.attack_range = 攻击范围
+	combat_component.attack_cooldown = 攻击间隔
+
+	# 断开默认直伤，改为弓箭手弹道
+	if combat_component.attack_initiated.is_connected(_on_default_attack):
+		combat_component.attack_initiated.disconnect(_on_default_attack)
+	combat_component.attack_initiated.connect(_on_弓箭手_attack)
+
+	# ---- 纹理与材质 ----
+	当前状态 = State.IDLE
 	var 新材质 = 角色图像.material.duplicate()
 	角色图像.material = 新材质
 
@@ -43,7 +60,8 @@ func _ready() -> void:
 		collision_mask = 32 + 8 + 4
 	else:
 		角色图像.texture = 玩家纹理
-		选中标签.visible = false
+		if is_instance_valid(选中标签):
+			选中标签.visible = false
 		collision_mask = 32 + 16 + 4
 
 	角色动画.play("待机")
@@ -52,9 +70,6 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if is_instance_valid(选中标签):
 		选中标签.visible = 选择状态
-
-	if _攻击冷却 > 0:
-		_攻击冷却 -= delta
 
 	_同步命令状态()
 
@@ -66,7 +81,6 @@ func _physics_process(delta: float) -> void:
 		State.ATTACK:
 			velocity = velocity.move_toward(Vector2.ZERO, 移动速度 * 12.0 * delta)
 
-	# ⭐ 统一 move_and_slide（控制器只设 velocity）
 	move_and_slide()
 
 	if velocity.x != 0:
@@ -88,29 +102,37 @@ func _切换动画(动画名: String) -> void:
 		角色动画.play(动画名)
 
 
+# ============================================================
+# 命令同步
+# ============================================================
+
 func _同步命令状态() -> void:
 	match 当前命令:
 		命令类型.移动:
 			if 当前状态 != State.MOVE:
 				切换状态(State.MOVE)
+
 		命令类型.攻击:
-			if 攻击目标 and is_instance_valid(攻击目标):
+			var target = targeting_component.get_target() if targeting_component else null
+			if target and is_instance_valid(target):
 				if 当前状态 != State.ATTACK and 当前状态 != State.MOVE:
 					切换状态(State.MOVE)
 				if 当前状态 == State.ATTACK:
-					var 距离 = global_position.distance_to(攻击目标.global_position)
-					if 距离 > 攻击范围:
+					if global_position.distance_to(target.global_position) > 攻击范围:
 						切换状态(State.MOVE)
 			else:
 				命令停止()
+
 		命令类型.无, 命令类型.驻守, _:
 			if 当前状态 != State.IDLE:
-				攻击目标 = null
 				切换状态(State.IDLE)
 
 
+# ============================================================
+# 待机
+# ============================================================
+
 func _处理待机状态(delta: float) -> void:
-	# 待机时排斥力
 	var 排斥力: Vector2 = _计算排斥力()
 	if 排斥力.length_squared() > 0.01:
 		velocity = velocity.move_toward(排斥力, 移动速度 * 10.0 * delta)
@@ -125,25 +147,26 @@ func _处理待机状态(delta: float) -> void:
 	if 当前命令 == 命令类型.驻守:
 		return
 
+	# TargetingComponent 自动索敌 → 追击
 	if 当前命令 == 命令类型.无:
-		if not 攻击目标 or not is_instance_valid(攻击目标):
-			var 附近敌 = _寻找最近的敌对目标(索敌范围)
-			if 附近敌:
-				攻击目标 = 附近敌
-				目标位置 = 附近敌.global_position
-				当前命令 = 命令类型.攻击
-				_是自动索敌攻击 = true
-				_追击起始位置 = global_position
-				切换状态(State.MOVE)
+		var target = targeting_component.get_target() if targeting_component else null
+		if target and is_instance_valid(target):
+			目标位置 = target.global_position
+			当前命令 = 命令类型.攻击
+			_是自动索敌攻击 = true
+			_追击起始位置 = global_position
+			切换状态(State.MOVE)
 
+
+# ============================================================
+# 移动
+# ============================================================
 
 func _处理移动状态(delta: float) -> void:
-	var 所有单位: Array = get_tree().get_nodes_in_group("移动单位")
-	# 追击限距检测
+	# 追击限距
 	if _是自动索敌攻击 and _追击起始位置 != Vector2.ZERO:
-		var 追击距离 = global_position.distance_to(_追击起始位置)
-		if 追击距离 > 追击上限距离:
-			攻击目标 = null
+		if global_position.distance_to(_追击起始位置) > 追击上限距离:
+			targeting_component.clear_target()
 			_是自动索敌攻击 = false
 			_追击起始位置 = Vector2.ZERO
 			if _原始目标位置 != Vector2.ZERO:
@@ -156,30 +179,21 @@ func _处理移动状态(delta: float) -> void:
 			return
 
 	# 进入攻击范围
-	if 攻击目标 and is_instance_valid(攻击目标):
-		if global_position.distance_to(攻击目标.global_position) <= 攻击范围:
-			执行攻击()
+	var target = targeting_component.get_target() if targeting_component else null
+	if target and is_instance_valid(target):
+		if global_position.distance_to(target.global_position) <= 攻击范围:
+			切换状态(State.ATTACK)
 			return
 
-	# 追击中更新目标
-	if 攻击目标 and is_instance_valid(攻击目标):
-		目标位置 = 攻击目标.global_position
+	if target and is_instance_valid(target):
+		目标位置 = target.global_position
 
-	# ⭐ 使用新移动控制器（流场+避障+卡死检测+速度lerp）
-	if 当前命令 == 命令类型.巡逻:
-		所有单位 = get_tree().get_nodes_in_group("移动单位")
-		FFManager.update_target(目标位置, 所有单位)
-		var 到达: bool = unit_controller.move_toward(目标位置, delta, FFManager.get_flow_field(), 所有单位)
-		if 到达:
-			_下一个巡逻点()
-		return
-
-	FFManager.update_target(目标位置, 所有单位)
-	var 到达: bool = unit_controller.move_toward(目标位置, delta, FFManager.get_flow_field(), 所有单位)
+	# ⭐ 使用 _使用流场移动（减少 FFManager 每帧调用）
+	var 到达: bool = _使用流场移动(delta)
 	if 到达:
 		match 当前命令:
 			命令类型.攻击:
-				if not 攻击目标 or not is_instance_valid(攻击目标):
+				if not target or not is_instance_valid(target):
 					if _原始目标位置 != Vector2.ZERO:
 						目标位置 = _原始目标位置
 						当前命令 = 命令类型.移动
@@ -187,87 +201,53 @@ func _处理移动状态(delta: float) -> void:
 						_是自动索敌攻击 = false
 						切换状态(State.MOVE)
 						return
-					攻击目标 = _寻找最近的敌对目标(攻击范围)
-					if 攻击目标:
-						目标位置 = 攻击目标.global_position
-					return
-				命令停止()
+				target = targeting_component.get_target() if targeting_component else null
+				if target:
+					目标位置 = target.global_position
+				return
 			命令类型.巡逻:
 				_下一个巡逻点()
 			_:
 				命令停止()
 		return
 
-	# 移动中自动索敌（A-move）
-	if 当前命令 == 命令类型.移动 and _是攻击移动 and not 攻击目标:
-		var 附近敌 = _寻找最近的敌对目标(索敌范围)
-		if 附近敌:
-			攻击目标 = 附近敌
-			当前命令 = 命令类型.攻击
-			_是自动索敌攻击 = true
-			_追击起始位置 = global_position
 
+# ============================================================
+# 攻击响应 — 由 CombatComponent.attack_initiated 触发
+# ============================================================
 
-func 执行攻击() -> void:
-	if 当前状态 == State.ATTACK or 当前生命值 <= 0:
-		return
-	if _攻击冷却 > 0:
-		return
-	if not 攻击目标 or not is_instance_valid(攻击目标):
-		攻击目标 = _寻找最近的敌对目标(攻击范围)
-		if not 攻击目标:
-			return
-
-	目标位置 = global_position
-	切换状态(State.ATTACK)
-
-	await get_tree().create_timer(0.15).timeout
-	if not is_instance_valid(self) or 当前状态 != State.ATTACK:
+func _on_弓箭手_attack(target: Node2D, packet: DamagePacket) -> void:
+	if 当前状态 != State.ATTACK:
 		return
 
-	if 攻击目标 and is_instance_valid(攻击目标):
-		角色图像.flip_h = 攻击目标.global_position.x < global_position.x
+	# 发射箭矢
+	if target and is_instance_valid(target):
+		var arrow = 箭矢场景.instantiate()
+		arrow.global_position = global_position + Vector2(20 if not 角色图像.flip_h else -20, -10)
+		arrow.target = target
+		arrow.damage_packet = packet
+		arrow.attacker = self
+		get_parent().add_child(arrow)
 
-	if 攻击目标 and is_instance_valid(攻击目标) and 攻击目标.当前生命值 > 0:
-		var 箭 = 箭矢场景.instantiate()
-		箭.global_position = global_position + Vector2(20 if not 角色图像.flip_h else -20, -10)
-		箭.目标 = 攻击目标
-		箭.伤害 = 攻击力
-		箭.攻击者 = self
-		get_parent().add_child(箭)
-
-	_攻击冷却 = 攻击间隔
-
+	# 攻击后判定
 	await get_tree().create_timer(0.25).timeout
 	if not is_instance_valid(self) or 当前状态 != State.ATTACK:
 		return
 
-	if 攻击目标 and is_instance_valid(攻击目标) and 攻击目标.当前生命值 > 0:
-		if global_position.distance_to(攻击目标.global_position) > 攻击范围:
-			目标位置 = 攻击目标.global_position
+	var current_target = targeting_component.get_target() if targeting_component else null
+	if current_target and is_instance_valid(current_target):
+		if global_position.distance_to(current_target.global_position) <= 攻击范围:
+			切换状态(State.ATTACK)
+		else:
+			targeting_component.set_target(current_target)
+			目标位置 = current_target.global_position
 			当前命令 = 命令类型.攻击
 			切换状态(State.MOVE)
-		else:
-			if _原始目标位置 != Vector2.ZERO:
-				攻击目标 = null
-				_是自动索敌攻击 = false
-				目标位置 = _原始目标位置
-				当前命令 = 命令类型.移动
-				_是攻击移动 = true
-				切换状态(State.MOVE)
-			else:
-				攻击目标 = null
-				_是自动索敌攻击 = false
-				命令停止()
 	else:
 		if _原始目标位置 != Vector2.ZERO:
-			攻击目标 = null
-			_是自动索敌攻击 = false
 			目标位置 = _原始目标位置
 			当前命令 = 命令类型.移动
 			_是攻击移动 = true
 			切换状态(State.MOVE)
 		else:
-			攻击目标 = null
-			_是自动索敌攻击 = false
 			命令停止()

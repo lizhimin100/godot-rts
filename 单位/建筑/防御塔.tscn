@@ -1,8 +1,11 @@
 [gd_scene format=3 uid="uid://5pb0qcyt2apc"]
 
-[ext_resource type="Script" path="res://单位/建筑/防御塔.gd" id="1_6ngd4"]
-[ext_resource type="Texture2D" path="res://小剑资源/兵种/Knights/Buildings/Tower/Tower_Blue.png" id="2_6ngd4"]
-[ext_resource type="Texture2D" path="res://小剑资源/兵种/Knights/Buildings/Tower/Tower_Destroyed.png" id="3_6ngd4"]
+[ext_resource type="Script" uid="uid://bb2lopahwpnxo" path="res://单位/建筑/防御塔.gd" id="1_6ngd4"]
+[ext_resource type="Texture2D" uid="uid://bkc68pg0y13w3" path="res://小剑资源/兵种/Knights/Buildings/Tower/Tower_Blue.png" id="2_6ngd4"]
+[ext_resource type="Texture2D" uid="uid://1q3xmydfhl4d" path="res://小剑资源/兵种/Knights/Buildings/Tower/Tower_Destroyed.png" id="3_6ngd4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tower"]
+size = Vector2(98, 91)
 
 [sub_resource type="Animation" id="Animation_tower_hit"]
 resource_name = "受击"
@@ -25,30 +28,21 @@ _data = {
 &"受击": SubResource("Animation_tower_hit")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tower"]
-size = Vector2(120, 240)
-
-[node name="防御塔" type="StaticBody2D"]
+[node name="防御塔" type="StaticBody2D" unique_id=598664696]
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("1_6ngd4")
-建筑名称 = "防御塔"
-最大生命值 = 800.0
 
-[node name="建筑图像" type="Sprite2D" parent="."]
+[node name="建筑图像" type="Sprite2D" parent="." unique_id=1684420219]
 texture = ExtResource("2_6ngd4")
-centered = true
 
-[node name="已摧毁图像" type="Sprite2D" parent="."]
-texture = ExtResource("3_6ngd4")
-centered = true
+[node name="已摧毁图像" type="Sprite2D" parent="." unique_id=1945807585]
 visible = false
+texture = ExtResource("3_6ngd4")
 
-[node name="碰撞" type="CollisionShape2D" parent="."]
-position = Vector2(0, 0)
+[node name="碰撞" type="CollisionShape2D" parent="." unique_id=383980726]
+position = Vector2(0, 47.5)
 shape = SubResource("RectangleShape2D_tower")
 
-[node name="动画" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_tower")
-}
+[node name="动画" type="AnimationPlayer" parent="." unique_id=151353065]
+libraries/ = SubResource("AnimationLibrary_tower")

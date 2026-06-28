@@ -100,6 +100,8 @@ func _physics_process(delta: float) -> void:
 
 	# ⭐ 统一 move_and_slide（控制器只设 velocity）
 	move_and_slide()
+	if velocity.x != 0:
+		角色图像.flip_h = velocity.x < 0
 
 	# 移动中碰到施工场地碰撞体 -> 开始建造
 	if 当前状态 == State.MOVE and _建造类型 >= 0 and _检测施工场地接触():
@@ -286,7 +288,6 @@ func _瞬移到建筑边缘(立即: bool = false) -> void:
 		水平范围 = 全局变量.建筑碰撞尺寸.get(_建造类型, Vector2(80, 80)).x * 0.35
 	var 目标位置: Vector2 = 建筑中心 + Vector2(randf_range(-水平范围, 水平范围), 30.0)
 
-	角色图像.flip_h = (建筑中心.x - 目标位置.x) < 0
 
 	z_index = 60
 
@@ -318,7 +319,6 @@ func _处理建造振荡(delta: float) -> void:
 
 	_建造闪烁计时 += delta
 	if _建造闪烁计时 < _建造闪烁间隔:
-		角色图像.flip_h = (建筑中心.x - global_position.x) < 0
 		return
 
 	_建造闪烁计时 = 0.0
@@ -348,7 +348,6 @@ func _生成瞬移残影(旧位置: Vector2, 新位置: Vector2) -> void:
 		残影.region_rect = 角色图像.region_rect
 		残影.hframes = 角色图像.hframes
 		残影.frame = 角色图像.frame
-		残影.flip_h = 角色图像.flip_h
 		残影.centered = 角色图像.centered
 		残影.scale = scale * 残影尺寸缩放
 		残影.global_position = 中间位置

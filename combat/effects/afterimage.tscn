@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dfj50t2kqy78t"]
+
+[ext_resource type="Script" path="res://combat/effects/afterimage.gd" id="1_6adfr"]
+
+[node name="Afterimage" type="Sprite2D"]
+centered = true
+z_index = 90
+script = ExtResource("1_6adfr")

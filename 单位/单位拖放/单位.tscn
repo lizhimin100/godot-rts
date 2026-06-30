@@ -59,6 +59,7 @@ position = Vector2(32, 8)
 shape = SubResource("RectangleShape2D_ui1r5")
 
 [node name="血条" type="ProgressBar" parent="."]
+z_index = 100
 offset_left = 2.0
 offset_top = -58.0
 offset_right = 62.0
@@ -69,6 +70,7 @@ value = 22.32
 show_percentage = false
 
 [node name="蓝条" type="ProgressBar" parent="."]
+z_index = 100
 offset_left = 2.0
 offset_top = -48.0
 offset_right = 62.0

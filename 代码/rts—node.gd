@@ -2,6 +2,12 @@ extends Node2D
 
 ## rts-node — RTS 输入协调节点 v2
 ## 处理：左键框选/点选 + 右键统一发送命令 + A-move
+##
+## ⭐ 阵营规则：
+##   - 只有玩家单位进入"可选单位"组（用于操控 + 迷雾视野）
+##   - 左键点选敌人：显示血条（选择状态=true），但不触发操作UI
+##   - 敌人不在"可选单位"组 → 不暴露战争迷雾位置
+##   - 命令只发送给玩家单位
 
 static var _全局实例: Node2D = null
 
@@ -35,11 +41,21 @@ var _amove模式中: bool = false
 # 当前选中单位列表
 var _选中单位列表: Array[Node] = []
 
+# 当前选中的敌人（仅用于显示血条，不触发UI、不暴露迷雾）
+var _选中的敌人: Node2D = null
+
 # ⭐ 框选优先级设置：true=单位优先于建筑，false=建筑优先于单位
 @export var 框选优先单位: bool = true
 
 @onready var 选择检查: Area2D = $选择检查
 @onready var 框选碰撞: CollisionShape2D = $选择检查/框选碰撞
+
+
+## 清除敌人的选择状态（不入侵"可选单位"组）
+func _清除敌人选择() -> void:
+	if _选中的敌人 and is_instance_valid(_选中的敌人):
+		_选中的敌人.选择状态 = false
+	_选中的敌人 = null
 
 
 func 判断右键是否为攻击(点击位置: Vector2) -> bool:
@@ -86,7 +102,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				queue_redraw()
 
 		elif event.button_index == 2:
-			# 右键 → 命令
+			# 右键 → 命令（清除敌人选择，玩家命令不受影响）
+			_清除敌人选择()
 			if event.is_pressed():
 				var 点击位置 = get_global_mouse_position()
 				var 是攻击指令: bool = 判断右键是否为攻击(点击位置)
@@ -142,13 +159,16 @@ func _更新鼠标光标() -> void:
 
 
 ## 发送命令到所有选中单位
+## ⭐ 只发送给玩家单位（敌人不可操控）
 func _发送命令(点击位置: Vector2, 是攻击: bool) -> void:
 	var 目标: Node2D = _获取点击目标(点击位置)
 	var 有选中单位 = false
 
-	# 获取当前所有选中单位
+	# 获取当前所有选中单位（只获取玩家单位）
 	_选中单位列表 = []
 	for 单位 in get_tree().get_nodes_in_group("可选单位"):
+		if not 单位.has_method("获取阵营") or 单位.获取阵营() != 阵营管理器.阵营.玩家:
+			continue
 		if 单位.选择状态:
 			_选中单位列表.append(单位)
 			有选中单位 = true
@@ -177,6 +197,8 @@ func _发送命令(点击位置: Vector2, 是攻击: bool) -> void:
 func _发送攻击移动命令(点击位置: Vector2) -> void:
 	_选中单位列表 = []
 	for 单位 in get_tree().get_nodes_in_group("可选单位"):
+		if not 单位.has_method("获取阵营") or 单位.获取阵营() != 阵营管理器.阵营.玩家:
+			continue
 		if 单位.选择状态:
 			_选中单位列表.append(单位)
 
@@ -297,24 +319,36 @@ func _清除选择UI():
 	if ui:
 		ui._clear_selection()
 
+
+# ============================================================
+# 点选单位（包含敌人血条显示）
+# ============================================================
+
 func _点选单位(点击位置: Vector2) -> void:
+	# 1) 清除所有玩家单位选择
 	for 单位 in get_tree().get_nodes_in_group("可选单位"):
 		单位.选择状态 = false
 
+	# 2) 清除敌人选择
+	_清除敌人选择()
+
 	var 空间 = get_world_2d().direct_space_state
+
+	# 3) 先查玩家可选单位
 	var 查询 = PhysicsPointQueryParameters2D.new()
 	查询.position = 点击位置
 	查询.collide_with_bodies = true
 	查询.collision_mask = 12  # 8(操作单位) + 4(建筑)
 	var 结果 = 空间.intersect_point(查询)
 
-	# 点选：优先选移动单位，建筑次之（建筑靠点选，保持大碰撞体积）
 	var 选中的单位 = null
 	var 选中的建筑 = null
 
 	for 碰撞结果 in 结果:
 		var 目标 = 碰撞结果.collider
 		if not 目标 or not 目标.is_in_group("可选单位"):
+			continue
+		if 目标.has_method("获取阵营") and 目标.获取阵营() != 阵营管理器.阵营.玩家:
 			continue
 		if 目标.is_in_group("移动单位") and 选中的单位 == null:
 			选中的单位 = 目标
@@ -329,12 +363,37 @@ func _点选单位(点击位置: Vector2) -> void:
 			ui._on_selection_changed([最终选中])
 		return
 
+	# 4) 没有玩家单位 → 尝试点选敌人（仅显示血条，不触发UI、不暴露迷雾）
+	var 敌人查询 = PhysicsPointQueryParameters2D.new()
+	敌人查询.position = 点击位置
+	敌人查询.collide_with_bodies = true
+	敌人查询.collision_mask = 16  # 敌人碰撞层
+	var 敌人结果 = 空间.intersect_point(敌人查询)
+	for 碰撞 in 敌人结果:
+		var 目标 = 碰撞.collider
+		if not 目标 or not 目标.has_method("_是敌人") or not 目标._是敌人():
+			continue
+		if not is_instance_valid(目标) or 目标.当前生命值 <= 0:
+			continue
+		# ⭐ 选中敌人 → 显示血条（via 选择状态），不调用操作UI
+		目标.选择状态 = true
+		_选中的敌人 = 目标
+		# 不调用 UI → 操作面板保持隐藏
+		return
+
+	# 5) 什么都没点中
 	_清除选择UI()
 
-func _框选单位(起点: Vector2, 大小: Vector2) -> void:
-	# ⭐ 立即清除所有选择，防止 await 期间旧选择被右键命令读取
+
+# ============================================================
+# 框选单位（只选玩家单位，同时清除敌人选择）
+# ============================================================
+
+func _框选单位(_起点: Vector2, 大小: Vector2) -> void:
+	# 清除所有玩家单位选择 + 敌人选择
 	for 单位 in get_tree().get_nodes_in_group("可选单位"):
 		单位.选择状态 = false
+	_清除敌人选择()
 
 	var 框选区域位置 = 选择区域起始位置()
 	选择检查.global_position = 框选区域位置
@@ -351,6 +410,9 @@ func _框选单位(起点: Vector2, 大小: Vector2) -> void:
 	for 目标 in 选择检查.get_overlapping_bodies():
 		if not 目标 in 所有可选:
 			continue
+		if 目标.has_method("获取阵营") and 目标.获取阵营() != 阵营管理器.阵营.玩家:
+			所有可选.erase(目标)
+			continue
 		if 目标.is_in_group("建筑"):
 			框选建筑列表.append(目标)
 		elif 目标.is_in_group("移动单位"):
@@ -359,13 +421,11 @@ func _框选单位(起点: Vector2, 大小: Vector2) -> void:
 
 	# ⭐ 根据优先级决定最终选中
 	var 最终选中: Array
-	var 被排除的: Array  # 框选范围内但未选中的（需要强制取消选择）
+	var 被排除的: Array
 	if 框选优先单位:
-		# 单位优先：有单位时只选单位，无单位时才选建筑
 		最终选中 = 框选单位列表 if not 框选单位列表.is_empty() else 框选建筑列表
 		被排除的 = 框选建筑列表 if not 框选单位列表.is_empty() else []
 	else:
-		# 建筑优先
 		最终选中 = 框选建筑列表 if not 框选建筑列表.is_empty() else 框选单位列表
 		被排除的 = 框选单位列表 if not 框选建筑列表.is_empty() else []
 

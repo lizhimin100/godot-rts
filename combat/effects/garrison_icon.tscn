@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://c6x2tb5on8wtr"]
+
+[ext_resource type="Script" path="res://combat/effects/garrison_icon.gd" id="1_5xg2w"]
+[ext_resource type="Resource" path="res://combat/effects/garrison_icon.res" id="2_3p7jc"]
+
+[node name="GarrisonIcon" type="Sprite2D"]
+position = Vector2(0, -38)
+texture = ExtResource("2_3p7jc")
+centered = true
+z_index = 100
+script = ExtResource("1_5xg2w")

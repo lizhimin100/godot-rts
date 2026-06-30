@@ -187,7 +187,7 @@ func 取消训练() -> bool:
 func _获取安全生成位置() -> Vector2:
 	# 1）优先从城门位置生成
 	var 城门位置 = global_position + 城门偏移
-	if not 流场寻路.是障碍(城门位置):
+	if not FFManager.is_obstacle(城门位置):
 		return 城门位置
 
 	# 2）城门被阻挡，尝试城门附近偏移
@@ -198,7 +198,7 @@ func _获取安全生成位置() -> Vector2:
 	]
 	for 偏移 in 候选偏移:
 		var 候选位置 = global_position + 偏移
-		if not 流场寻路.是障碍(候选位置):
+		if not FFManager.is_obstacle(候选位置):
 			return 候选位置
 	return global_position + Vector2(randf_range(120, 200), randf_range(80, 150))
 

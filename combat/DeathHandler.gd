@@ -6,10 +6,9 @@ extends Node
 ## 工作流程：
 ##   1. HealthComponent.died 信号触发
 ##   2. 禁用碰撞和逻辑
-##   3. 尝试播放 AnimationPlayer 的死亡动画
-##   4. 无动画时使用 Dead.png 精灵帧动画（适用于 CharacterBody2D 单位的角色图像）
-##   5. 无精灵时回退简单淡出
-##   6. 动画完成后释放节点
+##   3. 在单位位置实例化死亡动画场景（death_effect.tscn）
+##   4. 无死亡场景时回退简单淡出
+##   5. 动画完成后释放单位节点
 
 signal death_finished
 
@@ -18,18 +17,12 @@ signal death_finished
 ## 死亡动画名称（在 AnimationPlayer 中）
 @export var death_animation: String = "死亡"
 
-## Dead.png 死亡精灵配置 — 仅在无 AnimationPlayer 动画时使用
-const DEAD_TEXTURE: Texture2D = preload("res://小剑资源/兵种/Knights/Troops/Dead/Dead.png")
-## Dead.png 精灵水平帧数（图片总宽 896，每帧 128px）
-const DEAD_HFRAMES: int = 7
-## 每帧持续时间（秒）
-const FRAME_DURATION: float = 0.1
+## 死亡特效场景（实例化在单位位置播放帧动画）
+const DEATH_SCENE: PackedScene = preload("res://combat/effects/death_effect.tscn")
 
 var _health: HealthComponent = null
 var _anim_player: AnimationPlayer = null
 var _playing: bool = false
-## 用于存储原角色图像状态以便恢复（如果死亡被取消）
-var _saved_sprite_state: Dictionary = {}
 
 
 func _ready() -> void:
@@ -65,11 +58,8 @@ func _on_died(_attacker) -> void:
 		_anim_player.play(death_animation)
 		await _anim_player.animation_finished
 	else:
-		# 方案B：查找角色图像 Sprite2D，尝试播放 Dead.png 精灵动画
-		var sprite: Sprite2D = _find_sprite(target)
-		var played: bool = false
-		if sprite:
-			played = await _play_dead_sprite_animation(sprite)
+		# 方案B：实例化死亡特效场景
+		var played: bool = await _play_death_scene(target)
 		if not played:
 			# 方案C：回退淡出
 			if target is CanvasItem:
@@ -83,56 +73,29 @@ func _on_died(_attacker) -> void:
 		target.queue_free()
 
 
-## 使用 Dead.png 播放帧动画
-## 返回 true 表示动画成功播放
-func _play_dead_sprite_animation(sprite: Sprite2D) -> bool:
-	if not sprite or not is_instance_valid(sprite):
+## 实例化死亡特效场景在单位位置播放
+## 返回 true 表示成功播放
+func _play_death_scene(target: Node) -> bool:
+	if not target or not is_instance_valid(target):
+		return false
+	if not DEATH_SCENE:
+		return false
+	if not target is Node2D:
 		return false
 
-	# 保存当前状态（以便后续可能的还原）
-	_saved_sprite_state = {
-		"texture": sprite.texture,
-		"hframes": sprite.hframes,
-		"vframes": sprite.vframes,
-		"region_enabled": sprite.region_enabled,
-		"region_rect": sprite.region_rect,
-	}
+	var target2d: Node2D = target as Node2D
+	var death: Node2D = DEATH_SCENE.instantiate()
+	death.global_position = target2d.global_position
+	death.z_index = target2d.z_index + 1
+	target2d.get_parent().add_child(death)
 
-	# 设置 Dead.png 纹理
-	sprite.texture = DEAD_TEXTURE
-	sprite.region_enabled = true
-	# 单帧宽 128，高度用满 256
-	sprite.region_rect = Rect2(0, 0, 128, 256)
-	sprite.hframes = DEAD_HFRAMES
-	sprite.vframes = 1
-	sprite.frame = 0
-	sprite.centered = true
-
-	# 遍历所有帧
-	for i in range(DEAD_HFRAMES):
-		if not is_instance_valid(sprite):
-			return true
-		sprite.frame = i
-		await get_tree().create_timer(FRAME_DURATION).timeout
-
+	# 等待动画完成（死亡特效自动 queue_free）
+	await death.tree_exited
 	return true
 
 
 func _get_target_node() -> Node:
 	return get_parent()
-
-
-## 查找名为"角色图像"的 Sprite2D
-func _find_sprite(target: Node) -> Sprite2D:
-	# 优先查找名为"角色图像"的 Sprite2D
-	for child in target.get_children():
-		if child is Sprite2D and child.name == "角色图像":
-			return child
-	# 查找任意 Sprite2D（排除已摧毁图像等特殊用途的）
-	for child in target.get_children():
-		if child is Sprite2D and child.name != "已摧毁图像":
-			return child
-	return null
 
 
 func _find_health() -> HealthComponent:

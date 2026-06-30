@@ -10,6 +10,7 @@ extends Node
 ##   - 不选中时不显示任何条
 ##   - 选中时显示 HP 条
 ##   - MP 条仅当 max_mp > 0 时才显示
+##   - 初始隐藏，由父节点的 _on_selection_changed 控制显示
 
 ## 自动创建的进度条尺寸
 const AUTO_BAR_WIDTH: float = 70.0
@@ -23,13 +24,16 @@ var _hp_bar: ProgressBar = null
 var _mp_bar: ProgressBar = null
 var _selected: bool = false
 var _bars_are_auto_created: bool = false
+# hp_changed 去抖：同一帧多次受伤只刷新一次
+var _hp_debounce_timer: float = 0.0
+const HP_DEBOUNCE_TIME: float = 0.05
 
 
 func _ready() -> void:
 	_hp_bar = get_parent().get_node_or_null("血条") as ProgressBar
 	_mp_bar = get_parent().get_node_or_null("蓝条") as ProgressBar
 
-	# 如果场景中没有血条，自动创建（建筑用）
+	# 如果场景中没有血条，自动创建
 	if not _hp_bar:
 		_hp_bar = _create_progress_bar("血条", Color(0, 0.73, 0.31), Vector2(AUTO_BAR_WIDTH, HP_BAR_HEIGHT), Vector2(0, BAR_OFFSET_Y))
 		_bars_are_auto_created = true
@@ -50,16 +54,42 @@ func _ready() -> void:
 		_mp_bar.value = 100.0
 		_mp_bar.visible = false
 
+	# ⭐ 如果父节点已是选中状态（_ready 前已设置选择状态），立即同步
+	var parent = get_parent()
+	if parent and "选择状态" in parent and parent.选择状态:
+		_selected = true
+		_refresh()
+
 
 ## 设置选中状态（由 UnitBase/建筑基类 调用）
 func set_selected(s: bool) -> void:
 	_selected = s
-	_refresh()
+	# ⭐ 不依赖 _health！选中直接控制 HP 条可见性
+	if _hp_bar:
+		_hp_bar.visible = s
+		if s:
+			_hp_bar.value = (_health.hp / max(_health.max_hp, 0.01)) * 100.0 if _health else 100.0
+	if _mp_bar:
+		var show_mp: bool = s and (_health and _health.max_mp > 0.0)
+		_mp_bar.visible = show_mp
+		if show_mp:
+			_mp_bar.value = (_health.mp / max(_health.max_mp, 0.01)) * 100.0 if _health else 100.0
+	# 重新确认 _health（应对脚本热重载导致引用丢失）
+	if not _health:
+		_health = _find_health()
+		if _health:
+			_health.hp_changed.connect(_on_hp_changed)
+			_health.mp_changed.connect(_on_mp_changed)
+			_health.died.connect(_on_died)
 
 
 func _on_hp_changed(new_hp: float, max_hp: float, _delta: float) -> void:
-	if _hp_bar and _hp_bar.visible:
+	_hp_debounce_timer = HP_DEBOUNCE_TIME
+	if _hp_bar:
 		_hp_bar.value = (new_hp / max(max_hp, 0.01)) * 100.0
+		# 受伤时才短暂显示（如果没选中）
+		if not _selected and not _hp_bar.visible:
+			_hp_bar.visible = true
 
 
 func _on_mp_changed(new_mp: float, max_mp: float, _delta: float) -> void:
@@ -118,6 +148,13 @@ func _create_progress_bar(name: String, fill_color: Color, size: Vector2, pos: V
 
 	get_parent().add_child(bar)
 	return bar
+
+
+func _process(delta: float) -> void:
+	if _hp_debounce_timer > 0.0:
+		_hp_debounce_timer -= delta
+		if _hp_debounce_timer <= 0.0:
+			_refresh()
 
 
 func _find_health() -> HealthComponent:

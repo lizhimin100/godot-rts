@@ -1,5 +1,7 @@
 extends Node2D
 
+const BUILD_PREVIEW = preload("res://combat/effects/build_preview.tscn")
+
 ## 建筑放置管理器 — 处理建造UI按钮->选择位置->指派农民建造的完整流程
 ## 场景无关：自动在场景树中查找树/地砖/UI，不依赖硬编码路径
 
@@ -52,9 +54,9 @@ func _查找场景节点() -> void:
 
 	# 初始化流场寻路
 	if 地面层:
-		流场寻路.初始化(地面层, 树图层)
-		流场寻路.刷新障碍()
-		print("流场寻路已初始化: 地面=%s 树=%s" % [地面层.name, 树图层.name if 树图层 else "无"])
+		FFManager.setup_nav(地面层, 树图层)
+		FFManager.mark_dirty()
+		print("流场已初始化: 地面=%s 树=%s" % [地面层.name, str(树图层.name if 树图层 else "无")])
 
 	# 查找建造UI（通过组或名称）
 	var 建造UI = get_tree().get_first_node_in_group("建造UI")
@@ -115,10 +117,8 @@ func 开始放置(类型: int) -> void:
 	放置进行中 = true
 	位置有效 = false
 
-	预览精灵 = Sprite2D.new()
+	预览精灵 = BUILD_PREVIEW.instantiate()
 	预览精灵.texture = 建筑贴图[类型]
-	预览精灵.modulate = Color(1, 1, 1, 0.5)
-	预览精灵.z_index = 100
 	add_child(预览精灵)
 
 	print("开始放置: ", 全局变量.建筑类型.keys()[类型])

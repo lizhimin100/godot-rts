@@ -1,0 +1,90 @@
+[gd_scene format=3 uid="uid://dg3ponb7kx4jt"]
+
+[ext_resource type="Script" uid="uid://daqiocfg3hj0r" path="res://combat/effects/death_effect.gd" id="1_70edd"]
+[ext_resource type="Texture2D" uid="uid://c5uks21skn6pw" path="res://小剑资源/兵种/Knights/Troops/Dead/Dead.png" id="2_3x8ee"]
+
+[sub_resource type="Animation" id="Animation_h0kwv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:region_rect")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 896, 128)]
+}
+
+[sub_resource type="Animation" id="Animation_7ixub"]
+resource_name = "死亡"
+length = 0.7
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"update": 0,
+"values": []
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"update": 1,
+"values": []
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vrnd6"]
+_data = {
+&"RESET": SubResource("Animation_h0kwv"),
+&"死亡": SubResource("Animation_7ixub")
+}
+
+[node name="DeathEffect" type="Node2D" unique_id=1504451334]
+script = ExtResource("1_70edd")
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1570521613]
+texture = ExtResource("2_3x8ee")
+hframes = 7
+region_enabled = true
+region_rect = Rect2(0, 0, 896, 128)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1079731875]
+libraries/ = SubResource("AnimationLibrary_vrnd6")

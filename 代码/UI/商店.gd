@@ -1,6 +1,6 @@
 class_name Shop extends Control
 
-signal unit_bought(unit : UnitStats)
+signal unit_bought(unit : AcUnitStats)
 
 const UNIT_CARD = preload("res://单位/单位卡/角色卡.tscn")
 
@@ -38,7 +38,7 @@ func _put_back_remaining_to_pool () -> void:#将没有购买的单位添加到�
 
 
 
-func _on_unit_bought(unit : UnitStats) -> void:
+func _on_unit_bought(unit : AcUnitStats) -> void:
 	unit_bought.emit(unit)
 
 func _on_重掷按钮_pressed() -> void:

@@ -45,6 +45,7 @@ var 选择状态 := false:
 var _cached_health: HealthComponent = null
 var _cached_combat: CombatComponent = null
 var _cached_targeting: TargetingComponent = null
+var _status_bar: UnitStatusBar = null  # 直接引用（避免 find_child 失效）
 
 
 func _ready() -> void:
@@ -102,6 +103,7 @@ func _init_combat_components() -> void:
 	# UnitStatusBar（自动创建血条/蓝条 ProgressBar）
 	var bar := UnitStatusBar.new()
 	bar.name = "UnitStatusBar"
+	_status_bar = bar
 	add_child(bar)
 
 
@@ -130,9 +132,13 @@ func _get_targeting() -> TargetingComponent:
 # ============================================================
 
 func _on_selection_changed() -> void:
-	var bar: UnitStatusBar = find_child("UnitStatusBar") as UnitStatusBar
-	if bar:
-		bar.set_selected(选择状态)
+	var bar: UnitStatusBar = _status_bar
+	if not bar or not is_instance_valid(bar):
+		bar = find_child("UnitStatusBar") as UnitStatusBar
+		if not bar:
+			return
+		_status_bar = bar
+	bar.set_selected(选择状态)
 
 
 # ============================================================

@@ -63,6 +63,18 @@ var _has_arrived: bool = false
 var _last_frame_dir: Vector2 = Vector2.ZERO
 var _movement_locked: bool = false
 
+# 到达 hysteresis
+var _arrival_lock_timer: float = 0.0
+const ARRIVAL_HYSTERESIS_PX: float = 32.0
+const ARRIVAL_LOCK_DURATION: float = 0.3
+
+# 帧节流：错峰偏移（基于 instance_id）
+var _throttle_phase: int = 0
+var _throttle_counter: int = 0
+var _last_crowd_factor: float = 1.0
+var _last_yield_factor: float = 1.0
+const THROTTLE_INTERVAL: int = 8
+
 const STUCK_CHECK_MULTIPLIER: float = 3.0
 const STATIONARY_VELOCITY_THRESHOLD: float = 2.0
 
@@ -74,6 +86,9 @@ func _ready() -> void:
 		return
 	_stuck_detector = UnitStuckDetector.new()
 	_stuck_detector.set_params(stuck_threshold, stuck_time_limit)
+	# 基于 instance_id 错峰
+	_throttle_phase = hash(get_instance_id()) % THROTTLE_INTERVAL
+	_throttle_counter = _throttle_phase
 
 
 static func is_stationary(node: Node2D) -> bool:
@@ -135,6 +150,7 @@ func lock() -> void:
 	_movement_locked = true
 	_has_arrived = true
 	_last_frame_dir = Vector2.ZERO
+	_arrival_lock_timer = ARRIVAL_LOCK_DURATION  # 至少保持 0.3s
 	_apply_velocity(Vector2.ZERO)
 	if _stuck_detector:
 		_stuck_detector.reset()
@@ -165,6 +181,7 @@ func set_target(target: Vector2) -> void:
 	formation_offset = Vector2.ZERO
 	_has_arrived = false
 	_movement_locked = false
+	_arrival_lock_timer = 0.0
 	if _unit:
 		var dir_to: Vector2 = target - _unit.global_position
 		if dir_to.length_squared() > 1.0:
@@ -186,10 +203,10 @@ func _calculate_desired_direction() -> Vector2:
 
 	var world_target: Vector2 = target_position + formation_offset
 
-	var flow_dir: Vector2 = FlowFieldManager.get_direction(
+	var flow_dir: Vector2 = FFManager.get_direction(
 		_unit.global_position, world_target)
 
-	var steer_dir: Vector2 = UnitSteering.get_steering(_unit)
+	var steer_dir: Vector2 = SeparationSystem.get_force(_unit.global_position, FFManager.get_all_units(), 24.0, 4.0)
 
 	var dir: Vector2 = flow_dir * flow_weight + steer_dir * steer_weight
 
@@ -216,11 +233,15 @@ func get_slow_factor(dist_to_target: float) -> float:
 
 
 func get_crowd_factor() -> float:
+	# 帧节流：每 8 帧更新一次，错峰
+	_throttle_counter += 1
+	if _throttle_counter % THROTTLE_INTERVAL != _throttle_phase:
+		return _last_crowd_factor
 	var density: float = 0.0
 	var tree: SceneTree = _unit.get_tree()
 	if not tree:
 		return 1.0
-	for other_node in tree.get_nodes_in_group("移动单位"):
+	for other_node in FFManager.get_all_units():
 		if other_node == _unit or not is_instance_valid(other_node):
 			continue
 		var d: float = _unit.global_position.distance_to(other_node.global_position)
@@ -229,10 +250,14 @@ func get_crowd_factor() -> float:
 			if is_stationary(other_node):
 				contribution *= stationary_density_multiplier
 			density += contribution
-	return 1.0 - clamp(density, 0.0, 1.0) * crowd_slowdown
+	_last_crowd_factor = 1.0 - clamp(density, 0.0, 1.0) * crowd_slowdown
+	return _last_crowd_factor
 
 
 func get_yield_factor() -> float:
+	# 帧节流：每 8 帧更新一次，错峰
+	if _throttle_counter % THROTTLE_INTERVAL != (_throttle_phase + 3) % THROTTLE_INTERVAL:
+		return _last_yield_factor
 	var tree: SceneTree = _unit.get_tree()
 	if not tree:
 		return 1.0
@@ -241,7 +266,7 @@ func get_yield_factor() -> float:
 		return 1.0
 	var my_dir: Vector2 = my_vel.normalized()
 	var factor: float = 1.0
-	for other_node in tree.get_nodes_in_group("移动单位"):
+	for other_node in FFManager.get_all_units():
 		if other_node == _unit or not is_instance_valid(other_node):
 			continue
 		var offset: Vector2 = _unit.global_position - other_node.global_position
@@ -269,7 +294,8 @@ func get_yield_factor() -> float:
 			if other_priority > move_priority:
 				var strength: float = 1.0 - (dist / yield_range)
 				factor = min(factor, lerp(1.0, yield_pass_factor, strength))
-	return clamp(factor, 0.0, 1.0)
+	_last_yield_factor = clamp(factor, 0.0, 1.0)
+	return _last_yield_factor
 
 
 # ============================================================
@@ -285,10 +311,21 @@ func _process_movement(delta: float) -> void:
 	var world_target: Vector2 = target_position + formation_offset
 	var dist: float = _unit.global_position.distance_to(world_target)
 
-	# HARD ARRIVAL LOCK：到达即停，无 lerp
+	# HARD ARRIVAL LOCK：到达即停
 	if dist <= stopping_distance:
 		lock()
 		return
+
+	# 到达 hysteresis：锁定后至少保持 0.3s，且 > 32px 才解锁
+	if _has_arrived or _arrival_lock_timer > 0.0:
+		_arrival_lock_timer -= delta
+		if _arrival_lock_timer > 0.0:
+			_apply_velocity(Vector2.ZERO)
+			return
+		if dist <= ARRIVAL_HYSTERESIS_PX:
+			_apply_velocity(Vector2.ZERO)
+			return
+		_movement_locked = false
 
 	_has_arrived = false
 
@@ -320,16 +357,17 @@ func _process_movement(delta: float) -> void:
 
 	velocity = velocity.lerp(desired_velocity, accel * delta)
 
-	# 卡死检测：远距离时
-	if dist > stopping_distance * STUCK_CHECK_MULTIPLIER:
-		if _stuck_detector and _stuck_detector.update(_unit, delta):
-			var unstick: Vector2 = Vector2(
-				randf_range(-1.0, 1.0),
-				randf_range(-1.0, 1.0)
-			).normalized() * unstick_strength
-			velocity += unstick
-			if velocity.dot(desired_velocity) < 0 and desired_velocity.length() > 0:
-				velocity = desired_velocity * 0.2 + unstick
+	# 卡死检测（已到达/锁定状态下禁用）
+	if not _has_arrived and not _movement_locked:
+		if dist > stopping_distance * STUCK_CHECK_MULTIPLIER:
+			if _stuck_detector and _stuck_detector.update(_unit, delta):
+				var unstick: Vector2 = Vector2(
+					randf_range(-1.0, 1.0),
+					randf_range(-1.0, 1.0)
+				).normalized() * unstick_strength
+				velocity += unstick
+				if velocity.dot(desired_velocity) < 0 and desired_velocity.length() > 0:
+					velocity = desired_velocity * 0.2 + unstick
 
 	if velocity.length_squared() > max_speed * max_speed:
 		velocity = velocity.normalized() * max_speed

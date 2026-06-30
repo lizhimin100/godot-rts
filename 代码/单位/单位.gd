@@ -4,7 +4,7 @@ signal quick_sell_pressed
 
 
 
-@export var stats : UnitStats : set = set_stats
+@export var stats : AcUnitStats : set = set_stats
 
 @onready var 皮肤: Sprite2D = $visuals/皮肤
 @onready var 血条: ProgressBar = $血条
@@ -19,7 +19,7 @@ signal quick_sell_pressed
 
 var 是否悬停 := false
 
-func set_stats(value : UnitStats) -> void:
+func set_stats(value : AcUnitStats) -> void:
 	stats = value
 	
 	if value == null:

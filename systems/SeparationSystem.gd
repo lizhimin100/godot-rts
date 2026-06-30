@@ -27,8 +27,11 @@ static func get_force(
 	radius: float = DEFAULT_RADIUS,
 	strength: float = DEFAULT_STRENGTH
 ) -> Vector2:
+	var _t = Tracer.start()
 	var force: Vector2 = Vector2.ZERO
 	var radius_sq: float = radius * radius
+	var _n_skip: int = 0
+	var _n_applied: int = 0
 
 	for other in others:
 		if not is_instance_valid(other):

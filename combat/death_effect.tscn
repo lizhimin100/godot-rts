@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://b5utusnehw1et"]
+
+[ext_resource type="Script" path="res://combat/death_effect.gd" id="1_0s3og"]
+[ext_resource type="Texture2D" uid="uid://c5uks21skn6pw" path="res://小剑资源/兵种/Knights/Troops/Dead/Dead.png" id="2_dv48e"]
+
+[node name="DeathEffect" type="Node2D" unique_id=889584827]
+script = ExtResource("1_0s3og")
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1585311992]
+texture = ExtResource("2_dv48e")
+hframes = 7
+region_enabled = true
+region_rect = Rect2(0, 0, 896, 256)

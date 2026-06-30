@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://dqhj5rjdc5bo8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hm4a7"]
+bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
+corner_radius_top_left = 20
+corner_radius_bottom_right = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rhjnn"]
+bg_color = Color(0.7842046, 0.56253844, 0.22570458, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+corner_radius_top_left = 20
+corner_radius_bottom_right = 20
+corner_detail = 5
+
+[node name="BuildCountdownUI" type="Node2D"]
+
+[node name="建造倒计时" type="ProgressBar" parent="."]
+z_index = 100
+offset_left = -35.0
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -42.0
+theme_override_styles/background = SubResource("StyleBoxFlat_hm4a7")
+theme_override_styles/fill = SubResource("StyleBoxFlat_rhjnn")
+value = 100.0
+show_percentage = false

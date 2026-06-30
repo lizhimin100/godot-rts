@@ -35,7 +35,7 @@ static func get_slot_offset(index: int, total: int,
 
 	# 中心对齐
 	var center_x: float = (cols - 1) * 0.5
-	var rows: int = (total + cols - 1) / cols
+	var rows: int = int(ceil(total as float / cols))
 	var center_y: float = (rows - 1) * 0.5
 
 	return Vector2(

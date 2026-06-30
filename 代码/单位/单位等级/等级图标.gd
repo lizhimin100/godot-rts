@@ -6,9 +6,9 @@ const TIER_ICONS := {
 	3 : preload("res://assets/sprites/level3.png"),
 }
 
-@export var stats : UnitStats : set = _set_stats
+@export var stats : AcUnitStats : set = _set_stats
 
-func _set_stats(value :  UnitStats) -> void:
+func _set_stats(value :  AcUnitStats) -> void:
 	if stats == value :
 		return
 	

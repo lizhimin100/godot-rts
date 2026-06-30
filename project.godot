@@ -30,8 +30,8 @@ Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 "全局变量"="*res://代码/自动加载/全局变量.gd"
 "资源ui显示"="*res://UI组件/总UI/资源和经验谈UI显示.tscn"
 "阵营管理器"="*res://代码/自动加载/阵营管理器.gd"
-MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 DamageSystem="*res://combat/DamageSystem.gd"
+MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 
 [dialogic]
 

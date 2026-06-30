@@ -1,10 +1,10 @@
 class_name UnitCard extends Button
-signal unit_bought(unit : UnitStats)
+signal unit_bought(unit : AcUnitStats)
 
 const HOVER_BORDER_COLOR := Color("fafa82")
 
 @export var player_stats : PlayerStats 
-@export var unit_stats : UnitStats :set = _set_unit_stats
+@export var unit_stats : AcUnitStats :set = _set_unit_stats
 
 @onready var 特性: Label = %特性
 @onready var 底部: Panel = %底部
@@ -23,13 +23,13 @@ func _ready() -> void:
 	player_stats.changed.connect(_on_player_stats_changed)
 	_on_player_stats_changed()
 	unit_bought.connect(
-		func(unit : UnitStats):
+		func(unit : AcUnitStats):
 			printt("购买单位：" , unit)
 			printt("剩余金币：" , player_stats.金钱)
 	)
 
 
-func _set_unit_stats(value : UnitStats) -> void:
+func _set_unit_stats(value : AcUnitStats) -> void:
 	unit_stats = value
 	if not is_node_ready():
 		await  ready
@@ -38,7 +38,7 @@ func _set_unit_stats(value : UnitStats) -> void:
 		disabled = true
 		bought = true
 		return
-	border_color = UnitStats.稀有度颜色[unit_stats.稀有度]
+	border_color = AcUnitStats.稀有度颜色[unit_stats.稀有度]
 	border_sb.border_color = border_color
 	bottom_sb.bg_color = border_color
 	单位名称.text = unit_stats.单位名称

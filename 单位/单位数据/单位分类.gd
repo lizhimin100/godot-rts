@@ -1,18 +1,16 @@
-class_name UnitStats extends Resource
-
-enum 单位稀有度 {普通 ,罕见,稀有,传说}
+class_name AcUnitStats extends Resource
 
 const  稀有度颜色 : = {
-	单位稀有度.普通 : Color("124a2e"),
-	单位稀有度.罕见 : Color("1c527c"),
-	单位稀有度.稀有 : Color("ab0979"),
-	单位稀有度.传说 : Color("ea940b")
+	UnitRarity.单位稀有度.普通 : Color("124a2e"),
+	UnitRarity.单位稀有度.罕见 : Color("1c527c"),
+	UnitRarity.单位稀有度.稀有 : Color("ab0979"),
+	UnitRarity.单位稀有度.传说 : Color("ea940b")
 }
 
 @export var 单位名称 : String
 
 @export_category("数据分类")
-@export var 稀有度 : 单位稀有度
+@export var 稀有度 : UnitRarity.单位稀有度
 @export var 金币费用 :=1
 @export_range(1 , 5) var 单位等级 := 1 : set = _set_tier
 @export var pool_count := 6#在一轮单位池中该单位卡的数量

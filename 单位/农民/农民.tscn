@@ -234,6 +234,7 @@ theme_override_font_sizes/font_size = 20
 text = "▼"
 
 [node name="血条" type="ProgressBar" parent="." unique_id=981967833]
+z_index = 100
 offset_left = -35.0
 offset_top = -54.0
 offset_right = 35.0
@@ -244,6 +245,7 @@ value = 100.0
 show_percentage = false
 
 [node name="蓝条" type="ProgressBar" parent="." unique_id=595914863]
+z_index = 100
 offset_left = -35.0
 offset_top = -42.0
 offset_right = 35.0

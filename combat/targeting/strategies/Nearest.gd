@@ -15,7 +15,7 @@ func find_target(owner: Node2D, search_range: float) -> Node2D:
 		return null
 
 	# 同时搜索单位组和建筑组
-	for node in tree.get_nodes_in_group("移动单位"):
+	for node in FFManager.get_all_units():
 		if node == owner or not is_instance_valid(node):
 			continue
 		if not _is_enemy(owner, node):

@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://cjmjvmkx63mc3"]
+
+[ext_resource type="Script" path="res://combat/effects/construction_site.gd" id="1_q2c1w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4bdo8"]
+size = Vector2(80, 80)
+
+[node name="ConstructionSite" type="Node2D"]
+z_index = 50
+script = ExtResource("1_q2c1w")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+centered = true
+
+[node name="Blocker" type="StaticBody2D" parent="."]
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Blocker"]
+shape = SubResource("RectangleShape2D_4bdo8")

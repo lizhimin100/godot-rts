@@ -27,7 +27,7 @@ func _ready() -> void:
 		combat.attack_range = 攻击范围
 		combat.attack_cooldown = 攻击间隔
 		combat.process_mode = PROCESS_MODE_INHERIT  # 激活
-		combat.attack_initiated.connect(_on_塔_attack)
+		combat.attack_strike.connect(_on_塔_attack)
 
 	# 配置目标选择
 	var targeting: TargetingComponent = _get_targeting()

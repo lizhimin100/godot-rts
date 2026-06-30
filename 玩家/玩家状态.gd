@@ -13,17 +13,17 @@ const XP_REQUIREMENTS := {#经验值需要的字典
 	10 : 2560
 }
 
-const ROLL_RARITIES : = {
-	1: [UnitStats.单位稀有度.普通],
-	2: [UnitStats.单位稀有度.普通],
-	3: [UnitStats.单位稀有度.普通 , UnitStats.单位稀有度.罕见],
-	4: [UnitStats.单位稀有度.普通 , UnitStats.单位稀有度.罕见 , UnitStats.单位稀有度.稀有],
-	5: [UnitStats.单位稀有度.普通 , UnitStats.单位稀有度.罕见 , UnitStats.单位稀有度.稀有],
-	6: [UnitStats.单位稀有度.普通 , UnitStats.单位稀有度.罕见 , UnitStats.单位稀有度.稀有],
-	7: [UnitStats.单位稀有度.普通 , UnitStats.单位稀有度.罕见 , UnitStats.单位稀有度.稀有 , UnitStats.单位稀有度.传说],
-	8: [UnitStats.单位稀有度.普通 , UnitStats.单位稀有度.罕见 , UnitStats.单位稀有度.稀有, UnitStats.单位稀有度.传说],
-	9: [UnitStats.单位稀有度.普通 , UnitStats.单位稀有度.罕见 , UnitStats.单位稀有度.稀有, UnitStats.单位稀有度.传说],
-	10: [UnitStats.单位稀有度.普通 , UnitStats.单位稀有度.罕见 , UnitStats.单位稀有度.稀有, UnitStats.单位稀有度.传说]
+static var ROLL_RARITIES := {
+	1: [UnitRarity.单位稀有度.普通],
+	2: [UnitRarity.单位稀有度.普通],
+	3: [UnitRarity.单位稀有度.普通 , UnitRarity.单位稀有度.罕见],
+	4: [UnitRarity.单位稀有度.普通 , UnitRarity.单位稀有度.罕见 , UnitRarity.单位稀有度.稀有],
+	5: [UnitRarity.单位稀有度.普通 , UnitRarity.单位稀有度.罕见 , UnitRarity.单位稀有度.稀有],
+	6: [UnitRarity.单位稀有度.普通 , UnitRarity.单位稀有度.罕见 , UnitRarity.单位稀有度.稀有],
+	7: [UnitRarity.单位稀有度.普通 , UnitRarity.单位稀有度.罕见 , UnitRarity.单位稀有度.稀有 , UnitRarity.单位稀有度.传说],
+	8: [UnitRarity.单位稀有度.普通 , UnitRarity.单位稀有度.罕见 , UnitRarity.单位稀有度.稀有, UnitRarity.单位稀有度.传说],
+	9: [UnitRarity.单位稀有度.普通 , UnitRarity.单位稀有度.罕见 , UnitRarity.单位稀有度.稀有, UnitRarity.单位稀有度.传说],
+	10: [UnitRarity.单位稀有度.普通 , UnitRarity.单位稀有度.罕见 , UnitRarity.单位稀有度.稀有, UnitRarity.单位稀有度.传说]
 	
 }
 
@@ -46,7 +46,7 @@ const ROLL_CHANCES := {
 @export_range(0 , 999) var 经验 : int: set  = _set_xp
 @export_range(1 , 10) var 等级 : int : set = _set_level
 
-func get_random_rarity_for_level() -> UnitStats.单位稀有度:
+func get_random_rarity_for_level() -> UnitRarity.单位稀有度:
 	var rng = RandomNumberGenerator.new()
 	var array : Array = ROLL_RARITIES[等级]
 	var weights : PackedFloat32Array = PackedFloat32Array(ROLL_CHANCES[等级])

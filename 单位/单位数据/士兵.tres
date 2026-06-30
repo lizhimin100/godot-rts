@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="UnitStats" load_steps=2 format=3 uid="uid://dat6dna0am8y7"]
+[gd_resource type="Resource" script_class="AcUnitStats" load_steps=2 format=3 uid="uid://dat6dna0am8y7"]
 
 [ext_resource type="Script" uid="uid://dqe0ps78updlw" path="res://单位/单位数据/单位分类.gd" id="1_k2axy"]
 

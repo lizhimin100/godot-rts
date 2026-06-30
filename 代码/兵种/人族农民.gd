@@ -99,11 +99,9 @@ func _处理待机状态(delta: float):
 	if _附近敌人:
 		命令攻击(_附近敌人)
 		return
-	var 排斥力: Vector2 = _计算排斥力()
-	if 排斥力 != Vector2.ZERO:
-		velocity = velocity.move_toward(排斥力, 加速度 * 10 * delta)
-	else:
-		velocity = velocity.move_toward(Vector2.ZERO, 加速度 * 10 * delta)
+
+	# IDLE 状态：使用 visual offset（性能优化，不参与 O(N²)）
+	velocity = velocity.move_toward(Vector2.ZERO, 加速度 * 10 * delta)
 
 
 func _处理追敌状态(delta: float):
@@ -121,16 +119,23 @@ func _处理追敌状态(delta: float):
 	# 直接向敌人移动（农民用简单追敌）
 	var 敌人方向 = (攻击目标.global_position - global_position).normalized()
 	velocity = 敌人方向 * 移动速度
-	var 总避障力: Vector2 = _计算总避障力(敌人方向)
+	# ⭐ 使用 SeparationSystem 替代旧 _计算总避障力()
+	var 所有单位: Array = FFManager.get_all_units()
+	var 总避障力: Vector2 = SeparationSystem.get_force(global_position, 所有单位, 32.0, 4.0)
 	if 总避障力 != Vector2.ZERO:
 		velocity += 总避障力
 	velocity = velocity.limit_length(最大速度)
 
 
 func _处理移动状态(delta: float):
+	# ⭐ 节流：MOVE 状态下 10 FPS 触发流场更新
+	_move_update_timer += delta
+	if _move_update_timer >= MOVE_UPDATE_INTERVAL:
+		_move_update_timer = 0.0
+		request_movement_update()
+
 	# ⭐ 使用新移动控制器
-	var 所有单位: Array = get_tree().get_nodes_in_group("移动单位")
-	FFManager.update_target(目标位置, 所有单位)
+	var 所有单位: Array = FFManager.get_all_units()
 	var 到达: bool = unit_controller.move_toward(目标位置, delta, FFManager.get_flow_field(), 所有单位)
 	if 到达:
 		velocity = Vector2.ZERO

@@ -1,10 +1,11 @@
 class_name 移动基类
 extends CharacterBody2D
 
-## 移动基类 — 所有 RTS 可控制单位的基类
-## 提供：流场寻路、阵营关系、通用命令、单位间排斥力
-## 所有物理单位加入"移动单位"组（排斥力使用）
-## 只有玩家单位加入"可选单位"组（选择系统 + 迷雾视野使用）
+## 移动基类 — [已弃用] 请使用 UnitBase 替代
+## 保留用于未迁移的旧单位。新单位应直接使用 UnitBase。
+##
+## 已移除：旧流场系统引用、旧 Separation 系统引用。
+## 所有流场操作委托给 FFManager，分离由 SeparationSystem 处理。
 
 signal 避开友军
 
@@ -50,10 +51,7 @@ var _追击起始位置: Vector2 = Vector2.ZERO  # 自动索敌时的起始点�
 var _是自动索敌攻击: bool = false
 
 # ========== 驻守图标 ==========
-var _驻守图标: Sprite2D = null
-
-# ========== 流场缓存 ==========
-var _流场上次目标: Vector2 = Vector2.ZERO
+var _驻守图标: Node2D = null
 
 
 func _ready() -> void:
@@ -125,7 +123,7 @@ func 命令移动(位置: Vector2, 攻击移动: bool = false) -> void:
 		_原始目标位置 = 位置   # A-move 记下最终目标，杀敌后继续移动
 	else:
 		_原始目标位置 = Vector2.ZERO
-	_触发流场计算()
+	_通知移动控制器()
 	_切换动画("移动")
 	_隐藏驻守图标()
 
@@ -166,7 +164,7 @@ func 命令攻击(目标: Node2D) -> void:
 	_是自动索敌攻击 = false
 	_追击起始位置 = Vector2.ZERO
 	_原始目标位置 = Vector2.ZERO  # 手动攻击清除 A-move 目标
-	_触发流场计算()
+	_通知移动控制器()
 	_切换动画("移动")
 	_隐藏驻守图标()
 
@@ -180,7 +178,7 @@ func 命令巡逻(位置: Vector2) -> void:
 	当前巡逻索引 = 1
 	目标位置 = 位置
 	当前命令 = 命令类型.巡逻
-	_触发流场计算()
+	_通知移动控制器()
 	_切换动画("移动")
 
 
@@ -188,36 +186,27 @@ func _下一个巡逻点() -> void:
 	当前巡逻索引 = (当前巡逻索引 + 1) % 巡逻路径.size()
 	目标位置 = 巡逻路径[当前巡逻索引]
 	当前命令 = 命令类型.移动
-	_触发流场计算()
+	_通知移动控制器()
+
+
+# ============================================================
+# 通知移动控制器（统一入口：流场 + FFManager）
+# ============================================================
+
+func _通知移动控制器() -> void:
+	# 旧基类无 UnitController，由子类自行处理
+	pass
 
 
 # ============================================================
 # 驻守图标
 # ============================================================
 
-## 创建驻守图标（蓝色小圆盾）
+const GARRISON_ICON = preload("res://combat/effects/garrison_icon.tscn")
+
+## 创建驻守图标（场景）
 func _创建驻守图标() -> void:
-	_驻守图标 = Sprite2D.new()
-	_驻守图标.name = "驻守图标"
-	_驻守图标.position = Vector2(0, -38)
-	_驻守图标.z_index = 100
-	_驻守图标.centered = true
-	# 用程序生成一个蓝色小圆图
-	var img: Image = Image.create(14, 14, false, Image.FORMAT_RGBA8)
-	for x in range(14):
-		for y in range(14):
-			var cx = x - 6.5
-			var cy = y - 6.5
-			var dist = sqrt(cx*cx + cy*cy)
-			if dist <= 5.0:
-				img.set_pixel(x, y, Color(0.2, 0.5, 1.0, 0.9))
-			elif dist <= 6.5:
-				img.set_pixel(x, y, Color(1, 1, 1, 0.9))
-			else:
-				img.set_pixel(x, y, Color(0, 0, 0, 0))
-	var tex: ImageTexture = ImageTexture.create_from_image(img)
-	_驻守图标.texture = tex
-	_驻守图标.visible = false
+	_驻守图标 = GARRISON_ICON.instantiate()
 	add_child(_驻守图标)
 
 
@@ -233,15 +222,8 @@ func _隐藏驻守图标() -> void:
 		_驻守图标.visible = false
 
 
-func _触发流场计算() -> void:
-	if 目标位置.distance_to(_流场上次目标) > 1.0:
-		流场寻路.计算流场(目标位置)
-		_流场上次目标 = 目标位置
-
-
 # ============================================================
-# 导航移动（使用流场寻路）
-# 重要：不平滑方向，只平滑速度大小。方向直接来自流场 → 消除 S 形
+# 导航移动（旧接口，已禁用旧流场，直接使用 FFManager）
 # ============================================================
 
 func _导航移动到(目标位置: Vector2, delta: float) -> bool:
@@ -252,14 +234,9 @@ func _导航移动到(目标位置: Vector2, delta: float) -> bool:
 			velocity = Vector2.ZERO
 		return true
 
-	# 获取方向（流场方向，不可用时回退到指向目标方向）
-	var 移动方向 = 流场寻路.获取方向(global_position, 目标位置)
+	# 获取方向（FFManager 流场，不可用时回退到指向目标方向）
+	var 移动方向 = FFManager.get_direction(global_position, 目标位置)
 	var 目标速度 = 移动方向 * 移动速度
-
-	# 排斥力
-	var 排斥力: Vector2 = _计算排斥力()
-	if 排斥力 != Vector2.ZERO:
-		目标速度 += 排斥力
 
 	# 速度平滑过渡（仅平滑速度大小，不平滑方向向量）
 	velocity = velocity.move_toward(目标速度.limit_length(最大速度), 加速度 * delta)
@@ -272,7 +249,7 @@ func _寻找最近的敌对目标(搜索范围: float) -> Node2D:
 	var 最近: Node2D = null
 	var 最近距离: float = 搜索范围
 
-	for 单位 in get_tree().get_nodes_in_group("移动单位"):
+	for 单位 in FFManager.get_all_units():
 		if 单位 == self or not is_instance_valid(单位):
 			continue
 		if not 是敌对(单位):
@@ -412,7 +389,8 @@ func 停止移动() -> void:
 
 
 # ============================================================
-# 排斥力系统（仅用于单位之间近距离分离）
+# 排斥力系统 — 已迁移到 SeparationSystem
+# 保留 _计算排斥力 方法供旧子类调用，内部使用 SeparationSystem
 # ============================================================
 
 ## 兼容旧接口（供 人族步兵.gd 等子类调用）
@@ -423,20 +401,10 @@ func _计算总避障力(目标方向: Vector2) -> Vector2:
 func _计算排斥力() -> Vector2:
 	var 总排斥: Vector2 = Vector2.ZERO
 	var 本位置: Vector2 = global_position
-	var 排斥距离平方 = 排斥距离 * 排斥距离
 
-	for 单位 in get_tree().get_nodes_in_group("移动单位"):
-		if 单位 == self or not is_instance_valid(单位):
-			continue
+	var tree: SceneTree = get_tree()
+	if not tree:
+		return Vector2.ZERO
 
-		var 偏移 = 本位置 - 单位.global_position
-		var 距离平方 = 偏移.length_squared()
-		if 距离平方 > 排斥距离平方 or 距离平方 < 1.0:
-			continue
-
-		var 距离 = sqrt(距离平方)
-		var 力度 = 1.0 - (距离 / 排斥距离)
-		力度 *= 力度
-		总排斥 += 偏移 / 距离 * 力度 * 排斥强度
-
-	return 总排斥
+	var 所有单位: Array = FFManager.get_all_units()
+	return SeparationSystem.get_force(本位置, 所有单位, 排斥距离, 排斥强度 / 100.0)

@@ -25,7 +25,7 @@ func _get_first_available_area() -> 游戏瓦片层组件:#寻找第一个有空
 		return ganme_area
 	return null
 
-func spawn_unit (unit: UnitStats) -> void:#生成单位的核心方法
+func spawn_unit (unit: AcUnitStats) -> void:#生成单位的核心方法
 	var area := _get_first_available_area()
 	#TODO 有UI系统后再修改此项，不应该直接运行报错，应该UI提醒无法添加单位
 	assert(area, "替补区和游戏区都已满，无法添加单位")

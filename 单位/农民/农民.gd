@@ -32,6 +32,7 @@ var _建造位置: Vector2 = Vector2.ZERO
 var _建造计时器: Timer
 var _施工场地: Node2D = null
 var _施工场地碰撞体: StaticBody2D = null
+var _建造进度UI: Node2D = null
 const 建造时间表: Dictionary = {
 	全局变量.建筑类型.城堡: 48.0,
 	全局变量.建筑类型.房子: 8.0,
@@ -177,11 +178,8 @@ func _处理待机状态(delta: float) -> void:
 		if 目标位置 != Vector2.ZERO:
 			切换状态(State.MOVE)
 		return
-	var 排斥力: Vector2 = _计算排斥力()
-	if 排斥力.length_squared() > 0.01:
-		velocity = velocity.move_toward(排斥力, 移动速度 * 10.0 * delta)
-	else:
-		velocity = velocity.move_toward(Vector2.ZERO, 移动速度 * 10.0 * delta)
+	# IDLE 状态：使用 visual offset（性能优化）
+	velocity = velocity.move_toward(Vector2.ZERO, 移动速度 * 10.0 * delta)
 
 
 # ============================================================
@@ -202,53 +200,35 @@ func _处理移动状态(delta: float) -> void:
 		velocity = 到建筑.normalized() * 移动速度 * 0.6
 		return
 
-	# ⭐ 正常移动：使用流场控制器（流场+避障+卡死检测）
-	var 所有单位: Array = get_tree().get_nodes_in_group("移动单位")
-	FFManager.update_target(目标位置, 所有单位)
+	# ⭐ 正常移动：使用流场控制器（FFManager + UnitController，单系统）
+	_move_update_timer += delta
+	if _move_update_timer >= MOVE_UPDATE_INTERVAL:
+		_move_update_timer = 0.0
+		request_movement_update()
+
+	var 所有单位: Array = FFManager.get_all_units()
 	if unit_controller.move_toward(目标位置, delta, FFManager.get_flow_field(), 所有单位):
 		当前命令 = 命令类型.无
 		切换状态(State.IDLE)
 		return
 
 
-## 创建施工场地（含碰撞体，阻挡单位穿过）
+const CONSTRUCTION_SITE = preload("res://combat/effects/construction_site.tscn")
+const AFTERIMAGE = preload("res://combat/effects/afterimage.tscn")
+const BUILD_COUNTDOWN_UI = preload("res://combat/effects/build_countdown_ui.tscn")
+
+## 创建施工场地（场景化）
 func _创建施工场地() -> void:
 	if not 施工纹理.has(_建造类型):
 		return
-	_施工场地 = Node2D.new()
-	_施工场地.name = "施工场地"
-	_施工场地.z_index = 50
+	_施工场地 = CONSTRUCTION_SITE.instantiate()
 	_施工场地.global_position = _建造位置
-
-	var 精灵: Sprite2D = Sprite2D.new()
-	精灵.texture = 施工纹理[_建造类型]
-	精灵.modulate = Color(1, 1, 1, 0.3)
-	_施工场地.add_child(精灵)
-
-	# 进度条
-	var 进度条: ProgressBar = ProgressBar.new()
-	进度条.name = "建造进度条"
-	进度条.min_value = 0.0
-	进度条.max_value = 100.0
-	进度条.value = 0.0
-	进度条.size = Vector2(60, 10)
-	进度条.position = Vector2(-30, -60)
-	进度条.modulate = Color(1, 1, 1, 0.85)
-	进度条.show_percentage = false
-	_施工场地.add_child(进度条)
-
-	# 碰撞体——建筑占用体积
-	_施工场地碰撞体 = StaticBody2D.new()
-	_施工场地碰撞体.collision_layer = 4  # 建筑层
-	var 碰撞形状: CollisionShape2D = CollisionShape2D.new()
-	var 矩形: RectangleShape2D = RectangleShape2D.new()
-	矩形.size = 全局变量.建筑碰撞尺寸.get(_建造类型, Vector2(80, 80))
-	碰撞形状.shape = 矩形
-	_施工场地碰撞体.add_child(碰撞形状)
-	_施工场地.add_child(_施工场地碰撞体)
-
 	_施工场地.add_to_group("施工场地")
 	get_parent().add_child(_施工场地)
+	# ⚠ set_building_texture 必须在 add_child 之后调用（@onready 变量需要 _ready 已触发）
+	_施工场地.set_building_texture(施工纹理[_建造类型])
+	_施工场地.set_blocker_size(全局变量.建筑碰撞尺寸.get(_建造类型, Vector2(80, 80)))
+	_施工场地碰撞体 = _施工场地.get_node("Blocker") as StaticBody2D
 
 
 ## 开始建造
@@ -264,9 +244,17 @@ func _开始建造() -> void:
 	_瞬移到建筑边缘(true)
 
 	if is_instance_valid(_施工场地):
-		var 精灵: Node = _施工场地.get_child(0) if _施工场地.get_child_count() > 0 else null
-		if 精灵 and 精灵 is Sprite2D:
-			精灵.modulate = Color(1, 1, 1, 1)
+		var sprite2d = _施工场地.get_node("Sprite") as Sprite2D
+		if sprite2d:
+			sprite2d.modulate = Color(1, 1, 1, 1)
+		# ⭐ 创建独立的进度条 UI（唯一进度显示，旧版 construction_site 内置 ProgressBar 已移除）
+		if not is_instance_valid(_建造进度UI):
+			_建造进度UI = BUILD_COUNTDOWN_UI.instantiate()
+			_施工场地.add_child(_建造进度UI)
+			# 初始进度 0
+			var ui_bar := _建造进度UI.get_node("建造倒计时") as ProgressBar
+			if ui_bar:
+				ui_bar.value = 0.0
 
 	全局变量.显示通知("建造中...", _建造位置)
 
@@ -279,20 +267,17 @@ func _瞬移到建筑边缘(立即: bool = false) -> void:
 	var 建筑中心 = _施工场地.global_position
 
 	var 水平范围: float = 30.0
-	var 精灵: Sprite2D = null
-	if _施工场地.get_child_count() > 0:
-		精灵 = _施工场地.get_child(0) as Sprite2D
-	if 精灵 and 精灵.texture:
-		水平范围 = 精灵.texture.get_size().x * 0.35
+	var site_sprite: Sprite2D = _施工场地.get_node("Sprite") as Sprite2D
+	if site_sprite and site_sprite.texture:
+		水平范围 = site_sprite.texture.get_size().x * 0.35
 	else:
 		水平范围 = 全局变量.建筑碰撞尺寸.get(_建造类型, Vector2(80, 80)).x * 0.35
-	var 目标位置: Vector2 = 建筑中心 + Vector2(randf_range(-水平范围, 水平范围), 30.0)
-
+	var _瞬移位置: Vector2 = 建筑中心 + Vector2(randf_range(-水平范围, 水平范围), 30.0)
 
 	z_index = 60
 
 	if 立即:
-		global_position = 目标位置
+		global_position = _瞬移位置
 		_建造闪烁计时 = 0.0
 		_建造闪烁间隔 = randf_range(1.0, 3.0)
 	else:
@@ -303,7 +288,7 @@ func _瞬移到建筑边缘(立即: bool = false) -> void:
 		tween.tween_property(self, "scale", Vector2.ZERO, 0.08)
 		tween.tween_callback(func():
 			if is_instance_valid(self):
-				global_position = 目标位置
+				global_position = _瞬移位置
 		)
 		tween.tween_property(self, "scale", 原缩放, 0.1)
 
@@ -315,8 +300,6 @@ func _处理建造振荡(delta: float) -> void:
 		_取消建造()
 		return
 
-	var 建筑中心 = _施工场地.global_position if is_instance_valid(_施工场地) else _建造位置
-
 	_建造闪烁计时 += delta
 	if _建造闪烁计时 < _建造闪烁间隔:
 		return
@@ -327,39 +310,35 @@ func _处理建造振荡(delta: float) -> void:
 	_瞬移到建筑边缘(false)
 
 	if is_instance_valid(_施工场地) and _建造计时器.time_left > 0 and _建造总时间 > 0:
-		var 进度条 = _施工场地.get_node_or_null("建造进度条")
-		if 进度条:
-			进度条.value = (1.0 - _建造计时器.time_left / _建造总时间) * 100.0
+		var 进度: float = (1.0 - _建造计时器.time_left / _建造总时间) * 100.0
+		# ⭐ 唯一进度条 UI（build_countdown_ui.tscn），旧版 construction_site 内置 ProgressBar 已移除
+		if is_instance_valid(_建造进度UI):
+			var ui_bar: ProgressBar = _建造进度UI.get_node("建造倒计时") as ProgressBar
+			if ui_bar:
+				ui_bar.value = 进度
 
 
 func _生成瞬移残影(旧位置: Vector2, 新位置: Vector2) -> void:
 	const 残影数量: int = 5
-	const 残影存在时间: float = 0.3
-	const 残影尺寸缩放: float = 0.6
 
 	for i in 残影数量:
 		var 进度 = float(i) / float(残影数量 - 1)
 		var 中间位置 = 旧位置.lerp(新位置, 进度)
 		中间位置 += Vector2(randf_range(-8, 8), randf_range(-8, 8))
 
-		var 残影: Sprite2D = Sprite2D.new()
+		var 残影: Sprite2D = AFTERIMAGE.instantiate()
 		残影.texture = 角色图像.texture
 		残影.region_enabled = 角色图像.region_enabled
 		残影.region_rect = 角色图像.region_rect
 		残影.hframes = 角色图像.hframes
 		残影.frame = 角色图像.frame
 		残影.centered = 角色图像.centered
-		残影.scale = scale * 残影尺寸缩放
+		残影.scale = scale * 0.6
 		残影.global_position = 中间位置
 		残影.modulate = Color(0, 0, 0, 0.5)
 		残影.z_index = z_index - 1
 
 		get_parent().add_child(残影)
-
-		var 残影tween: Tween = create_tween()
-		残影tween.tween_property(残影, "modulate:a", 0.0, 残影存在时间)
-		残影tween.parallel().tween_property(残影, "scale", scale * 残影尺寸缩放 * 1.5, 残影存在时间)
-		残影tween.tween_callback(残影.queue_free)
 
 	var 拖尾: Line2D = Line2D.new()
 	拖尾.points = PackedVector2Array([旧位置, 新位置])
@@ -392,6 +371,9 @@ func _取消建造() -> void:
 		return
 	if _建造计时器 and _建造计时器.time_left > 0:
 		_建造计时器.stop()
+	if is_instance_valid(_建造进度UI):
+		_建造进度UI.queue_free()
+		_建造进度UI = null
 	if is_instance_valid(_施工场地):
 		_施工场地.queue_free()
 		_施工场地 = null
@@ -425,6 +407,9 @@ func _建造完成() -> void:
 	if _建造类型 < 0:
 		return
 
+	if is_instance_valid(_建造进度UI):
+		_建造进度UI.queue_free()
+		_建造进度UI = null
 	if is_instance_valid(_施工场地):
 		_施工场地.queue_free()
 		_施工场地 = null
@@ -435,8 +420,8 @@ func _建造完成() -> void:
 		var 建筑 = 场景.instantiate()
 		建筑.global_position = _建造位置
 		get_parent().add_child(建筑)
-		# ⭐ 通知流场管理器障碍变化
-		FlowFieldManager.mark_dirty()
+		# ⭐ 通知新流场管理器障碍变化
+		FFManager.mark_dirty()
 		print("农民建造完成: ", 全局变量.建筑类型.keys()[_建造类型])
 		全局变量.显示通知("建造完成！", _建造位置 + Vector2(0, -40))
 	else:

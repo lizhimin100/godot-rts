@@ -2,9 +2,15 @@ extends Control
 class_name 操作UI
 
 ## 操作UI — RTS 选中单位命令面板
-## 显示当前选中单位的可用操作按钮
+##
+## 数据来源：
+##   - 选中单位：选择管理器
+##   - 命令发送：命令管理器
+##   不直接访问 unit 属性
 
-# 全局引用（兼容脚本热更新场景）
+const DIAG: bool = true  # 诊断日志
+
+# 全局引用
 static var _全局实例: 操作UI = null
 
 var 当前选中单位 := []
@@ -27,42 +33,54 @@ func _enter_tree() -> void:
 	_全局实例 = self
 	add_to_group("操作UI")
 
+	# 监听选择管理器的选中变化
+	if 选择管理器.实例:
+		if DIAG: print("[UI] 连接选择管理器信号: 选中变化 + 选中清空")
+		选择管理器.实例.选中变化.connect(_on_选中变化)
+		选择管理器.实例.选中清空.connect(_on_选中清空)
+	else:
+		if DIAG: print("[UI] ⚠ 选择管理器.实例 为 null！信号未连接")
+		# 延迟重试
+		await get_tree().process_frame
+		if 选择管理器.实例:
+			if DIAG: print("[UI] 延迟连接成功")
+			选择管理器.实例.选中变化.connect(_on_选中变化)
+			选择管理器.实例.选中清空.connect(_on_选中清空)
+		else:
+			if DIAG: print("[UI] ⚠ 延迟后仍然无法连接选择管理器")
+
+
 func _exit_tree() -> void:
 	if _全局实例 == self:
 		_全局实例 = null
 
-## 供外部获取实例（兼容热更新）
+
 static func 获取实例() -> 操作UI:
 	return _全局实例
 
 
-
-
 func _ready() -> void:
-	print("🖥️ 操作UI _ready() 节点就绪")
 	操作面板.visible = false
 	if 训练行:
 		训练行.visible = false
-		print("🖥️   训练行已隐藏")
-	else:
-		print("⚠️ 操作UI: 训练行节点未找到!")
 	if 建筑名称标签:
 		建筑名称标签.visible = false
 	if 状态标签:
 		状态标签.visible = false
 
 
-func _on_unit_selected(unit: Node) -> void:
-	_on_selection_changed([unit])
+# ============================================================
+# 选中变化响应（来自 SelectionManager）
+# ============================================================
 
-
-## 选中变更 — 接受选中单位数组（多选支持）
-func _on_selection_changed(units: Array) -> void:
+func _on_选中变化(units: Array) -> void:
+	if DIAG: print("[UI] 选中变化: ", units.size(), " 个单位")
 	if units.is_empty():
-		_clear_selection()
+		_清除选中()
 		return
 
 	当前选中单位 = units.duplicate()
+	if DIAG: print("[UI] 当前选中: ", 当前选中单位.size(), " 个单位, 第一个=", 当前选中单位[0].name if 当前选中单位 else "无")
 	操作面板.visible = true
 	_当前选中建筑 = false
 	_当前选中城堡 = false
@@ -79,6 +97,7 @@ func _on_selection_changed(units: Array) -> void:
 	# 检测选中单位类型（以第一个为主）
 	var unit = units[0]
 	if not is_instance_valid(unit):
+		if DIAG: print("[UI] ⚠ 选中单位无效")
 		return
 
 	if unit.is_in_group("建筑"):
@@ -86,19 +105,24 @@ func _on_selection_changed(units: Array) -> void:
 		_当前建筑节点 = unit
 		if unit is 城堡:
 			_当前选中城堡 = true
-	else:
-		pass
 
 	_更新按钮()
 
 
+func _on_选中清空() -> void:
+	if DIAG: print("[UI] 选中清空")
+	_清除选中()
+
+
+# ============================================================
+# 按钮更新
+# ============================================================
+
 func _更新按钮() -> void:
-	print("🖥️ _更新按钮: 城堡=%s 建筑=%s" % [_当前选中城堡, _当前选中建筑])
 	# 城堡 → 显示训练行
 	if _当前选中城堡:
 		if 训练行:
 			训练行.visible = true
-			print("🖥️   显示训练行")
 		_隐藏状态标签()
 		return
 
@@ -109,7 +133,7 @@ func _更新按钮() -> void:
 
 	# 普通单位 → 显示命令按钮
 	按钮行.visible = true
-	print("🖥️   显示按钮行")
+	if DIAG: print("[UI] 显示按钮行")
 
 
 func _显示建筑信息(建筑: Node) -> void:
@@ -146,7 +170,6 @@ func _显示状态反馈(消息: String) -> void:
 	状态标签.text = 消息
 	状态标签.visible = true
 	await get_tree().create_timer(3.0).timeout
-	# 只在没有新消息覆盖时才隐藏
 	if is_instance_valid(状态标签) and _状态标签计数 == 当前计数:
 		状态标签.visible = false
 
@@ -156,7 +179,7 @@ func _隐藏状态标签() -> void:
 		状态标签.visible = false
 
 
-func _clear_selection() -> void:
+func _清除选中() -> void:
 	当前选中单位 = []
 	操作面板.visible = false
 	_当前选中建筑 = false
@@ -165,50 +188,52 @@ func _clear_selection() -> void:
 	_隐藏状态标签()
 
 
-func _发送命令到所有单位(方法名: String, 参数 = null) -> void:
-	for unit in 当前选中单位:
-		if is_instance_valid(unit) and unit.has_method(方法名):
-			if 参数 != null:
-				unit.call(方法名, 参数)
-			else:
-				unit.call(方法名)
-
+# ============================================================
+# 按钮事件 — 通过命令管理器发送
+# ============================================================
 
 func _on_取消选中_pressed() -> void:
-	for unit in 当前选中单位:
-		if is_instance_valid(unit):
-			unit.选择状态 = false
-	_clear_selection()
+	if DIAG: print("[UI] 取消选中 按钮按下")
+	选择管理器.取消选中()
 
 
 func _on_停止_pressed() -> void:
-	_发送命令到所有单位("命令停止")
+	if DIAG: print("[UI] 停止按钮按下, 当前选中单位=", 当前选中单位.size(), " 有效=", 当前选中单位.filter(func(u): return is_instance_valid(u)).size())
+	if not 当前选中单位.is_empty():
+		命令管理器.命令停止(当前选中单位)
 
 
 func _on_驻守_pressed() -> void:
-	_发送命令到所有单位("命令驻守")
+	if DIAG: print("[UI] 驻守按钮按下, 当前选中单位=", 当前选中单位.size())
+	if not 当前选中单位.is_empty():
+		命令管理器.命令驻守(当前选中单位)
 
 
 func _on_巡逻_pressed() -> void:
+	if 当前选中单位.is_empty():
+		return
 	var 最后位置 = _获取最后标记位置()
 	if 最后位置 != Vector2.ZERO and 最后位置.distance_to(Vector2.ZERO) > 5:
-		_发送命令到所有单位("命令巡逻", 最后位置)
+		命令管理器.命令巡逻(当前选中单位, 最后位置)
 	else:
 		for unit in 当前选中单位:
-			if is_instance_valid(unit) and unit.has_method("命令巡逻"):
-				unit.命令巡逻(unit.global_position + Vector2(100, 0))
+			if is_instance_valid(unit):
+				命令管理器.命令巡逻([unit], unit.global_position + Vector2(100, 0))
 
 
 func _on_攻击移动_pressed() -> void:
-	var rts = get_tree().get_first_node_in_group("rts")
-	if not is_instance_valid(rts):
-		for path in ["/root/平面/rts——node", "/root/世界岛场景/rts——node"]:
-			rts = get_node_or_null(path)
-			if is_instance_valid(rts):
-				break
-	if rts and rts.has_method("_amove模式中"):
-		rts._amove模式中 = true
-		print("A-move 模式已激活")
+	## A-move 模式：左键点击时发送攻击移动命令
+	## 在当前选中单位的位置发送移动命令
+	if not 当前选中单位.is_empty():
+		var input_handler = get_tree().get_first_node_in_group("输入处理器")
+		if input_handler and input_handler.has_method("_获取最后右键位置"):
+			var pos = input_handler._获取最后右键位置()
+			if pos != Vector2.ZERO:
+				命令管理器.命令移动(当前选中单位, pos)
+			else:
+				命令管理器.命令移动(当前选中单位, Vector2(100, 0))
+		else:
+			命令管理器.命令移动(当前选中单位, Vector2(100, 0))
 
 
 # ============================================================
@@ -216,22 +241,16 @@ func _on_攻击移动_pressed() -> void:
 # ============================================================
 
 func _on_训练剑士_pressed() -> void:
-	print("🖱️ 训练剑士按钮被点击")
 	_尝试训练单位("剑士")
 
-
 func _on_训练弓箭手_pressed() -> void:
-	print("🖱️ 训练弓箭手按钮被点击")
 	_尝试训练单位("弓箭手")
 
-
 func _on_训练农民_pressed() -> void:
-	print("🖱️ 训练农民按钮被点击")
 	_尝试训练单位("农民")
 
 
 func _尝试训练单位(类型: String) -> void:
-	print("🖥️ _尝试训练单位: %s" % 类型)
 	if 当前选中单位.is_empty():
 		_显示状态反馈("请先选中城堡")
 		return
@@ -244,7 +263,6 @@ func _尝试训练单位(类型: String) -> void:
 	if unit.has_method("添加训练"):
 		var 成功 = unit.添加训练(类型)
 		if 成功:
-			# 获取当前队列大小
 			var 队列大小 = unit.获取队列大小() if unit.has_method("获取队列大小") else "?"
 			_显示状态反馈("训练%s已加入队列 [%s/5]" % [类型, str(队列大小)])
 		else:
@@ -262,13 +280,7 @@ func _尝试训练单位(类型: String) -> void:
 # ============================================================
 
 func _获取最后标记位置() -> Vector2:
-	# 1. 组查找
-	var rts = get_tree().get_first_node_in_group("rts")
-	if is_instance_valid(rts) and rts.has_method("获取最后标记位置"):
-		return rts.获取最后标记位置()
-	# 2. 场景路径回退（兼容热更新）
-	for path in ["/root/平面/rts——node", "/root/世界岛场景/rts——node"]:
-		rts = get_node_or_null(path)
-		if is_instance_valid(rts) and rts.has_method("获取最后标记位置"):
-			return rts.获取最后标记位置()
+	var input_handler = get_tree().get_first_node_in_group("输入处理器")
+	if input_handler and input_handler.has_method("_获取最后右键位置"):
+		return input_handler._获取最后右键位置()
 	return Vector2.ZERO

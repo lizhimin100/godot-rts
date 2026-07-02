@@ -24,9 +24,6 @@
 [ext_resource type="PackedScene" uid="uid://d3jji01luv5wy" path="res://组件/显示小地图组件.tscn" id="26_4ta5k"]
 [ext_resource type="Texture2D" uid="uid://btfco2rg0ysxw" path="res://小剑资源/Resources/Resources/W_Idle_(NoShadow).png" id="26_k1qpm"]
 [ext_resource type="Texture2D" uid="uid://cgqlrv50c3027" path="res://小剑资源/Resources/Resources/M_Idle_(NoShadow).png" id="27_55xwe"]
-[ext_resource type="PackedScene" uid="uid://4r6fq3otr2qt" path="res://组件/rts——node.tscn" id="28_4ta5k"]
-[ext_resource type="Shader" uid="uid://cu1jqeey1rced" path="res://shader学习/shader/战争迷雾.gdshader" id="33_np52u"]
-[ext_resource type="Script" uid="uid://1bjuh866uojv" path="res://代码/战争迷雾.gd" id="33_ov0ta"]
 [ext_resource type="PackedScene" uid="uid://dh4h4i1wlakvq" path="res://UI组件/镜片.tscn" id="35_np52u"]
 [ext_resource type="Script" uid="uid://c1pgy0fv8o84h" path="res://代码/组件代码/世界岛相机控制.gd" id="37_vvsp5"]
 [ext_resource type="PackedScene" uid="uid://cf7b1l8g2qpht" path="res://角色/主角.tscn" id="40_pn4h8"]
@@ -34,22 +31,6 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ssk3w"]
 size = Vector2(40, 36)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_6eh7d"]
-shader = ExtResource("33_np52u")
-shader_parameter/for_color = Color(0, 0, 0, 1)
-
-[sub_resource type="Gradient" id="Gradient_55xwe"]
-offsets = PackedFloat32Array(0.770213, 1)
-colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_ov0ta"]
-gradient = SubResource("Gradient_55xwe")
-width = 320
-height = 320
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0.5, 0)
 
 [node name="世界场景" type="Node2D" unique_id=625190321]
 script = ExtResource("1_vvsp5")
@@ -375,20 +356,7 @@ grow_vertical = 2
 
 [node name="操作UI" parent="布局渲染" unique_id=929976407 instance=ExtResource("41_pn4h8")]
 
-[node name="rts——node" parent="." unique_id=1275235753 instance=ExtResource("28_4ta5k")]
-
-[node name="战争迷雾（要在最下面）" type="Sprite2D" parent="." unique_id=1049257837 node_paths=PackedStringArray("视野玩家")]
-z_index = 2
-material = SubResource("ShaderMaterial_6eh7d")
-position = Vector2(1120, 640)
-script = ExtResource("33_ov0ta")
-texture_filter = 1
-"迷雾宽度" = 5000
-"迷雾长度" = 5000
-"雾纹理尺寸" = 500
-"视野半径" = 160.0
-"光源纹理" = SubResource("GradientTexture2D_ov0ta")
-"视野玩家" = NodePath("../环境和角色/角色/主角")
+# 旧 rts--node 和 战争迷雾 已移除 — 使用新系统
 
 [node name="镜片" parent="." unique_id=1272075030 instance=ExtResource("35_np52u")]
 visible = false

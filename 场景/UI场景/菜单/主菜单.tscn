@@ -1,0 +1,137 @@
+[gd_scene format=3 uid="uid://cww1e34s8mj4b"]
+
+[ext_resource type="Texture2D" uid="uid://bluoclwbn6etr" path="res://小剑资源/UI/Buttons/Button_Blue_3Slides.png" id="1_tuvep"]
+[ext_resource type="Texture2D" uid="uid://obvc3vkf25uv" path="res://小剑资源/UI/Buttons/Button_Blue_3Slides_Pressed.png" id="2_2swu8"]
+[ext_resource type="Texture2D" uid="uid://c5r61bo3e3ako" path="res://小剑资源/UI/Buttons/Button_Hover_3Slides.png" id="3_lgdc7"]
+
+[node name="主菜单" type="Control" unique_id=1679001181]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="容器" type="VBoxContainer" parent="." unique_id=2042066613]
+custom_minimum_size = Vector2(525, 720)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="开始游戏" type="TextureButton" parent="容器" unique_id=379477758]
+custom_minimum_size = Vector2(450, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("1_tuvep")
+texture_pressed = ExtResource("2_2swu8")
+texture_hover = ExtResource("3_lgdc7")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="容器/开始游戏" unique_id=478410466]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 12
+theme_override_constants/shadow_outline_size = 16
+theme_override_font_sizes/font_size = 60
+text = "开始游戏"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="设定" type="TextureButton" parent="容器" unique_id=1370982723]
+custom_minimum_size = Vector2(450, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("1_tuvep")
+texture_pressed = ExtResource("2_2swu8")
+texture_hover = ExtResource("3_lgdc7")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="容器/设定" unique_id=1496856743]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 12
+theme_override_constants/shadow_outline_size = 16
+theme_override_font_sizes/font_size = 60
+text = "设定"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="相关" type="TextureButton" parent="容器" unique_id=1803370431]
+custom_minimum_size = Vector2(450, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("1_tuvep")
+texture_pressed = ExtResource("2_2swu8")
+texture_hover = ExtResource("3_lgdc7")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="容器/相关" unique_id=448504953]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 12
+theme_override_constants/shadow_outline_size = 16
+theme_override_font_sizes/font_size = 60
+text = "相关"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="间隔器" type="Control" parent="容器" unique_id=1204291659]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="退出游戏" type="TextureButton" parent="容器" unique_id=1030695009]
+custom_minimum_size = Vector2(450, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = ExtResource("1_tuvep")
+texture_pressed = ExtResource("2_2swu8")
+texture_hover = ExtResource("3_lgdc7")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="容器/退出游戏" unique_id=1607170757]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 12
+theme_override_constants/shadow_outline_size = 16
+theme_override_font_sizes/font_size = 60
+text = "退出游戏"
+horizontal_alignment = 1
+vertical_alignment = 1

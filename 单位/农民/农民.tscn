@@ -181,7 +181,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_col"]
-size = Vector2(44, 46)
+size = Vector2(38, 32)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
@@ -207,6 +207,8 @@ scale = Vector2(0.5, 0.5)
 collision_layer = 8
 collision_mask = 36
 script = ExtResource("1_ssk3w")
+"移动速度" = 90.0
+"最大速度" = 800.0
 
 [node name="角色图像" type="Sprite2D" parent="." unique_id=1551252876]
 material = SubResource("ShaderMaterial_reset")
@@ -219,7 +221,7 @@ region_rect = Rect2(0, 0, 1152, 190)
 libraries/ = SubResource("AnimationLibrary_farmer")
 
 [node name="碰撞" type="CollisionShape2D" parent="." unique_id=780736858]
-position = Vector2(2, -1)
+position = Vector2(-1, 0)
 shape = SubResource("RectangleShape2D_col")
 
 [node name="选中标签" type="Label" parent="." unique_id=2021623762]

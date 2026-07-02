@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "npc.schema.v1.json",
+  "title": "NPC Schema v1",
+  "description": "style仅表示美术风格分组，不影响逻辑与台词协议；所有风格共用同一结构。",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "meta",
+    "assets",
+    "spritesheet",
+    "gameplay",
+    "ext"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "id",
+        "displayName",
+        "style",
+        "category",
+        "generator",
+        "createdAt",
+        "updatedAt",
+        "tags"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "style": {
+          "type": "string",
+          "enum": ["gufeng", "medieval", "modern"]
+        },
+        "category": {
+          "type": "string",
+          "enum": ["shop", "function", "quest", "combat"]
+        },
+        "generator": {
+          "type": "string",
+          "const": "banana_ai_gem_yituquan_dongzuo"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "assets": {
+      "type": "object",
+      "required": ["spritePath", "thumbPath"],
+      "properties": {
+        "spritePath": { "type": "string", "const": "./sprite.png" },
+        "thumbPath": { "type": "string", "const": "./thumb.png" }
+      },
+      "additionalProperties": false
+    },
+    "spritesheet": {
+      "type": "object",
+      "required": [
+        "layoutVersion",
+        "frameWidth",
+        "frameHeight",
+        "columns",
+        "rows",
+        "margin",
+        "spacing",
+        "defaultFps",
+        "animations"
+      ],
+      "properties": {
+        "layoutVersion": { "type": "string", "const": "yituquan_v1" },
+        "frameWidth": { "type": "integer", "const": 128 },
+        "frameHeight": { "type": "integer", "const": 128 },
+        "columns": { "type": "integer", "const": 8 },
+        "rows": { "type": "integer", "const": 12 },
+        "margin": { "type": "integer", "const": 0 },
+        "spacing": { "type": "integer", "const": 0 },
+        "defaultFps": { "type": "integer", "const": 8 },
+        "animations": {
+          "type": "object",
+          "required": [
+            "idle_down",
+            "walk_down",
+            "idle_left",
+            "walk_left",
+            "idle_right",
+            "walk_right",
+            "idle_up",
+            "walk_up"
+          ],
+          "properties": {
+            "idle_down": { "$ref": "#/$defs/rowAnim" },
+            "walk_down": { "$ref": "#/$defs/rowAnim" },
+            "idle_left": { "$ref": "#/$defs/rowAnim" },
+            "walk_left": { "$ref": "#/$defs/rowAnim" },
+            "idle_right": { "$ref": "#/$defs/rowAnim" },
+            "walk_right": { "$ref": "#/$defs/rowAnim" },
+            "idle_up": { "$ref": "#/$defs/rowAnim" },
+            "walk_up": { "$ref": "#/$defs/rowAnim" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "gameplay": {
+      "type": "object",
+      "required": ["faction", "role", "level", "stats", "interaction"],
+      "properties": {
+        "faction": { "type": "string" },
+        "role": { "type": "string" },
+        "level": { "type": "integer", "minimum": 1 },
+        "stats": {
+          "type": "object",
+          "required": ["hp", "attack", "defense", "moveSpeed"],
+          "properties": {
+            "hp": { "type": "number", "minimum": 0 },
+            "attack": { "type": "number", "minimum": 0 },
+            "defense": { "type": "number", "minimum": 0 },
+            "moveSpeed": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "interaction": {
+          "type": "object",
+          "required": ["canTalk", "canTrade", "questGiver"],
+          "properties": {
+            "canTalk": { "type": "boolean" },
+            "canTrade": { "type": "boolean" },
+            "questGiver": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "ext": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "rowAnim": {
+      "type": "object",
+      "required": ["row", "from", "to", "loop"],
+      "properties": {
+        "row": { "type": "integer", "minimum": 0 },
+        "from": { "type": "integer", "minimum": 0 },
+        "to": { "type": "integer", "minimum": 0 },
+        "loop": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

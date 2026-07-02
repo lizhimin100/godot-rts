@@ -5,7 +5,7 @@ extends Node2D
 @onready var 营地按钮: Button = $布局渲染/按钮面板/营地按钮
 @onready var 布局UI: CanvasLayer = $布局渲染
 @onready var 小地图 = $布局渲染/显示小地图/小地图
-@onready var 战争迷雾: Node2D = get_node("战争迷雾（要在最下面）")
+# 战争迷雾已由 迷雾系统 Autoload 管理
 
 
 func _ready() -> void:

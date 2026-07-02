@@ -1,10 +1,10 @@
-extends UnitBase
+extends 单位基类
 class_name 人族步兵
 
-## 人族步兵 — RTS 近战单位
+## 人族步兵 — 旧版近战单位（待迁移）
 ## 4 状态状态机：IDLE / CHASE / MOVE / ATTACK
-##   普通移动 → 流场控制器（避障 + 卡死检测）
-##   追敌 → NavigationAgent2D（仅追敌使用）
+##
+## 单驱动力原则：velocity 由 UnitController + super._physics_process 统一管理
 
 enum State {
 	IDLE,
@@ -32,13 +32,10 @@ var _附近敌人: Node2D = null
 
 func _ready() -> void:
 	super._ready()
-	# 替换父类创建的导航代理为场景中预设的
 	if has_node("导航代理"):
 		导航代理 = $导航代理
-	# 同步移动参数到控制器
 	当前状态 = State.IDLE
 	选中标签.visible = false
-	# 配置索敌区域
 	var 碰撞形状 = CircleShape2D.new()
 	碰撞形状.radius = 警戒范围
 	索敌区域.get_node("CollisionShape2D").shape = 碰撞形状
@@ -64,8 +61,8 @@ func _physics_process(delta: float) -> void:
 		State.ATTACK:
 			_处理攻击状态(delta)
 
-	# ⭐ 统一 move_and_slide（控制器只设置 velocity，不调 move_and_slide）
-	move_and_slide()
+	# ⭐ 单驱动力原则：唯一 velocity 入口
+	super._physics_process(delta)
 
 	if 选择状态 and velocity.x != 0:
 		角色图像.flip_h = velocity.x < 0
@@ -73,17 +70,17 @@ func _physics_process(delta: float) -> void:
 
 func _同步命令状态() -> void:
 	match 当前命令:
-		命令类型.移动:
+		命令管理器.命令类型.移动:
 			if 当前状态 != State.MOVE:
 				_附近敌人 = null
 				切换状态(当前状态, State.MOVE)
-		命令类型.攻击:
+		命令管理器.命令类型.攻击:
 			if 攻击目标 and is_instance_valid(攻击目标):
 				if 当前状态 != State.CHASE and 当前状态 != State.ATTACK:
 					切换状态(当前状态, State.CHASE)
 			else:
 				命令停止()
-		命令类型.无, 命令类型.驻守, _:
+		命令管理器.命令类型.无, 命令管理器.命令类型.驻守, _:
 			if 当前状态 != State.IDLE:
 				_附近敌人 = null
 				切换状态(当前状态, State.IDLE)
@@ -94,10 +91,14 @@ func 切换状态(from: State, to: State) -> void:
 		State.CHASE, State.ATTACK:
 			pass
 	match to:
-		State.IDLE: 角色动画.play("待机")
+		State.IDLE:
+			角色动画.play("待机")
+			if 移动控制器: 移动控制器.stop()
 		State.CHASE: 角色动画.play("移动")
 		State.MOVE: 角色动画.play("移动")
-		State.ATTACK: 角色动画.play("攻击")
+		State.ATTACK:
+			角色动画.play("攻击")
+			if 移动控制器: 移动控制器.stop()
 	当前状态 = to
 
 
@@ -108,8 +109,9 @@ func _处理待机状态(delta: float):
 		命令攻击(_附近敌人)
 		return
 
-	# IDLE 状态：使用 visual offset（性能优化，不参与 O(N²)）
-	velocity = velocity.move_toward(Vector2.ZERO, 加速度 * 10 * delta)
+	# velocity 由 UnitController 统一管理（IDLE 渐减速）
+	if 移动控制器 and 移动控制器.is_moving():
+		移动控制器.stop()
 
 
 func _处理追敌状态(delta: float):
@@ -118,53 +120,39 @@ func _处理追敌状态(delta: float):
 		命令停止()
 		return
 
-	# ⭐ 使用 NavigationAgent2D 追敌（用户指定：仅追敌使用）
 	导航代理.target_position = 攻击目标.global_position
 
 	var 距离 = global_position.distance_to(攻击目标.global_position)
 	if 距离 <= 攻击范围:
-		velocity = Vector2.ZERO
+		if 移动控制器: 移动控制器.stop()
 		切换状态(State.CHASE, State.ATTACK)
 		return
 
-	# 计算追敌方向
-	var 目标方向: Vector2
-	if not 导航代理.is_navigation_finished():
-		var 下一个路径点 = 导航代理.get_next_path_position()
-		目标方向 = (下一个路径点 - global_position).normalized()
-	else:
-		# ⭐ 导航路径已走完但还没到攻击范围 → 直接向目标方向移动
-		#    防止 velocity 残留导致的持续漂移
-		目标方向 = (攻击目标.global_position - global_position).normalized()
-
-	velocity = 目标方向 * 移动速度
-	# ⭐ 使用 SeparationSystem 替代旧 _计算总避障力()
+	# velocity 由 super._physics_process 的 compute_velocity 管理
 	var 所有单位: Array = FFManager.get_all_units()
-	var 排斥力: Vector2 = SeparationSystem.get_force(global_position, 所有单位, 32.0, 4.0)
-	if 排斥力 != Vector2.ZERO:
-		velocity += 排斥力
-	velocity = velocity.limit_length(最大速度)
+	if 移动控制器 and 移动控制器.is_inside_tree():
+		移动控制器.set_target(攻击目标.global_position)
+		velocity = 移动控制器.compute_velocity(delta, FFManager.get_flow_field(), 所有单位)
+	else:
+		# 回退：直接向目标移动
+		var 目标方向 = (攻击目标.global_position - global_position).normalized()
+		velocity = 目标方向 * 移动速度
 
 
 func _处理移动状态(delta: float):
-	# A-move：移动中检测敌人
 	if _是攻击移动:
 		var 敌人 = _寻找最近的敌对目标(警戒范围 * 0.6)
 		if 敌人:
 			命令攻击(敌人)
 			return
 
-	# ⭐ 节流：MOVE 状态下 10 FPS 触发流场更新
 	_move_update_timer += delta
 	if _move_update_timer >= MOVE_UPDATE_INTERVAL:
 		_move_update_timer = 0.0
-		request_movement_update()
+		_request_flow_update()
 
-	# ⭐ 使用新移动控制器（流场 + 分离转向 + 卡死检测）
-	var 所有单位: Array = FFManager.get_all_units()
-	var 到达: bool = unit_controller.move_toward(目标位置, delta, FFManager.get_flow_field(), 所有单位)
-	if 到达:
-		velocity = Vector2.ZERO
+	# velocity 由 super._physics_process 统一管理
+	if 移动控制器 and 移动控制器.has_arrived():
 		命令停止()
 
 
@@ -179,11 +167,13 @@ func _处理攻击状态(delta: float):
 		切换状态(State.ATTACK, State.CHASE)
 		return
 
+	# velocity 保持 0（攻击时静止）
+	if 移动控制器 and 移动控制器.is_moving():
+		移动控制器.stop()
+
 	# 面向目标
 	角色图像.flip_h = 攻击目标.global_position.x < global_position.x
 
-	# 攻击（有冷却）
-	velocity = Vector2.ZERO
 	if _攻击冷却 <= 0:
 		角色动画.play("攻击")
 		if 攻击目标.has_method("受伤"):

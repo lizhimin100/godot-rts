@@ -55,7 +55,7 @@ func 生成地图() -> void:
 
 		var 计数 := _填充图层(tilemap, Vector2i(默认x, 默认y))
 		总计数 += 计数
-		print("地图生成: ", tilemap.name, " +", 计数, " 格")
+		#print("地图生成: ", tilemap.name, " +", 计数, " 格")  # DEBUG
 
 	# 更新寻路网格
 	var 草地 := _查找TileMapLayer(世界, "场景/草地")
@@ -66,7 +66,7 @@ func 生成地图() -> void:
 			草地.astar.update()
 
 	_已生成 = true
-	print("地图生成完成！共 ", 总计数, " 格")
+	#print("地图生成完成！共 ", 总计数, " 格")  # DEBUG
 
 
 func _编辑器生成() -> void:
@@ -81,7 +81,7 @@ func _编辑器生成() -> void:
 			continue
 		var 计数 := _填充图层(tilemap, Vector2i(配置[1], 配置[2]))
 		总计数 += 计数
-	print("编辑器地图生成完成！共 ", 总计数, " 格")
+	#print("编辑器地图生成完成！共 ", 总计数, " 格")  # DEBUG
 
 
 func _查找TileMapLayer(根: Node, 路径: String) -> TileMapLayer:
@@ -135,7 +135,7 @@ func 清除地图() -> void:
 					tilemap.set_cell(pos, -1, Vector2i(0, 0), 0)
 					计数 += 1
 
-		print("清除: ", tilemap.name, " -", 计数)
+		#print("清除: ", tilemap.name, " -", 计数)  # DEBUG
 		总计数 += 计数
 
-	print("地图清除完成！共移除 ", 总计数, " 格")
+	#print("地图清除完成！共移除 ", 总计数, " 格")  # DEBUG

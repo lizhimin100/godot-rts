@@ -1,0 +1,656 @@
+[gd_scene format=3 uid="uid://c70ar5gsj2kxf"]
+
+[ext_resource type="Script" uid="uid://dvhf1spf05awc" path="res://代码/UI/资源ui显示.gd" id="1_5gh2j"]
+[ext_resource type="Resource" uid="uid://dqk7nx3o21qu1" path="res://玩家/玩家状态（测试）.tres" id="2_dcnlq"]
+[ext_resource type="PackedScene" uid="uid://brw0uayd8g15p" path="res://UI组件/商店UI组件/经验值追踪器.tscn" id="3_tpup2"]
+[ext_resource type="Texture2D" uid="uid://c4awhqfup7o2k" path="res://assets/sprites/gold.png" id="4_tlct7"]
+[ext_resource type="LabelSettings" uid="uid://bskfebg6nwr6m" path="res://主题/字体主题/字体资源.tres" id="5_j77mk"]
+[ext_resource type="Texture2D" uid="uid://btfco2rg0ysxw" path="res://小剑资源/Resources/Resources/W_Idle_(NoShadow).png" id="6_sg8so"]
+[ext_resource type="Texture2D" uid="uid://cgqlrv50c3027" path="res://小剑资源/Resources/Resources/M_Idle_(NoShadow).png" id="7_fiwxp"]
+[ext_resource type="PackedScene" uid="uid://d3jji01luv5wy" path="res://组件/显示小地图组件.tscn" id="8_tpup2"]
+[ext_resource type="Texture2D" uid="uid://bgb4c4x0i3kf6" path="res://美术、音频/UI/UI表/小地图UI/放大镜.png" id="9_6tgf7"]
+[ext_resource type="Texture2D" uid="uid://cgsgx074v5bpq" path="res://小剑资源/UI/Buttons/Button_Hover.png" id="9_fuaua"]
+[ext_resource type="Texture2D" uid="uid://0ovs88ipqcpd" path="res://美术、音频/UI/UI表/移动.png" id="9_r7qdf"]
+[ext_resource type="Texture2D" uid="uid://bvmyd8sr3eo8t" path="res://美术、音频/UI/UI表/停止.png" id="10_2mcrn"]
+[ext_resource type="Texture2D" uid="uid://30ooqukl7j6d" path="res://美术、音频/UI/UI表/小地图UI/缩小.png" id="10_6uuwx"]
+[ext_resource type="Texture2D" uid="uid://cijyrxk3m78k6" path="res://小剑资源/UI/Buttons/Button_Disable.png" id="10_xuk8g"]
+[ext_resource type="Texture2D" uid="uid://dc78nkxhc20bp" path="res://美术、音频/UI/UI表/小地图UI/集合.png" id="11_lpefm"]
+[ext_resource type="Texture2D" uid="uid://cs6ow2xbdjne4" path="res://小剑资源/UI/Pointers/01.png" id="11_r7qdf"]
+[ext_resource type="Texture2D" uid="uid://bwm4os7s2gtbh" path="res://美术、音频/UI/UI表/攻击.png" id="12_pnnbu"]
+[ext_resource type="FontFile" uid="uid://8di0jvr25vat" path="res://assets/font/m5x7.ttf" id="12_q8yxu"]
+[ext_resource type="Texture2D" uid="uid://dlvjgh7o4fn8k" path="res://美术、音频/UI/UI表/小地图UI/注意.png" id="12_qu46t"]
+[ext_resource type="Texture2D" uid="uid://bandk2y2l3tk1" path="res://美术、音频/UI/UI表/巡逻.png" id="13_5hasl"]
+[ext_resource type="Texture2D" uid="uid://boxp6da6ujk0r" path="res://美术、音频/UI/UI表/框架背景/人族背景UI/头像框.png" id="13_6uuwx"]
+[ext_resource type="Texture2D" uid="uid://dmwtngvlsl7fl" path="res://美术、音频/UI/UI表/驻守.png" id="14_q8yxu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_82q0j"]
+bg_color = Color(0.270588, 0.266667, 0.309804, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.6, 0.862745, 1, 0.729412)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+expand_margin_left = 4.0
+expand_margin_right = 4.0
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 10
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5gh2j"]
+size = Vector2(1280, 480)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lpefm"]
+bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qu46t"]
+bg_color = Color(0, 0.733333, 0.313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_227fd"]
+bg_color = Color(0, 0.654902, 0.937255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[node name="UI" type="CanvasLayer" unique_id=320724724]
+follow_viewport_enabled = true
+
+[node name="资源（边距）" type="MarginContainer" parent="." unique_id=630854809]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 88.0
+grow_horizontal = 2
+size_flags_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+script = ExtResource("1_5gh2j")
+player_stats = ExtResource("2_dcnlq")
+
+[node name="背景" type="PanelContainer" parent="资源（边距）" unique_id=551178820]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_82q0j")
+
+[node name="内边距" type="MarginContainer" parent="资源（边距）/背景" unique_id=155785370]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 2
+
+[node name="整体竖排版" type="HBoxContainer" parent="资源（边距）/背景/内边距" unique_id=1043515166]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 45
+
+[node name="经验值追踪器" parent="资源（边距）/背景/内边距/整体竖排版" unique_id=1718264582 instance=ExtResource("3_tpup2")]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="1横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版" unique_id=2048147611]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = -5
+alignment = 2
+
+[node name="金钱" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/1横排版" unique_id=766175725]
+custom_minimum_size = Vector2(32, 25)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_tlct7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="金钱数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/1横排版" unique_id=1440403247]
+custom_minimum_size = Vector2(64, 25)
+layout_mode = 2
+text = "999"
+label_settings = ExtResource("5_j77mk")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="2横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版" unique_id=1718392637]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = -5
+alignment = 2
+
+[node name="木材" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/2横排版" unique_id=214631499]
+custom_minimum_size = Vector2(32, 25)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("6_sg8so")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="木材数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/2横排版" unique_id=1574102977]
+custom_minimum_size = Vector2(96, 25)
+layout_mode = 2
+text = "999"
+label_settings = ExtResource("5_j77mk")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="3横排版" type="HBoxContainer" parent="资源（边距）/背景/内边距/整体竖排版" unique_id=2005785661]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = -5
+alignment = 2
+
+[node name="人口" type="TextureRect" parent="资源（边距）/背景/内边距/整体竖排版/3横排版" unique_id=1527592265]
+custom_minimum_size = Vector2(32, 25)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("7_fiwxp")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="人口数" type="Label" parent="资源（边距）/背景/内边距/整体竖排版/3横排版" unique_id=177362158]
+custom_minimum_size = Vector2(96, 25)
+layout_mode = 2
+text = "999"
+label_settings = ExtResource("5_j77mk")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardDropArea" type="Area2D" parent="." unique_id=649919438]
+visible = false
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CardDropArea" unique_id=1598682880]
+position = Vector2(640, 240)
+shape = SubResource("RectangleShape2D_5gh2j")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1346186846]
+custom_minimum_size = Vector2(1275, 270)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="下方UI" type="HBoxContainer" parent="MarginContainer" unique_id=85502397]
+custom_minimum_size = Vector2(1275, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/下方UI" unique_id=1787629942]
+custom_minimum_size = Vector2(400, 180)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="花纹" type="Control" parent="MarginContainer/下方UI/HBoxContainer" unique_id=793542178]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+
+[node name="显示小地图" parent="MarginContainer/下方UI/HBoxContainer" unique_id=1008220713 instance=ExtResource("8_tpup2")]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/下方UI/HBoxContainer" unique_id=1040115331]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_constants/separation = -25
+
+[node name="放大" type="TextureButton" parent="MarginContainer/下方UI/HBoxContainer/VBoxContainer" unique_id=1756168448]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(0.8, 0.8)
+texture_normal = ExtResource("9_6tgf7")
+
+[node name="缩小" type="TextureButton" parent="MarginContainer/下方UI/HBoxContainer/VBoxContainer" unique_id=523170150]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(0.8, 0.8)
+texture_normal = ExtResource("10_6uuwx")
+
+[node name="集合" type="TextureButton" parent="MarginContainer/下方UI/HBoxContainer/VBoxContainer" unique_id=1941233348]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(0.8, 0.8)
+texture_normal = ExtResource("11_lpefm")
+
+[node name="注意" type="TextureButton" parent="MarginContainer/下方UI/HBoxContainer/VBoxContainer" unique_id=47858013]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(0.8, 0.8)
+texture_normal = ExtResource("12_qu46t")
+
+[node name="花纹2" type="Control" parent="MarginContainer/下方UI/HBoxContainer" unique_id=758833437]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+
+[node name="地图和的间隙" type="Control" parent="MarginContainer/下方UI" unique_id=1608538686]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/下方UI" unique_id=2146482169]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="头像和血条" type="VBoxContainer" parent="MarginContainer/下方UI/HBoxContainer2" unique_id=83404551]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/下方UI/HBoxContainer2/头像和血条" unique_id=2005431898]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0, 0.25)
+offset_transform_scale = Vector2(1.25, 1.25)
+texture = ExtResource("13_6uuwx")
+
+[node name="Control" type="Control" parent="MarginContainer/下方UI/HBoxContainer2/头像和血条" unique_id=1478590578]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="血条" type="ProgressBar" parent="MarginContainer/下方UI/HBoxContainer2/头像和血条" unique_id=562591177]
+z_index = 100
+custom_minimum_size = Vector2(100, 10.5)
+layout_mode = 2
+size_flags_horizontal = 4
+offset_transform_enabled = true
+theme_override_styles/background = SubResource("StyleBoxFlat_lpefm")
+theme_override_styles/fill = SubResource("StyleBoxFlat_qu46t")
+value = 100.0
+show_percentage = false
+
+[node name="Control2" type="Control" parent="MarginContainer/下方UI/HBoxContainer2/头像和血条" unique_id=363355641]
+custom_minimum_size = Vector2(0, 2.5)
+layout_mode = 2
+
+[node name="蓝条" type="ProgressBar" parent="MarginContainer/下方UI/HBoxContainer2/头像和血条" unique_id=1322445954]
+z_index = 100
+custom_minimum_size = Vector2(100, 11.5)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+offset_transform_enabled = true
+theme_override_styles/background = SubResource("StyleBoxFlat_lpefm")
+theme_override_styles/fill = SubResource("StyleBoxFlat_227fd")
+value = 100.0
+show_percentage = false
+
+[node name="和操作面板的间隙" type="Control" parent="MarginContainer/下方UI" unique_id=108853774]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+
+[node name="操作面板" type="GridContainer" parent="MarginContainer/下方UI" unique_id=1303826995]
+custom_minimum_size = Vector2(256, 192)
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+columns = 4
+
+[node name="移动图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=2057533927]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+offset_transform_enabled = true
+offset_transform_scale = Vector2(1.25, 1.25)
+texture_normal = ExtResource("9_r7qdf")
+stretch_mode = 4
+
+[node name="停止图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=1211586308]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+offset_transform_enabled = true
+offset_transform_scale = Vector2(1.25, 1.25)
+texture_normal = ExtResource("10_2mcrn")
+stretch_mode = 4
+
+[node name="驻守图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=811122634]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(1.25, 1.25)
+texture_normal = ExtResource("14_q8yxu")
+
+[node name="攻击图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=828756520]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(1.25, 1.25)
+texture_normal = ExtResource("12_pnnbu")
+
+[node name="巡逻图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=1612464915]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(1.25, 1.25)
+texture_normal = ExtResource("13_5hasl")
+
+[node name="纹理6" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=2039566466]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("9_fuaua")
+texture_pressed = ExtResource("10_xuk8g")
+texture_hover = ExtResource("9_fuaua")
+
+[node name="图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板/纹理6" unique_id=1262886345]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+offset_transform_enabled = true
+offset_transform_position = Vector2(10, 0)
+
+[node name="被动" type="Label" parent="MarginContainer/下方UI/操作面板/纹理6" unique_id=1491374514]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 4
+theme_override_fonts/font = ExtResource("12_q8yxu")
+theme_override_font_sizes/font_size = 15
+text = "
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="纹理7" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=1508937693]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("9_fuaua")
+texture_pressed = ExtResource("10_xuk8g")
+texture_hover = ExtResource("9_fuaua")
+
+[node name="图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板/纹理7" unique_id=1633884400]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+offset_transform_enabled = true
+offset_transform_position = Vector2(10, 0)
+
+[node name="被动2" type="Label" parent="MarginContainer/下方UI/操作面板/纹理7" unique_id=1235762058]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 4
+theme_override_fonts/font = ExtResource("12_q8yxu")
+theme_override_font_sizes/font_size = 15
+text = "
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="纹理8" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=81942668]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("9_fuaua")
+texture_pressed = ExtResource("10_xuk8g")
+texture_hover = ExtResource("9_fuaua")
+
+[node name="图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板/纹理8" unique_id=756454684]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+offset_transform_enabled = true
+offset_transform_position = Vector2(10, 0)
+texture_normal = ExtResource("11_r7qdf")
+
+[node name="取消选择" type="Label" parent="MarginContainer/下方UI/操作面板/纹理8" unique_id=418579231]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 4
+theme_override_fonts/font = ExtResource("12_q8yxu")
+theme_override_font_sizes/font_size = 15
+text = "
+取消"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="纹理9" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=524188717]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("9_fuaua")
+texture_pressed = ExtResource("10_xuk8g")
+texture_hover = ExtResource("9_fuaua")
+
+[node name="图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板/纹理9" unique_id=573269450]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+offset_transform_enabled = true
+offset_transform_position = Vector2(10, 0)
+
+[node name="技能1" type="Label" parent="MarginContainer/下方UI/操作面板/纹理9" unique_id=1628913907]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 4
+theme_override_fonts/font = ExtResource("12_q8yxu")
+theme_override_font_sizes/font_size = 15
+text = "
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="纹理10" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=1825170556]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("9_fuaua")
+texture_pressed = ExtResource("10_xuk8g")
+texture_hover = ExtResource("9_fuaua")
+
+[node name="图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板/纹理10" unique_id=565125504]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+offset_transform_enabled = true
+offset_transform_position = Vector2(10, 0)
+
+[node name="技能2" type="Label" parent="MarginContainer/下方UI/操作面板/纹理10" unique_id=1248212777]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 4
+theme_override_fonts/font = ExtResource("12_q8yxu")
+theme_override_font_sizes/font_size = 15
+text = "
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="纹理11" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=1709227045]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("9_fuaua")
+texture_pressed = ExtResource("10_xuk8g")
+texture_hover = ExtResource("9_fuaua")
+
+[node name="图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板/纹理11" unique_id=1773556554]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+offset_transform_enabled = true
+offset_transform_position = Vector2(10, 0)
+
+[node name="技能3" type="Label" parent="MarginContainer/下方UI/操作面板/纹理11" unique_id=285954532]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 4
+theme_override_fonts/font = ExtResource("12_q8yxu")
+theme_override_font_sizes/font_size = 15
+text = "
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="纹理12" type="TextureButton" parent="MarginContainer/下方UI/操作面板" unique_id=2059117767]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("9_fuaua")
+texture_pressed = ExtResource("10_xuk8g")
+texture_hover = ExtResource("9_fuaua")
+
+[node name="图标" type="TextureButton" parent="MarginContainer/下方UI/操作面板/纹理12" unique_id=325670608]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+offset_transform_enabled = true
+offset_transform_position = Vector2(10, 0)
+
+[node name="技能4" type="Label" parent="MarginContainer/下方UI/操作面板/纹理12" unique_id=1256872918]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 28.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0.172549, 0.172549, 0.172549, 0.419608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 4
+theme_override_fonts/font = ExtResource("12_q8yxu")
+theme_override_font_sizes/font_size = 15
+text = "
+"
+horizontal_alignment = 1
+vertical_alignment = 1

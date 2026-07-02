@@ -28,6 +28,25 @@ _data = {
 &"受击": SubResource("Animation_house_hit")
 }
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w3efh"]
+bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i1wm5"]
+bg_color = Color(0, 0.733333, 0.313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ph220"]
+bg_color = Color(0, 0.654902, 0.937255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
 [node name="房子" type="StaticBody2D" unique_id=1185866235]
 collision_layer = 4
 collision_mask = 0
@@ -46,3 +65,27 @@ shape = SubResource("RectangleShape2D_house")
 
 [node name="动画" type="AnimationPlayer" parent="." unique_id=1372501691]
 libraries/ = SubResource("AnimationLibrary_house")
+
+[node name="血条" type="ProgressBar" parent="." unique_id=1071556824]
+visible = false
+z_index = 100
+offset_left = -43.0
+offset_top = -56.0
+offset_right = 46.0
+offset_bottom = -42.0
+theme_override_styles/background = SubResource("StyleBoxFlat_w3efh")
+theme_override_styles/fill = SubResource("StyleBoxFlat_i1wm5")
+value = 100.0
+show_percentage = false
+
+[node name="蓝条" type="ProgressBar" parent="." unique_id=869328600]
+visible = false
+z_index = 100
+offset_left = -41.0
+offset_top = -42.0
+offset_right = 43.0
+offset_bottom = -34.0
+theme_override_styles/background = SubResource("StyleBoxFlat_w3efh")
+theme_override_styles/fill = SubResource("StyleBoxFlat_ph220")
+value = 100.0
+show_percentage = false

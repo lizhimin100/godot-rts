@@ -1,0 +1,37 @@
+﻿{
+	"schemaVersion": 1,
+	"meta": {
+		"id": "fx_fall_leaf_fall",
+		"displayName": "秋叶飘落",
+		"style": "fx",
+		"category": "function",
+		"tags": ["树叶", "飘落", "秋季", "环境特效"]
+	},
+	"assets": {
+		"spritePath": "res://AI资源库/特效库/秋叶飘落/fx.png",
+		"thumbPath": "res://AI资源库/特效库/秋叶飘落/fx.png"
+	},
+	"spritesheet": {
+		"layoutVersion": "grid_v1",
+		"frameWidth": 0,
+		"frameHeight": 0,
+		"columns": 5,
+		"rows": 1,
+		"margin": 0,
+		"spacing": 0,
+		"defaultFps": 12,
+		"animations": {
+			"fx": { "row": 0, "from": 0, "to": 4, "loop": true }
+		}
+	},
+	"gameplay": {
+		"role": "fx_emitter"
+	},
+	"ext": {
+		"librarySortPriority": 2,
+		"cardPreviewAnim": "fx",
+		"otherPayload": {
+			"emitterScriptPath": "res://AI资源库/特效库/秋叶飘落/leaf_fx_emitter.gd"
+		}
+	}
+}

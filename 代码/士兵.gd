@@ -52,9 +52,9 @@ func _physics_process(_delta : float) -> void: # ## 物理帧处理器（Godot�
 			最近对象.交互逻辑(self) # ✅ 调用目标的交互方法（自定义函数）
 			if 最近对象.开始对话 :# 只有当实际触发对话时才锁定移动
 				对话中 = true
-				print("当前最近交互对象列表:", 最近对象.name)
+				#print("当前最近交互对象列表:", 最近对象.name)  # DEBUG
 		else: # 没有可交互对象时保持移动
-			print("当前没有可交互对象")
+			#print("当前没有可交互对象")  # DEBUG
 			对话中 = false
 	
 	super._physics_process(_delta)
@@ -76,9 +76,9 @@ func 停止移动() -> void:
 
 #  自定义信号处理 
 func 结束对话() -> void:
-	print("对话结束信号触发成功！")
+	#print("对话结束信号触发成功！")  # DEBUG
 	对话中 = false  # ✅ 对话结束时更新状态
-	print("当前对话已结束，对话当前状态为：",  对话中)
+	#print("当前对话已结束，对话当前状态为：",  对话中)  # DEBUG
 
 
 

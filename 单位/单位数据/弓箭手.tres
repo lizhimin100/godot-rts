@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AcUnitStats" load_steps=2 format=3 uid="uid://gq382nljvm62"]
+[gd_resource type="Resource" script_class="AcUnitStats" format=3 uid="uid://gq382nljvm62"]
 
 [ext_resource type="Script" uid="uid://dqe0ps78updlw" path="res://单位/单位数据/单位分类.gd" id="1_c2gvd"]
 
@@ -8,7 +8,5 @@ script = ExtResource("1_c2gvd")
 "单位名称" = "弓箭手"
 "稀有度" = 1
 "金币费用" = 20
-"单位等级" = 1
 pool_count = 10
-"皮肤坐标" = Vector2i(0, 0)
 metadata/_custom_type_script = "uid://dqe0ps78updlw"

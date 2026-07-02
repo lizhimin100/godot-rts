@@ -55,7 +55,7 @@ func _input(event: InputEvent) -> void:  # 输入处理
 
 # 该函数用于将相机聚焦到指定的对话位置，并进行缩放. 目标位置: 相机要聚焦到的位置，类型为 Vector2. 目标缩放级别: 相机要缩放到的级别，默认为 0.8
 func 聚焦对话位置(目标位置: Vector2, 目标缩放级别: float = 1.35) -> void: #  对话相关控制，要在其他角色脚本里要在其他角色脚本里传入角色当前位置
-	print("当前相机锁定状态：", 允许移动)  # 因为允许移动+false在下面，所以值为true，此处是表示相机被锁定
+	#print("当前相机锁定状态：", 允许移动)  # 因为允许移动+false在下面，所以值为true，此处是表示相机被锁定  # DEBUG
 	var 过渡时间 = 0.75
 	# 使用Tween实现平滑过渡,Tween 是 Godot 引擎中用于实现平滑过渡效果的工具
 	var tween = create_tween().set_parallel(true)# set_parallel(true) 表示让所有的过渡动画并行执行
@@ -69,7 +69,7 @@ func 聚焦对话位置(目标位置: Vector2, 目标缩放级别: float = 1.35)
 	允许移动 = false  # 锁定相机控制
 
 func 重置相机() -> void:#
-	print("当前相机锁定状态：", 允许移动)  #因为在聚焦对话位置设置了允许移动+false，所以值为false，表示相机不再被锁定
+	#print("当前相机锁定状态：", 允许移动)  #因为在聚焦对话位置设置了允许移动+false，所以值为false，表示相机不再被锁定  # DEBUG
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(self, "zoom", Vector2(目标缩放, 目标缩放), 0.5)
 	允许移动 = true   # 恢复相机控制

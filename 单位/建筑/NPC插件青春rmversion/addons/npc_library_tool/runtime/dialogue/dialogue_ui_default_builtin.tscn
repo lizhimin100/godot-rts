@@ -1,0 +1,176 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://addons/npc_library_tool/runtime/dialogue/dialogue_ui_default.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://addons/npc_library_tool/runtime/dialogue/assets/对话框底图.png" id="2_box"]
+[ext_resource type="Texture2D" path="res://addons/npc_library_tool/runtime/dialogue/assets/特效小块.png" id="3_frame"]
+[ext_resource type="Texture2D" path="res://addons/npc_library_tool/runtime/dialogue/assets/玩家与NPC名字条.png" id="4_nameplate"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_name"]
+font_size = 28
+font_color = Color(0.95, 0.92, 0.85, 1)
+
+[node name="DialogueUI" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+use_scene_body_margins = true
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="DialogPanel" type="Control" parent="Root"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -696.0
+offset_top = -690.0
+offset_right = 888.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="PortraitFrame" type="TextureRect" parent="Root/DialogPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.148
+anchor_top = 0.535
+anchor_right = -0.148
+anchor_bottom = 0.535
+offset_left = -0.56799316
+offset_top = -0.19500732
+offset_right = 335.432
+offset_bottom = 263.805
+texture = ExtResource("3_frame")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Portrait" type="TextureRect" parent="Root/DialogPanel/PortraitFrame"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 26.0
+offset_top = 19.0
+offset_right = -26.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="NamePlate" type="TextureRect" parent="Root/DialogPanel"]
+z_index = 11
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.27
+anchor_top = 0.476
+anchor_right = 0.27
+anchor_bottom = 0.476
+offset_left = 0.3199768
+offset_top = -0.25201416
+offset_right = 749.31995
+offset_bottom = 78.747986
+texture = ExtResource("4_nameplate")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="Root/DialogPanel"]
+unique_name_in_owner = true
+z_index = 12
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.34800002
+anchor_top = 0.48400003
+anchor_right = 0.34800002
+anchor_bottom = 0.48400003
+offset_left = -0.23205566
+offset_top = 0.3319702
+offset_right = 503.76794
+offset_bottom = 68.33197
+text = "名字"
+label_settings = SubResource("LabelSettings_name")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DialogBg" type="TextureRect" parent="Root/DialogPanel"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -343.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("2_box")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BodyVBox" type="VBoxContainer" parent="Root/DialogPanel/DialogBg"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="SpacerTop" type="Control" parent="Root/DialogPanel/DialogBg/BodyVBox"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="BodyMargin" type="MarginContainer" parent="Root/DialogPanel/DialogBg/BodyVBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 183
+theme_override_constants/margin_top = 77
+theme_override_constants/margin_right = 190
+theme_override_constants/margin_bottom = 27
+
+[node name="BodyText" type="RichTextLabel" parent="Root/DialogPanel/DialogBg/BodyVBox/BodyMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_constants/line_separation = 5
+theme_override_font_sizes/normal_font_size = 32
+horizontal_alignment = 0
+vertical_alignment = 0
+bbcode_enabled = true
+text = "对话正文"
+fit_content = false
+autowrap_mode = 3
+scroll_active = false
+
+[node name="SpacerBottom" type="Control" parent="Root/DialogPanel/DialogBg/BodyVBox"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="ClickAdvance" type="Control" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

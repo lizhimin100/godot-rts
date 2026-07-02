@@ -17,11 +17,11 @@ func _init() -> void:
 
 func 交互逻辑 (交互者 : Node) -> void :
 	if !交互者.is_in_group("玩家") :  # 检查是否是角色类节点
-		print("交互者必须是玩家节点！")
+		#print("交互者必须是玩家节点！")  # DEBUG
 		return
 	当前交互者 = 交互者 # 将交互者赋值给类属性
 	对话交互逻辑(当前交互者)
-	print("[交互逻辑]%s" % name)
+	#print("[交互逻辑]%s" % name)  # DEBUG
 	发生交互.emit()
 	await get_tree().create_timer(0.5).timeout # 0.5秒后执行的代码
 
@@ -31,9 +31,9 @@ func 交互逻辑 (交互者 : Node) -> void :
 
 
 func 进入 (操作角色 ) -> void :
-	print("npc检测到有物体进入：", 操作角色.name)
+	#print("npc检测到有物体进入：", 操作角色.name)  # DEBUG
 	if 操作角色.is_in_group("玩家"):
-		print("玩家进入npc交互区域")
+		#print("玩家进入npc交互区域")  # DEBUG
 		操作角色.注册可交互对象(self)
 
 func 退出 (操作角色 ) -> void :
@@ -43,9 +43,9 @@ func 退出 (操作角色 ) -> void :
 
 func 对话交互逻辑 (交互者: Node) -> void  :
 	if !交互者.is_in_group("玩家") :  # 检查是否是角色类节点
-		print("对话者必须是玩家节点！")
+		#print("对话者必须是玩家节点！")  # DEBUG
 		return
 	if 交互者.对话中:  # 如果已经在对话中则返回
-		print("当前对话者正在对话中！")
+		#print("当前对话者正在对话中！")  # DEBUG
 		return
-	print(交互者.name , "现在可以和npc进行对话。")
+	#print(交互者.name , "现在可以和npc进行对话。")  # DEBUG

@@ -2,10 +2,7 @@
 
 [ext_resource type="TileSet" uid="uid://b5hj8m718ipyb" path="res://设置好的图层/草地.tres" id="1_e2ydd"]
 [ext_resource type="Script" uid="uid://c1pgy0fv8o84h" path="res://代码/组件代码/世界岛相机控制.gd" id="2_rpxdi"]
-[ext_resource type="Shader" uid="uid://cu1jqeey1rced" path="res://shader学习/shader/战争迷雾.gdshader" id="3_kdqec"]
-[ext_resource type="Script" uid="uid://1bjuh866uojv" path="res://代码/战争迷雾.gd" id="4_eu7sg"]
 [ext_resource type="PackedScene" uid="uid://c6s1m7kk73uwg" path="res://单位/剑士/剑士.tscn" id="5_2oxns"]
-[ext_resource type="PackedScene" uid="uid://4r6fq3otr2qt" path="res://组件/rts——node.tscn" id="6_kdqec"]
 [ext_resource type="Script" uid="uid://bqdtkmdc2oiq6" path="res://代码/胜负判定.gd" id="7_debug"]
 [ext_resource type="PackedScene" uid="uid://dv3mapfay5a65" path="res://单位/弓箭手/弓箭手.tscn" id="8_archer"]
 [ext_resource type="PackedScene" uid="uid://d1k2m3n4o5p6q" path="res://单位/建筑/城堡.tscn" id="9_castle"]
@@ -13,25 +10,10 @@
 [ext_resource type="PackedScene" uid="uid://d1k2m3n4o5p6r" path="res://单位/农民/农民.tscn" id="11_farmer"]
 [ext_resource type="PackedScene" uid="uid://i0x0g7m64en1" path="res://UI/建造ui/建造ui.tscn" id="12_buildui"]
 [ext_resource type="Script" uid="uid://bjy40hyi8dfj3" path="res://代码/测试/建筑放置管理器.gd" id="13_placement"]
-[ext_resource type="Script" path="res://代码/world/NavigationWorld.gd" id="14_nav"]
-[ext_resource type="Script" path="res://systems/FFManager.gd" id="15_ffmgr"]
+[ext_resource type="Script" uid="uid://bl8lhmrxubtbl" path="res://代码/world/NavigationWorld.gd" id="14_nav"]
+[ext_resource type="Script" uid="uid://kxx0jhsrkwwy" path="res://systems/FFManager.gd" id="15_ffmgr"]
+[ext_resource type="Script" uid="uid://cs60ijkkchba" path="res://系统/输入处理器.gd" id="16_input"]
 [ext_resource type="TileSet" uid="uid://cfcoynvdn1k6d" path="res://设置好的图层/树林层.tres" id="21_forest"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_8ykcf"]
-shader = ExtResource("3_kdqec")
-shader_parameter/for_color = Color(0, 0, 0, 1)
-
-[sub_resource type="Gradient" id="Gradient_55xwe"]
-offsets = PackedFloat32Array(0.770213, 1)
-colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_rtyix"]
-gradient = SubResource("Gradient_55xwe")
-width = 320
-height = 320
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0.5, 0)
 
 [node name="平面" type="Node2D" unique_id=1423257950]
 
@@ -55,19 +37,15 @@ position_smoothing_speed = 8.0
 editor_draw_drag_margin = true
 script = ExtResource("2_rpxdi")
 
-[node name="战争迷雾（要在最下面）" type="Sprite2D" parent="." unique_id=533869498]
+[node name="迷雾覆盖层" type="Sprite2D" parent="." unique_id=533869499]
 z_index = 100
-material = SubResource("ShaderMaterial_8ykcf")
 position = Vector2(500, 290)
-script = ExtResource("4_eu7sg")
-"光源纹理" = SubResource("GradientTexture2D_rtyix")
-"视野单位组" = "可选单位"
+
+[node name="剑士" parent="." unique_id=769071568 instance=ExtResource("5_2oxns")]
+position = Vector2(346, 146)
 
 [node name="单位" type="Node2D" parent="." unique_id=708731266]
 y_sort_enabled = true
-
-[node name="剑士" parent="单位" unique_id=769071568 instance=ExtResource("5_2oxns")]
-position = Vector2(346, 146)
 
 [node name="剑士2" parent="单位" unique_id=681632190 instance=ExtResource("5_2oxns")]
 position = Vector2(772, 99)
@@ -114,13 +92,14 @@ position = Vector2(497, 70)
 position = Vector2(458, 1263)
 collision_layer = 16
 
-[node name="rts——node" parent="." unique_id=1198587590 instance=ExtResource("6_kdqec")]
-
-[node name="NavigationWorld" type="Node" parent="."]
+[node name="NavigationWorld" type="Node" parent="." unique_id=1446193734]
 script = ExtResource("14_nav")
 
-[node name="FFManager" type="Node" parent="."]
+[node name="FFManager" type="Node" parent="." unique_id=1174565248]
 script = ExtResource("15_ffmgr")
+
+[node name="输入处理器" type="Node" parent="." unique_id=888888888]
+script = ExtResource("16_input")
 
 [node name="胜负UI" type="CanvasLayer" parent="." unique_id=1112280517]
 script = ExtResource("7_debug")

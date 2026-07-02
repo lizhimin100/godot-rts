@@ -1,0 +1,212 @@
+{
+    "schemaVersion": 1,
+    "meta": {
+        "id": "npc_robot_001",
+        "displayName": "故障机器人",
+        "style": "wasteland_scifi",
+        "category": "combat",
+        "types": [
+            "combat"
+        ],
+        "description": "杀戮尖塔中的故障机器人，机械构造的爆发型战斗机械体，自带故障特效的雷电系输出核心。",
+        "generator": "senior_writer_v2",
+        "createdAt": "2026-04-13T00:00:00Z",
+        "updatedAt": "2026-04-13T00:00:00Z",
+        "tags": [
+            "杀戮尖塔",
+            "故障机器人",
+            "机械",
+            "战斗型",
+            "雷电故障"
+        ]
+    },
+    "assets": {
+        "spritePath": "./robot_sprite.png",
+        "thumbPath": "./robot_thumb.png"
+    },
+    "spritesheet": {
+        "layoutVersion": "yituquan_v1",
+        "frameWidth": 21,
+        "frameHeight": 42,
+        "columns": 12,
+        "rows": 6,
+        "margin": 0,
+        "spacing": 0,
+        "defaultFps": 8,
+        "animations": {
+            "idle_down": {
+                "row": 2,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "walk_down": {
+                "row": 3,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "idle_left": {
+                "row": 2,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "walk_left": {
+                "row": 3,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "idle_right": {
+                "row": 2,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "walk_right": {
+                "row": 3,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "idle_up": {
+                "row": 1,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "walk_up": {
+                "row": 1,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "run_down": {
+                "row": 4,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "run_left": {
+                "row": 4,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "run_up": {
+                "row": 5,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            }
+        }
+    },
+    "gameplay": {
+        "faction": "尖塔机械阵营",
+        "role": "combat_robot_elite",
+        "level": 25,
+        "stats": {
+            "hp": 1200,
+            "attack": 180,
+            "defense": 90,
+            "moveSpeed": 100
+        },
+        "interaction": {
+            "canTalk": true,
+            "canTrade": false,
+            "questGiver": true
+        },
+        "combat": {
+            "enabled": true,
+            "aiArchetype": "burst_robot",
+            "element": "robot_lightning",
+            "skills": [
+                {
+                    "skillId": "sk_lightning_bolt",
+                    "skillName": "雷电飞弹",
+                    "cooldown": 3.0,
+                    "power": 1.1
+                },
+                {
+                    "skillId": "sk_glitch_impact",
+                    "skillName": "故障冲击",
+                    "cooldown": 7.5,
+                    "power": 1.7
+                },
+                {
+                    "skillId": "sk_charge_jump",
+                    "skillName": "充能跃迁",
+                    "cooldown": 4.5,
+                    "power": 0.0
+                }
+            ]
+        },
+        "quest": {
+            "enabled": true,
+            "questId": "qst_spire_001",
+            "title": "尖塔故障校准",
+            "description": "故障机器人核心系统出现紊乱，需要稳定的机械能量核心完成校准，恢复战斗机能。",
+            "objective": "前往【尖塔废弃工坊】击败失控机械兵，收集3枚【机械稳定核心】交给故障机器人。",
+            "rewards": {
+                "gold": 2000,
+                "exp": 2500,
+                "items": [
+                    {
+                        "itemId": "item_robot_core",
+                        "itemName": "故障机器人的校准核心",
+                        "count": 1
+                    }
+                ]
+            },
+            "tasks": []
+        }
+    },
+    "ext": {
+        "librarySortPriority": 8,
+        "cardPreviewAnim": "idle_down",
+        "animationParams": "standard_humanoid_4dir",
+        "dialogueState": "first_meet_unlocked",
+        "localization": {
+            "appearance": {
+                "zh": "故障机器人为金属机械身躯，外壳带有故障流光与电路划痕，核心能源舱持续闪烁蓝光，机械关节灵活运转，行动时伴随轻微的电流滋滋声。",
+                "ja": "",
+                "en": ""
+            },
+            "background": {
+                "zh": "故障机器人是杀戮尖塔内诞生的自主机械生命体，因系统故障挣脱程式控制，擅长雷电法术与爆发输出，依靠能量核心维持运作，需要定期校准修复故障。",
+                "ja": "",
+                "en": ""
+            },
+            "dialogues": {
+                "greeting": {
+                    "zh": "像素交流群 群号：1079961300，密码：bimelona",
+                    "ja": "",
+                    "en": ""
+                },
+                "shopOpen": {
+                    "zh": "像素交流群 群号：1079961300，密码：bimelona",
+                    "ja": "",
+                    "en": ""
+                },
+                "questHint": {
+                    "zh": "像素交流群 群号：1079961300，密码：bimelona",
+                    "ja": "",
+                    "en": ""
+                }
+            }
+        },
+        "spawnCoordinates": {
+            "mapId": "map_spire_factory",
+            "x": 800,
+            "y": 450
+        },
+        "battleProfile": {
+            "engageRadius": 400,
+            "leashRadius": 700,
+            "preferredRange": 250
+        },
+        "otherPayload": {},
+        "projectPrivate": {}
+    }
+}

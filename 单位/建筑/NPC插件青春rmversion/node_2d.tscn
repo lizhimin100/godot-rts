@@ -1,0 +1,153 @@
+[gd_scene load_steps=4 format=3 uid="uid://bmqv204n8ojdl"]
+
+[ext_resource type="PackedScene" uid="uid://b8dcmfvfip8h6" path="res://generated/npc_library_tool/npcs/npc_RPG_0001.normal.tscn" id="1_epypp"]
+[ext_resource type="Script" uid="uid://1sy4isisioys" path="res://addons/npc_library_tool/runtime/merchant_npc.gd" id="2_0hol4"]
+[ext_resource type="Script" uid="uid://dq4l54hk25hvv" path="res://addons/npc_library_tool/runtime/rpgmaker_protagonist_driver.gd" id="3_q6r6c"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="klee" type="Node2D" parent="." instance=ExtResource("1_epypp")]
+y_sort_enabled = true
+position = Vector2(271.53137, 225.71869)
+scale = Vector2(3, 3)
+script = ExtResource("2_0hol4")
+npc_display_name = "klee"
+dialogue_lines = PackedStringArray("呀～你也来啦？要不要和我一起打打酱油呀？", "想听变强小秘诀的话，可要好好讨好我哦！", "帮我打打酱油嘛，事后有奖励哦～")
+enable_dialogue_system = false
+npc_portrait_path = "res://AI资源库/RPGMAKER/klee/thumb.png"
+ai_action = "rundown"
+player_group_candidates = PackedStringArray("player", "Player")
+player_name_keywords = PackedStringArray("player", "hero", "main", "character")
+interact_action_candidates = PackedStringArray("interact", "ui_accept")
+interact_key_fallbacks = PackedInt32Array(69, 70, 4194309)
+metadata/ai_path_points = [{
+"dir": "right",
+"dist": 48.0
+}]
+metadata/npc_id = "npc_RPG_0001"
+metadata/npc_json_path = "res://AI资源库/RPGMAKER/klee/npc.json"
+metadata/npc_style = "medieval"
+metadata/npc_category = "combat"
+metadata/npc_data = {
+"assets": {
+"spritePath": "./sprite.png",
+"thumbPath": "./thumb.png"
+},
+"ext": {
+"animationParams": "standard_humanoid_4dir",
+"battleProfile": {
+"engageRadius": 380.0,
+"leashRadius": 640.0,
+"preferredRange": 220.0
+},
+"cardPreviewAnim": "idle_down",
+"dialogueState": "first_meet_unlocked",
+"librarySortPriority": 8.0,
+"localization": {
+"appearance": {
+"en": "",
+"ja": "",
+"zh": "Doro是个~~人形？~~Q版娇小粉色短发萌物。"
+},
+"background": {
+"en": "",
+"ja": "",
+"zh": "Dora只用卖萌就行了，啥都不干。"
+},
+"dialogues": {
+"greeting": {
+"en": "",
+"ja": "",
+"zh": "呀～你也来啦？要不要和我一起打打酱油呀？"
+},
+"questHint": {
+"en": "",
+"ja": "",
+"zh": "帮我打打酱油嘛，事后有奖励哦～"
+},
+"shopOpen": {
+"en": "",
+"ja": "",
+"zh": "想听变强小秘诀的话，可要好好讨好我哦！"
+}
+}
+},
+"otherPayload": {},
+"projectPrivate": {},
+"spawnCoordinates": {
+"mapId": "map_magic_academy_yard",
+"x": 736.0,
+"y": 420.0
+}
+},
+"gameplay": {
+"combat": {
+"aiArchetype": "agile_burst_mage",
+"element": "arcane_fire",
+"enabled": true,
+"skills": [{
+"cooldown": 3.5,
+"power": 1.0,
+"skillId": "sk_arcane_bolt_fan",
+"skillName": "星火连弹"
+}, {
+"cooldown": 8.0,
+"power": 1.6,
+"skillId": "sk_meteoric_circle",
+"skillName": "陨辉法环"
+}, {
+"cooldown": 5.0,
+"power": 0.0,
+"skillId": "sk_blink_step",
+"skillName": "瞬步闪烁"
+}]
+},
+"faction": "伊甸",
+"interaction": {
+"canTalk": true,
+"canTrade": false,
+"questGiver": true
+},
+"level": 21.0,
+"quest": {
+"description": "没事就打个酱油",
+"enabled": true,
+"objective": "前往【海X酱油】击败失控傀儡，收集3瓶【味极鲜】交给Doro。",
+"questId": "qst_academy_017",
+"rewards": {
+"exp": 2200.0,
+"gold": 1800.0,
+"items": [{
+"count": 1.0,
+"itemId": "acc_emily_ribbon",
+"itemName": "Doro写真集"
+}]
+},
+"tasks": [],
+"title": "打酱油"
+},
+"role": "combat_mage_senior",
+"stats": {
+"attack": 142.0,
+"defense": 76.0,
+"hp": 920.0,
+"moveSpeed": 118.0
+}
+},
+"meta": {
+"category": "combat",
+"createdAt": "2026-04-13T00:00:00Z",
+"description": "Dororororororororo。",
+"displayName": "klee",
+"generator": "senior_writer_v2",
+"id": "npc_RPG_0001",
+"style": "medieval",
+"tags": ["NIKKE", "战力爆表？", "Q版", "萌物？", "粉毛"],
+"types": ["combat"],
+"updatedAt": "2026-04-13T00:00:00Z"
+},
+"schemaVersion": 1.0
+}
+
+[node name="RpgmakerProtagonistDriver" type="Node" parent="klee"]
+script = ExtResource("3_q6r6c")

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://de7v3gfbsbsqv"]
 
-[ext_resource type="Script" path="res://UI/操作UI.gd" id="1_6ngd4"]
+[ext_resource type="Script" uid="uid://ctdl8h3qga87u" path="res://UI/操作UI.gd" id="1_6ngd4"]
 [ext_resource type="Theme" uid="uid://cy5vc3kjccuhm" path="res://主题/世界岛HUD主题.tres" id="2_2tcp8"]
 [ext_resource type="Texture2D" uid="uid://qsci8gkwnjn5" path="res://小剑资源/UI/Banners/Carved_Regular.png" id="3_h6jku"]
 
@@ -11,7 +11,7 @@ texture_margin_top = 8.0
 texture_margin_right = 8.0
 texture_margin_bottom = 8.0
 
-[node name="操作UI" type="Control"]
+[node name="操作UI" type="Control" unique_id=1222568026]
 layout_mode = 3
 anchors_preset = 0
 offset_left = 10.0
@@ -21,7 +21,7 @@ offset_bottom = 720.0
 theme = ExtResource("2_2tcp8")
 script = ExtResource("1_6ngd4")
 
-[node name="操作面板" type="PanelContainer" parent="."]
+[node name="操作面板" type="PanelContainer" parent="." unique_id=394242345]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,67 +30,68 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_panel")
 
-[node name="按钮行" type="HBoxContainer" parent="操作面板"]
+[node name="按钮行" type="HBoxContainer" parent="操作面板" unique_id=1379307975]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="取消选中" type="Button" parent="操作面板/按钮行"]
-layout_mode = 2
+[node name="取消选中" type="Button" parent="操作面板/按钮行" unique_id=1477100049]
 custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
 text = "取消选中"
 
-[node name="停止" type="Button" parent="操作面板/按钮行"]
-layout_mode = 2
+[node name="停止" type="Button" parent="操作面板/按钮行" unique_id=1432946782]
 custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
 text = "停止"
 
-[node name="驻守" type="Button" parent="操作面板/按钮行"]
-layout_mode = 2
+[node name="驻守" type="Button" parent="操作面板/按钮行" unique_id=1531266535]
 custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
 text = "驻守"
 
-[node name="巡逻" type="Button" parent="操作面板/按钮行"]
-layout_mode = 2
+[node name="巡逻" type="Button" parent="操作面板/按钮行" unique_id=1356924763]
 custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
 text = "巡逻"
 
-[node name="攻击移动" type="Button" parent="操作面板/按钮行"]
-layout_mode = 2
+[node name="攻击移动" type="Button" parent="操作面板/按钮行" unique_id=376709822]
 custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
 text = "攻→移"
 
-[node name="训练行" type="HBoxContainer" parent="操作面板"]
+[node name="训练行" type="HBoxContainer" parent="操作面板" unique_id=1408302741]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 8
+
+[node name="训练剑士" type="Button" parent="操作面板/训练行" unique_id=178098755]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "剑士
+100金 3s"
+
+[node name="训练弓箭手" type="Button" parent="操作面板/训练行" unique_id=1269727046]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "弓箭手
+150金50木 4s"
+
+[node name="训练农民" type="Button" parent="操作面板/训练行" unique_id=1182792622]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+text = "农民
+50金 2s"
+
+[node name="建筑名称标签" type="Label" parent="操作面板" unique_id=1971694193]
 visible = false
-
-[node name="训练剑士" type="Button" parent="操作面板/训练行"]
 layout_mode = 2
-custom_minimum_size = Vector2(100, 50)
-text = "剑士\n100金 3s"
-
-[node name="训练弓箭手" type="Button" parent="操作面板/训练行"]
-layout_mode = 2
-custom_minimum_size = Vector2(100, 50)
-text = "弓箭手\n150金50木 4s"
-
-[node name="训练农民" type="Button" parent="操作面板/训练行"]
-layout_mode = 2
-custom_minimum_size = Vector2(100, 50)
-text = "农民\n50金 2s"
-
-[node name="建筑名称标签" type="Label" parent="操作面板"]
-layout_mode = 2
-visible = false
 theme_override_font_sizes/font_size = 16
-text = ""
 
-[node name="状态标签" type="Label" parent="操作面板"]
-layout_mode = 2
+[node name="状态标签" type="Label" parent="操作面板" unique_id=519816041]
 visible = false
-theme_override_font_sizes/font_size = 14
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
-text = ""
+theme_override_font_sizes/font_size = 14
 
 [connection signal="pressed" from="操作面板/按钮行/取消选中" to="." method="_on_取消选中_pressed"]
 [connection signal="pressed" from="操作面板/按钮行/停止" to="." method="_on_停止_pressed"]

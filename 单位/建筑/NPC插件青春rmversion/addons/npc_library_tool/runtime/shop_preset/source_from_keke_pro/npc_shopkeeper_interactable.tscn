@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://m2nemhgu0mqd"]
+
+[ext_resource type="Script" path="res://脚本代码/npc/npc_shopkeeper_interactable.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bocadnpc001" path="res://游戏场景/共用场景/ocad_npc.tscn" id="2_npc"]
+[ext_resource type="Texture2D" uid="uid://bo4t7ql4j5otp" path="res://游戏资源/图片素材/UI素材/商店老板.png" id="3_yat86"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_prompt"]
+font_size = 20
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
+radius = 28.0
+
+[node name="ShopkeeperInteractable" type="Node2D" unique_id=1826980869]
+y_sort_enabled = true
+script = ExtResource("1_script")
+npc_portrait = ExtResource("3_yat86")
+npc_display_name = "店主"
+dialogue_lines = Array[Dictionary]([{
+"is_player": false,
+"speaker": "店主",
+"text": "有什么想买的吗老板～"
+}, {
+"is_player": false,
+"speaker": "店主",
+"text": "买卖都好商量。"
+}])
+
+[node name="PromptLayer" type="CanvasLayer" parent="." unique_id=144796403]
+layer = 85
+
+[node name="InteractPrompt" type="Label" parent="PromptLayer" unique_id=1647612690]
+unique_name_in_owner = true
+offset_right = 200.0
+offset_bottom = 32.0
+text = "按 C 对话"
+label_settings = SubResource("LabelSettings_prompt")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OcadNpc" parent="." unique_id=41568017 instance=ExtResource("2_npc")]
+spritesheet = ExtResource("3_yat86")
+random_idle = false
+random_item = false
+
+[node name="InteractArea" type="Area2D" parent="." unique_id=1346164814]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea" unique_id=452764563]
+shape = SubResource("CircleShape2D_interact")

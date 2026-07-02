@@ -11,14 +11,14 @@ func 加可交互对象(可交互目标: Node) -> void :
 	if 可交互目标 in 交互对象 :
 		return
 	交互对象.append(可交互目标)
-	print("玩家已添加可交互对象：", 可交互目标.name)
+	#print("玩家已添加可交互对象：", 可交互目标.name)  # DEBUG
 	弹出文字框(可交互目标 , null , null) #将可交互目标作为弹出文字框函数的参数传入
 
 func 去可交互对象(可交互目标: Node) -> void:
 	交互对象.erase(可交互目标)
 	if 可交互目标 in 附近可交互对象:
 		附近可交互对象.erase(可交互目标)
-		print("玩家已移除可交互对象：",可交互目标.name)
+		#print("玩家已移除可交互对象：",可交互目标.name)  # DEBUG
 
 
 func 弹出文字框 (触发目标 , _介绍内容 , _位置) ->void :

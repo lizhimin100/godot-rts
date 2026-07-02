@@ -28,6 +28,25 @@ _data = {
 &"受击": SubResource("Animation_tower_hit")
 }
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sx42x"]
+bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hldhr"]
+bg_color = Color(0, 0.733333, 0.313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nls17"]
+bg_color = Color(0, 0.654902, 0.937255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
 [node name="防御塔" type="StaticBody2D" unique_id=598664696]
 collision_layer = 4
 collision_mask = 0
@@ -46,3 +65,27 @@ shape = SubResource("RectangleShape2D_tower")
 
 [node name="动画" type="AnimationPlayer" parent="." unique_id=151353065]
 libraries/ = SubResource("AnimationLibrary_tower")
+
+[node name="血条" type="ProgressBar" parent="." unique_id=268253695]
+visible = false
+z_index = 100
+offset_left = -55.0
+offset_top = -54.0
+offset_right = 51.0
+offset_bottom = -42.0
+theme_override_styles/background = SubResource("StyleBoxFlat_sx42x")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hldhr")
+value = 100.0
+show_percentage = false
+
+[node name="蓝条" type="ProgressBar" parent="." unique_id=471596499]
+visible = false
+z_index = 100
+offset_left = -52.0
+offset_top = -42.0
+offset_right = 48.0
+offset_bottom = -34.0
+theme_override_styles/background = SubResource("StyleBoxFlat_sx42x")
+theme_override_styles/fill = SubResource("StyleBoxFlat_nls17")
+value = 100.0
+show_percentage = false

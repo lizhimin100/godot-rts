@@ -56,7 +56,7 @@ func _查找场景节点() -> void:
 	if 地面层:
 		FFManager.setup_nav(地面层, 树图层)
 		FFManager.mark_dirty()
-		print("流场已初始化: 地面=%s 树=%s" % [地面层.name, str(树图层.name if 树图层 else "无")])
+		#print("流场已初始化: 地面=%s 树=%s" % [地面层.name, str(树图层.name if 树图层 else "无")])  # DEBUG
 
 	# 查找建造UI（通过组或名称）
 	var 建造UI = get_tree().get_first_node_in_group("建造UI")
@@ -69,9 +69,9 @@ func _查找场景节点() -> void:
 		建造UI.建造1.connect(_on_建造城堡)
 		建造UI.建造2.connect(_on_建造房子)
 		建造UI.建造3.connect(_on_建造防御塔)
-		print("建筑放置管理器已连接建造UI: ", 建造UI.name)
+		#print("建筑放置管理器已连接建造UI: ", 建造UI.name)  # DEBUG
 	else:
-		print("未找到建造UI节点")
+		pass  # 未找到建造UI节点
 
 
 ## 递归遍历节点的辅助函数
@@ -121,7 +121,7 @@ func 开始放置(类型: int) -> void:
 	预览精灵.texture = 建筑贴图[类型]
 	add_child(预览精灵)
 
-	print("开始放置: ", 全局变量.建筑类型.keys()[类型])
+	#print("开始放置: ", 全局变量.建筑类型.keys()[类型])  # DEBUG
 
 
 func 取消放置() -> void:
@@ -220,16 +220,16 @@ func 放置建筑() -> void:
 
 	var 最近农民 = _查找最近闲置农民(建造位置)
 	if not 最近农民:
-		print("没有闲置农民可供建造！")
+		#print("没有闲置农民可供建造！")  # DEBUG
 		全局变量.显示通知("需要农民来建造！", 建造位置)
 		取消放置()
 		return
 
 	if 最近农民.has_method("命令建造"):
 		最近农民.命令建造(建筑类型, 建造位置)
-		print("已指派农民建造: ", 全局变量.建筑类型.keys()[建筑类型], " 位置: ", 建造位置)
+		#print("已指派农民建造: ", 全局变量.建筑类型.keys()[建筑类型], " 位置: ", 建造位置)  # DEBUG
 	else:
-		print("农民没有命令建造方法!")
+		#print("农民没有命令建造方法!")  # DEBUG
 		取消放置()
 		return
 

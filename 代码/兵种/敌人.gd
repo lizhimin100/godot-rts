@@ -32,4 +32,4 @@ func _on_受伤框判定_受到伤害(攻击对象: 伤害框判定) -> void:
 
 
 func print_health():
-	print("health stat : %.01f/%.01f"% [当前血量.get_value() , 最大血量.get_value()])
+	#print("health stat : %.01f/%.01f"% [当前血量.get_value() , 最大血量.get_value()])  # DEBUG

@@ -19,11 +19,11 @@ func _ready() -> void:
 
 	_地面层 = get_node_or_null("../地形/地面") as TileMapLayer
 	if not _地面层:
-		print("导航区域管理：找不到地面层")
+		#print("导航区域管理：找不到地面层")  # DEBUG
 		return
 
 	_生成导航区域()
-	print("导航区域已生成")
+	#print("导航区域已生成")  # DEBUG
 
 
 ## 静态方法：全局触发导航更新
@@ -42,7 +42,7 @@ func _生成导航区域() -> void:
 
 	var 可用格子 := _地面层.get_used_cells()
 	if 可用格子.is_empty():
-		print("地面层没有已使用的格子")
+		#print("地面层没有已使用的格子")  # DEBUG
 		return
 
 	# 计算所有格子的包围盒（包含整个地面）
@@ -76,4 +76,4 @@ func _生成导航区域() -> void:
 	导航多边形.make_polygons_from_outlines()
 
 	self.navigation_polygon = 导航多边形
-	print("导航区已更新：覆盖 ", 可用格子.size(), " 个格子")
+	#print("导航区已更新：覆盖 ", 可用格子.size(), " 个格子")  # DEBUG

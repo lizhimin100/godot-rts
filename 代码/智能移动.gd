@@ -19,7 +19,7 @@ func _process(delta: float) -> void:
 		
 		路径 = 格子.astar.get_id_path(起点位置 , 终点位置)
 		
-		print(路径)
+		#print(路径)  # DEBUG
 	
 	if 路径  and not 路径.is_empty() : #如果路径存在且不是空集便执行下面代码
 		var 路径位置 = 格子.map_to_local(路径[0])#将tilmaplayer坐标转换为世界坐标

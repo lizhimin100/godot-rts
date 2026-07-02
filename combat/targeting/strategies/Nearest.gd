@@ -51,7 +51,7 @@ static func _is_enemy(owner: Node2D, target: Node) -> bool:
 	if target.has_method("是敌对"):
 		return target.是敌对(owner)
 	if target.has_method("判断关系"):
-		return target.判断关系(target) == 阵营管理器.关系.敌对
+		return target.判断关系(owner) == 阵营管理器.关系.敌对
 	# 通过阵营管理器判断
 	if target.has_method("获取阵营"):
 		return 阵营管理器.是敌对(owner.获取阵营(), target.获取阵营())

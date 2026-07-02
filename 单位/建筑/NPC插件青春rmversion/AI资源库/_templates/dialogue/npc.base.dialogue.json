@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "description": "可复用的NPC台词块模板（跨风格通用）",
+  "blocks": {
+    "defaultGreeting": [
+      {
+        "speaker": "{npcName}",
+        "text": "你好，今天要办什么事？",
+        "isPlayer": false
+      },
+      {
+        "speaker": "{npcName}",
+        "text": "如果需要帮助，可以随时来找我。",
+        "isPlayer": false
+      }
+    ],
+    "shopGreeting": [
+      {
+        "speaker": "{npcName}",
+        "text": "欢迎光临，要看看货吗？",
+        "isPlayer": false
+      }
+    ],
+    "questOffer": [
+      {
+        "speaker": "{npcName}",
+        "text": "我这里有件事需要你帮忙。",
+        "isPlayer": false
+      },
+      {
+        "speaker": "{npcName}",
+        "text": "准备好了就告诉我。",
+        "isPlayer": false
+      }
+    ],
+    "questComplete": [
+      {
+        "speaker": "{npcName}",
+        "text": "做得不错，这份奖励给你。",
+        "isPlayer": false
+      }
+    ],
+    "combatWarning": [
+      {
+        "speaker": "{npcName}",
+        "text": "前面很危险，注意安全。",
+        "isPlayer": false
+      }
+    ]
+  }
+}

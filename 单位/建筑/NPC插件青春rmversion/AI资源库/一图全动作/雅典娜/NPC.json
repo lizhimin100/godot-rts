@@ -1,0 +1,162 @@
+{
+    "schemaVersion": 1,
+    "meta": {
+        "id": "npc_hunter_athena_001",
+        "displayName": "雅典娜",
+        "style": "wasteland_scifi",
+        "category": "function",
+        "types": [
+            "hunter",
+            "mechanic",
+            "mercenary"
+        ],
+        "description": "性格冷静的乐天派少女，痴迷于坦克引擎的轰鸣，信奉“口径即是正义”。",
+        "generator": "manual_template_v1_expert_mode",
+        "createdAt": "2026-04-17T16:30:00Z",
+        "updatedAt": "2026-04-17T16:30:00Z",
+        "tags": [
+            "红狼遗孤",
+            "霰弹枪专家",
+            "机械痴",
+            "MetalMax风格"
+        ]
+    },
+    "assets": {
+        "spritePath": "./athena_hunter_sprite.png",
+        "thumbPath": "./athena_hunter_thumb.png"
+    },
+    "spritesheet": {
+        "layoutVersion": "yituquan_v1",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 8,
+        "rows": 12,
+        "margin": 0,
+        "spacing": 0,
+        "defaultFps": 10,
+        "animations": {
+            "idle_down": {
+                "row": 0,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "walk_down": {
+                "row": 1,
+                "from": 0,
+                "to": 7,
+                "loop": true
+            },
+            "attack_shotgun": {
+                "row": 4,
+                "from": 0,
+                "to": 4,
+                "loop": false
+            },
+            "repair_action": {
+                "row": 5,
+                "from": 0,
+                "to": 7,
+                "loop": true
+            }
+        }
+    },
+    "gameplay": {
+        "faction": "自由猎人",
+        "role": "combat_mechanic",
+        "level": 24,
+        "stats": {
+            "hp": 2200,
+            "attack": 185,
+            "defense": 85,
+            "moveSpeed": 3.5
+        },
+        "interaction": {
+            "canTalk": true,
+            "canTrade": true,
+            "questGiver": true
+        },
+        "skills": [
+            {
+                "name": "废土爆裂",
+                "type": "active",
+                "description": "使用改装双管霰弹枪进行近距离轰击，对装甲目标造成额外30%破甲伤害。"
+            },
+            {
+                "name": "紧急抢修",
+                "type": "passive",
+                "description": "在战斗状态下，载具履带或炮塔受损时有40%概率瞬间修复。"
+            }
+        ],
+        "merchant": {
+            "enabled": true,
+            "shopItems": [
+                {
+                    "itemId": "ammo_sg_slug",
+                    "itemName": "特制独头弹",
+                    "itemType": "弹药",
+                    "price": 120,
+                    "count": 10,
+                    "stock": 50
+                },
+                {
+                    "itemId": "consumable_fuel_ex",
+                    "itemName": "高辛烷值燃料",
+                    "itemType": "消耗品",
+                    "price": 800,
+                    "count": 1,
+                    "stock": 5
+                }
+            ]
+        },
+        "quest": {
+            "enabled": true,
+            "title": "梦幻战车的拼图",
+            "description": "雅典娜需要一个特定的传动装置来完成她的自制战车，那个零件就在徘徊于死亡沙漠的‘巡弋者’身上。",
+            "objective": "击败赏金首【巡弋者】，带回其核心驱动轴。",
+            "rewards": {
+                "gold": 12000,
+                "exp": 8500,
+                "items": [
+                    {
+                        "itemId": "weapon_sg_athena_custom",
+                        "itemName": "“废土爆裂”原型机",
+                        "count": 1
+                    }
+                ]
+            }
+        }
+    },
+    "ext": {
+        "localization": {
+            "appearance": {
+                "zh": "凌乱金发扎成高马尾，穿着白色紧身背心与磨损的深色牛仔裤，手臂肌肉线条清晰。腰间斜跨弹药带，大腿挂着工具包与Mk 2手榴弹。脚蹬一双带金属底的工作靴，手中紧握一把改装后的双管霰弹枪。",
+                "en": "Messy blonde hair tied in a high ponytail. She wears a white tank top and worn dark jeans, showing defined muscles. A bandolier crosses her chest, with a tool bag and Mk 2 grenades on her thighs. Her metal-soled boots and modified double-barrel shotgun define her rugged look."
+            },
+            "background": {
+                "zh": "传闻中红狼曾停留过的修理厂遗孤。她对成为最强猎人毫无兴趣，唯一的执念是收集顶级零件组装出能穿越死亡沙漠的“梦幻战车”。虽然身处末日，却始终保持着一种无畏的自信。",
+                "en": "An orphan from a workshop where the legendary 'Red Wolf' once stayed. Uninterested in fame, she hunts monsters solely to scavenge rare parts for her 'Dream Tank'. She remains a stoic optimist despite the harsh wasteland."
+            },
+            "dialogues": {
+                "greeting": {
+                    "zh": "像素交流群 群号：1079961300，密码：bimelona别看我小，我双手举霰弹枪的准头比你见过的怪物都稳。要雇佣我吗？",
+                    "en": "Hey! Don't let my size fool you. My aim with this shotgun is steadier than any monster you've seen. Looking to hire me?"
+                },
+                "shopOpen": {
+                    "zh": "像素交流群 群号：1079961300，密码：bimelona",
+                    "en": "As long as you fill my tank with premium fuel, we can talk business."
+                },
+                "battle_start": {
+                    "zh": "像素交流群 群号：1079961300，密码：bimelona别让那家伙碰坏了我们要拆的零件！",
+                    "en": "Pochi, get ready! Don't let that thing damage the parts we're scavenging!"
+                }
+            }
+        },
+        "animationParams": "humanoid_combatant_female",
+        "otherPayload": {
+            "companion": "Pochi (Cyber-dog with MG)",
+            "weaponType": "Shotgun / Explosives",
+            "techLevel": 4
+        }
+    }
+}

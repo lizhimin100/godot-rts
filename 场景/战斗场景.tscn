@@ -1,17 +1,16 @@
-[gd_scene load_steps=16 format=4 uid="uid://bgbk08diqe42i"]
+[gd_scene format=4 uid="uid://bgbk08diqe42i"]
 
 [ext_resource type="TileSet" uid="uid://gupu3swobqhm" path="res://设置好的图层/new_tile_set.tres" id="1_1it7y"]
 [ext_resource type="Script" uid="uid://dmmgd2wg24p04" path="res://代码/场景/战斗场景.gd" id="1_8ax8v"]
 [ext_resource type="TileSet" uid="uid://b5hj8m718ipyb" path="res://设置好的图层/草地.tres" id="2_fg63w"]
 [ext_resource type="TileSet" uid="uid://b0bx7trno57e6" path="res://设置好的图层/土地和水.tres" id="3_em5n6"]
 [ext_resource type="PackedScene" uid="uid://bsnky0tm55bxp" path="res://角色/人族步兵.tscn" id="4_em5n6"]
-[ext_resource type="PackedScene" uid="uid://4r6fq3otr2qt" path="res://组件/rts——node.tscn" id="5_e7s5r"]
 [ext_resource type="PackedScene" uid="uid://20ywfbkme06n" path="res://角色/史莱姆.tscn" id="6_e7s5r"]
 [ext_resource type="PackedScene" uid="uid://diamojkvtdllu" path="res://角色/人族农民.tscn" id="7_da3cy"]
 [ext_resource type="Texture2D" uid="uid://4i2xoeoqy27s" path="res://小剑资源/UI/Buttons/Button_Hover_9Slides.png" id="12_h0oob"]
 [ext_resource type="PackedScene" uid="uid://cns8ogi2klhbw" path="res://测试/测试建造.tscn" id="13_bq0ae"]
 [ext_resource type="PackedScene" uid="uid://i0x0g7m64en1" path="res://UI/建造ui/建造ui.tscn" id="13_je83h"]
-[ext_resource type="PackedScene" uid="uid://c70ar5gsj2kxf" path="res://UI组件/总UI/资源和经验谈UI显示.tscn" id="14_h0oob"]
+[ext_resource type="PackedScene" uid="uid://c70ar5gsj2kxf" path="res://UI组件/总UI/全局UI.tscn" id="14_h0oob"]
 [ext_resource type="PackedScene" uid="uid://d3jji01luv5wy" path="res://组件/显示小地图组件.tscn" id="17_ygchv"]
 [ext_resource type="Texture2D" uid="uid://dktqcnhitk3ps" path="res://小剑资源/UI/Banners/Carved_9Slides.png" id="20_ygchv"]
 [ext_resource type="Script" uid="uid://b4jr2vyvdsodx" path="res://代码/测试/策略相机.gd" id="21_i0jeb"]
@@ -65,8 +64,6 @@ position = Vector2(293, 129)
 
 [node name="人族农民" parent="角色" instance=ExtResource("7_da3cy")]
 position = Vector2(171, 245)
-
-[node name="rts——node" parent="." instance=ExtResource("5_e7s5r")]
 
 [node name="UI" type="CanvasLayer" parent="."]
 layer = 3

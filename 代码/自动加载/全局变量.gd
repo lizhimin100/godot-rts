@@ -43,6 +43,12 @@ const 建筑碰撞尺寸 := {
 	建筑类型.防御塔: Vector2(120, 240),
 }
 
+const 建筑最大生命值 := {
+	建筑类型.城堡: 500.0,
+	建筑类型.房子: 500.0,
+	建筑类型.防御塔: 800.0,
+}
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

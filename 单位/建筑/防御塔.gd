@@ -21,7 +21,7 @@ func _ready() -> void:
 	最大生命值 = 800.0
 
 	# 配置战斗组件
-	var combat: CombatComponent = _get_combat()
+	var combat: CombatComponent = _获取战斗组件()
 	if combat:
 		combat.attack_damage = 攻击力
 		combat.attack_range = 攻击范围
@@ -30,14 +30,14 @@ func _ready() -> void:
 		combat.attack_strike.connect(_on_塔_attack)
 
 	# 配置目标选择
-	var targeting: TargetingComponent = _get_targeting()
+	var targeting: TargetingComponent = _获取索敌组件()
 	if targeting:
 		targeting.search_range = 攻击范围 + 50.0  # 略大于攻击范围，提前锁定
 		targeting.chase_range = 攻击范围 * 1.5
 		targeting.process_mode = PROCESS_MODE_INHERIT  # 激活
 
 	# 塔不需要 HUD 的 MP 条
-	var hc: HealthComponent = _get_health()
+	var hc: HealthComponent = _获取生命组件()
 	if hc:
 		hc.max_hp = 最大生命值
 		hc.set_hp(最大生命值)

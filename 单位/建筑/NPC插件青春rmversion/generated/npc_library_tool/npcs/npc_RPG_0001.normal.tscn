@@ -1,0 +1,332 @@
+[gd_scene load_steps=23 format=3 uid="uid://b8dcmfvfip8h6"]
+
+[ext_resource type="Script" uid="uid://1sy4isisioys" path="res://addons/npc_library_tool/runtime/merchant_npc.gd" id="1_2yc5q"]
+[ext_resource type="Texture2D" uid="uid://v8imawjexyt5" path="res://AI资源库/RPGMAKER/klee/sprite.png" id="2_6u6m5"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
+radius = 1.6666666
+
+[sub_resource type="Image" id="Image_2yc5q"]
+data = {
+"data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 135, 0, 0, 0, 140, 0, 0, 0, 144, 0, 0, 0, 146, 0, 0, 0, 147, 0, 0, 0, 146, 0, 0, 0, 144, 0, 0, 0, 140, 0, 0, 0, 135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 0, 0, 0, 148, 0, 0, 0, 156, 0, 0, 0, 163, 0, 0, 0, 169, 0, 0, 0, 173, 0, 0, 0, 175, 0, 0, 0, 176, 0, 0, 0, 175, 0, 0, 0, 173, 0, 0, 0, 169, 0, 0, 0, 163, 0, 0, 0, 156, 0, 0, 0, 148, 0, 0, 0, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 0, 0, 0, 143, 0, 0, 0, 155, 0, 0, 0, 165, 0, 0, 0, 173, 0, 0, 0, 180, 0, 0, 0, 186, 0, 0, 0, 190, 0, 0, 0, 192, 0, 0, 0, 193, 0, 0, 0, 192, 0, 0, 0, 190, 0, 0, 0, 186, 0, 0, 0, 180, 0, 0, 0, 173, 0, 0, 0, 165, 0, 0, 0, 155, 0, 0, 0, 143, 0, 0, 0, 130, 0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 0, 149, 0, 0, 0, 161, 0, 0, 0, 171, 0, 0, 0, 179, 0, 0, 0, 186, 0, 0, 0, 191, 0, 0, 0, 195, 0, 0, 0, 198, 0, 0, 0, 198, 0, 0, 0, 198, 0, 0, 0, 195, 0, 0, 0, 191, 0, 0, 0, 186, 0, 0, 0, 179, 0, 0, 0, 171, 0, 0, 0, 161, 0, 0, 0, 149, 0, 0, 0, 136, 0, 0, 0, 0, 0, 0, 0, 130, 0, 0, 0, 143, 0, 0, 0, 155, 0, 0, 0, 165, 0, 0, 0, 173, 0, 0, 0, 180, 0, 0, 0, 186, 0, 0, 0, 190, 0, 0, 0, 192, 0, 0, 0, 193, 0, 0, 0, 192, 0, 0, 0, 190, 0, 0, 0, 186, 0, 0, 0, 180, 0, 0, 0, 173, 0, 0, 0, 165, 0, 0, 0, 155, 0, 0, 0, 143, 0, 0, 0, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 0, 0, 0, 148, 0, 0, 0, 156, 0, 0, 0, 163, 0, 0, 0, 169, 0, 0, 0, 173, 0, 0, 0, 175, 0, 0, 0, 176, 0, 0, 0, 175, 0, 0, 0, 173, 0, 0, 0, 169, 0, 0, 0, 163, 0, 0, 0, 156, 0, 0, 0, 148, 0, 0, 0, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 135, 0, 0, 0, 140, 0, 0, 0, 144, 0, 0, 0, 146, 0, 0, 0, 147, 0, 0, 0, 146, 0, 0, 0, 144, 0, 0, 0, 140, 0, 0, 0, 135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"format": "RGBA8",
+"height": 8,
+"mipmaps": false,
+"width": 20
+}
+
+[sub_resource type="ImageTexture" id="ImageTexture_6u6m5"]
+image = SubResource("Image_2yc5q")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dimcn"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0d2v5"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dbl0l"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kv6m7"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mil3u"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(0, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6eeks"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(48, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dwcea"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(96, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gqhbt"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(48, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gvxej"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(0, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ar6de"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(48, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_klxx6"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(96, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7qsvm"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(48, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l5yd7"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(0, 144, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3ylxn"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(48, 144, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nf3mw"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(96, 144, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qu3s5"]
+atlas = ExtResource("2_6u6m5")
+region = Rect2(48, 144, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xysb6"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dimcn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0d2v5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dbl0l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kv6m7")
+}],
+"loop": true,
+"name": &"rundown",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mil3u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6eeks")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dwcea")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gqhbt")
+}],
+"loop": true,
+"name": &"runleft",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gvxej")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ar6de")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_klxx6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7qsvm")
+}],
+"loop": true,
+"name": &"runright",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l5yd7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3ylxn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nf3mw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qu3s5")
+}],
+"loop": true,
+"name": &"runup",
+"speed": 5.0
+}]
+
+[node name="klee" type="Node2D"]
+y_sort_enabled = true
+scale = Vector2(3, 3)
+script = ExtResource("1_2yc5q")
+npc_display_name = "klee"
+dialogue_lines = PackedStringArray("呀～你也来啦？要不要和我一起打打酱油呀？", "想听变强小秘诀的话，可要好好讨好我哦！", "帮我打打酱油嘛，事后有奖励哦～")
+npc_portrait_path = "res://AI资源库/RPGMAKER/klee/thumb.png"
+ai_action = "rundown"
+player_group_candidates = PackedStringArray("player", "Player")
+player_name_keywords = PackedStringArray("player", "hero", "main", "character")
+interact_action_candidates = PackedStringArray("interact", "ui_accept")
+interact_key_fallbacks = PackedInt32Array(69, 70, 4194309)
+metadata/ai_path_points = [{
+"dir": "right",
+"dist": 48.0
+}]
+metadata/npc_id = "npc_RPG_0001"
+metadata/npc_json_path = "res://AI资源库/RPGMAKER/klee/npc.json"
+metadata/npc_style = "medieval"
+metadata/npc_category = "combat"
+metadata/npc_data = {
+"assets": {
+"spritePath": "./sprite.png",
+"thumbPath": "./thumb.png"
+},
+"ext": {
+"animationParams": "standard_humanoid_4dir",
+"battleProfile": {
+"engageRadius": 380.0,
+"leashRadius": 640.0,
+"preferredRange": 220.0
+},
+"cardPreviewAnim": "idle_down",
+"dialogueState": "first_meet_unlocked",
+"librarySortPriority": 8.0,
+"localization": {
+"appearance": {
+"en": "",
+"ja": "",
+"zh": "Doro是个~~人形？~~Q版娇小粉色短发萌物。"
+},
+"background": {
+"en": "",
+"ja": "",
+"zh": "Dora只用卖萌就行了，啥都不干。"
+},
+"dialogues": {
+"greeting": {
+"en": "",
+"ja": "",
+"zh": "呀～你也来啦？要不要和我一起打打酱油呀？"
+},
+"questHint": {
+"en": "",
+"ja": "",
+"zh": "帮我打打酱油嘛，事后有奖励哦～"
+},
+"shopOpen": {
+"en": "",
+"ja": "",
+"zh": "想听变强小秘诀的话，可要好好讨好我哦！"
+}
+}
+},
+"otherPayload": {},
+"projectPrivate": {},
+"spawnCoordinates": {
+"mapId": "map_magic_academy_yard",
+"x": 736.0,
+"y": 420.0
+}
+},
+"gameplay": {
+"combat": {
+"aiArchetype": "agile_burst_mage",
+"element": "arcane_fire",
+"enabled": true,
+"skills": [{
+"cooldown": 3.5,
+"power": 1.0,
+"skillId": "sk_arcane_bolt_fan",
+"skillName": "星火连弹"
+}, {
+"cooldown": 8.0,
+"power": 1.6,
+"skillId": "sk_meteoric_circle",
+"skillName": "陨辉法环"
+}, {
+"cooldown": 5.0,
+"power": 0.0,
+"skillId": "sk_blink_step",
+"skillName": "瞬步闪烁"
+}]
+},
+"faction": "伊甸",
+"interaction": {
+"canTalk": true,
+"canTrade": false,
+"questGiver": true
+},
+"level": 21.0,
+"quest": {
+"description": "没事就打个酱油",
+"enabled": true,
+"objective": "前往【海X酱油】击败失控傀儡，收集3瓶【味极鲜】交给Doro。",
+"questId": "qst_academy_017",
+"rewards": {
+"exp": 2200.0,
+"gold": 1800.0,
+"items": [{
+"count": 1.0,
+"itemId": "acc_emily_ribbon",
+"itemName": "Doro写真集"
+}]
+},
+"tasks": [],
+"title": "打酱油"
+},
+"role": "combat_mage_senior",
+"stats": {
+"attack": 142.0,
+"defense": 76.0,
+"hp": 920.0,
+"moveSpeed": 118.0
+}
+},
+"meta": {
+"category": "combat",
+"createdAt": "2026-04-13T00:00:00Z",
+"description": "Dororororororororo。",
+"displayName": "klee",
+"generator": "senior_writer_v2",
+"id": "npc_RPG_0001",
+"style": "medieval",
+"tags": ["NIKKE", "战力爆表？", "Q版", "萌物？", "粉毛"],
+"types": ["combat"],
+"updatedAt": "2026-04-13T00:00:00Z"
+},
+"schemaVersion": 1.0
+}
+
+[node name="InteractArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+shape = SubResource("CircleShape2D_interact")
+
+[node name="InteractPrompt" type="Label" parent="."]
+offset_left = -60.0
+offset_top = -45.0
+offset_right = 60.0
+offset_bottom = -17.0
+theme_override_font_sizes/font_size = 8
+text = "press E to active"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OcadNpc" type="Node2D" parent="."]
+
+[node name="Shadow" type="Node2D" parent="OcadNpc"]
+position = Vector2(0, 6)
+
+[node name="Sprite2D" type="Sprite2D" parent="OcadNpc/Shadow"]
+texture_filter = 1
+position = Vector2(0, 12)
+scale = Vector2(0.8, 0.8)
+texture = SubResource("ImageTexture_6u6m5")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="OcadNpc"]
+z_index = 1
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_xysb6")
+animation = &"rundown"

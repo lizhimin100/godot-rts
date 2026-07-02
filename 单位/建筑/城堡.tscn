@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dwsat58e5tqrv" path="res://小剑资源/兵种/Knights/Buildings/Castle/Castle_Destroyed.png" id="3_6ngd4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_castle"]
-size = Vector2(261, 97)
+size = Vector2(264, 127)
 
 [sub_resource type="Animation" id="Animation_foe1q"]
 resource_name = "受击"
@@ -28,6 +28,25 @@ _data = {
 &"受击": SubResource("Animation_foe1q")
 }
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lcrp1"]
+bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8gc3d"]
+bg_color = Color(0, 0.733333, 0.313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_djmmu"]
+bg_color = Color(0, 0.654902, 0.937255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.239216, 0.105882, 0.0980392, 1)
+
 [node name="城堡" type="StaticBody2D" unique_id=1167517112]
 collision_layer = 4
 collision_mask = 0
@@ -41,8 +60,32 @@ visible = false
 texture = ExtResource("3_6ngd4")
 
 [node name="碰撞" type="CollisionShape2D" parent="." unique_id=1236568928]
-position = Vector2(-0.5, 60.5)
+position = Vector2(1, 45.5)
 shape = SubResource("RectangleShape2D_castle")
 
 [node name="动画" type="AnimationPlayer" parent="." unique_id=658756952]
 libraries/ = SubResource("AnimationLibrary_foe1q")
+
+[node name="血条" type="ProgressBar" parent="." unique_id=1346712668]
+visible = false
+z_index = 100
+offset_left = -78.0
+offset_top = -57.0
+offset_right = 86.0
+offset_bottom = -42.0
+theme_override_styles/background = SubResource("StyleBoxFlat_lcrp1")
+theme_override_styles/fill = SubResource("StyleBoxFlat_8gc3d")
+value = 100.0
+show_percentage = false
+
+[node name="蓝条" type="ProgressBar" parent="." unique_id=120445688]
+visible = false
+z_index = 100
+offset_left = -76.0
+offset_top = -42.0
+offset_right = 85.0
+offset_bottom = -31.0
+theme_override_styles/background = SubResource("StyleBoxFlat_lcrp1")
+theme_override_styles/fill = SubResource("StyleBoxFlat_djmmu")
+value = 100.0
+show_percentage = false

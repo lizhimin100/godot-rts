@@ -14,4 +14,4 @@ func _ready() -> void:
 	astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER #寻路不再考虑对角线
 	astar.update()
 	
-	print(astar.region)
+	#print(astar.region)  # DEBUG

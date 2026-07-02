@@ -1,16 +1,15 @@
-extends UnitBase
+extends 单位基类
 class_name 剑士
 
-## 剑士 — RTS 可控制近战单位
+## 剑士 — RTS 近战单位
 ##
-## 3 状态状态机：IDLE / MOVE / ATTACK
-## 战斗周期由 CombatComponent 管理（windup→strike→recovery→cooldown）
-## 此脚本仅实现"打击时做什么"和"攻击结束后去哪"
+## 3 状态状态机：待机 / 移动 / 攻击
+## ⚠ 速度由 运动服务 统一管理，本类不写 velocity
 
-enum State {
-	IDLE,
-	MOVE,
-	ATTACK
+enum 状态 {
+	待机,
+	移动,
+	攻击,
 }
 
 @export var 攻击力: float = 12.0
@@ -20,92 +19,117 @@ enum State {
 const 玩家纹理: Texture2D = preload("res://小剑资源/兵种/Knights/Troops/Warrior/Blue/Warrior_Blue.png")
 const 敌人纹理: Texture2D = preload("res://小剑资源/兵种/Knights/Troops/Warrior/Red/Warrior_Red.png")
 
-var 当前状态: State = State.IDLE
+var 当前状态: 状态 = 状态.待机
+var _追击上限: float = 400.0
 
 @onready var 角色图像: Sprite2D = $角色图像
 @onready var 角色动画: AnimationPlayer = $角色动画
-@onready var 选中标签: Label = $选中标签
 
 
 func _ready() -> void:
-	# 属性数据层（在 super._ready 之前）
 	stats = UnitStats.create_剑士_stats()
 	stats.attack = 攻击力
 	stats.attack_range = 攻击范围
 	stats.attack_cooldown = 攻击间隔
+	# 移动速度由场景值决定，stats 不覆盖
+	_追击上限 = stats.chase_range
 
 	super._ready()
 
-	# ---- 配置 CombatComponent ----
-	combat_component.attack_damage = stats.attack
-	combat_component.attack_range = stats.attack_range
-	combat_component.attack_cooldown = stats.attack_cooldown
-	combat_component.windup_time = 0.2    # ⭐ 前摇 0.2s（旧版行为）
-	combat_component.recovery_time = 0.2  # ⭐ 后摇 0.2s（旧版行为）
-	combat_component.cooldown_timing = CombatComponent.CooldownTiming.AT_STRIKE
+	战斗组件.attack_damage = stats.attack
+	战斗组件.attack_range = stats.attack_range
+	战斗组件.attack_cooldown = stats.attack_cooldown
+	战斗组件.windup_time = 0.2
+	战斗组件.recovery_time = 0.2
+	战斗组件.cooldown_timing = CombatComponent.CooldownTiming.AT_STRIKE
 
-	# ---- 连接战斗信号 ----
-	if combat_component.attack_strike.is_connected(_on_default_attack_strike):
-		combat_component.attack_strike.disconnect(_on_default_attack_strike)
-	combat_component.attack_started.connect(_on_剑士_attack_started)
-	combat_component.attack_strike.connect(_on_剑士_strike)
-	combat_component.attack_finished.connect(_on_剑士_attack_finished)
+	if 战斗组件.attack_strike.is_connected(_on_默认打击):
+		战斗组件.attack_strike.disconnect(_on_默认打击)
+	战斗组件.attack_started.connect(_on_攻击开始)
+	战斗组件.attack_strike.connect(_on_打击)
+	战斗组件.attack_finished.connect(_on_攻击结束)
 
-	# ---- 纹理与材质 ----
-	当前状态 = State.IDLE
+	当前状态 = 状态.待机
 	var 新材质 = 角色图像.material.duplicate()
 	角色图像.material = 新材质
 
 	if _是敌人():
 		角色图像.texture = 敌人纹理
 		角色图像.material.set_shader_parameter("outline_color", Color(0.9, 0.2, 0.2, 1))
-		if is_instance_valid(选中标签):
-			选中标签.visible = false
-		collision_mask = 32 + 8 + 4
 	else:
 		角色图像.texture = 玩家纹理
-		if is_instance_valid(选中标签):
-			选中标签.visible = false
-		collision_mask = 32 + 16 + 4
 
 	角色动画.play("待机")
-	角色动画.animation_finished.connect(_on_anim_finished)
+	角色动画.animation_finished.connect(_on_动画结束)
+
+	# 监听移动结束信号
+	移动结束.connect(_on_剑士移动结束)
 
 
 func _physics_process(delta: float) -> void:
-	if is_instance_valid(选中标签):
-		选中标签.visible = 选择状态
-
 	_同步命令状态()
 
 	match 当前状态:
-		State.IDLE:
-			_处理待机状态(delta)
-		State.MOVE:
-			_处理移动状态(delta)
-		State.ATTACK:
-			# ⭐ 安全检测：目标离开攻击范围时立即切回移动，不等攻击周期结束
-			#    也避免 _同步命令状态 在边缘情况未能及时触发切换
-			var atk_target := targeting_component.get_target() if targeting_component else null
-			if atk_target and is_instance_valid(atk_target):
-				if global_position.distance_to(atk_target.global_position) > 攻击范围:
-					切换状态(State.MOVE)
-			velocity = velocity.move_toward(Vector2.ZERO, 移动速度 * 12.0 * delta)
+		状态.待机:
+			_处理待机(delta)
+		状态.移动:
+			_处理移动(delta)
+		状态.攻击:
+			_处理攻击(delta)
 
-	move_and_slide()
+	# ⭐ 单驱动力原则：唯一 move_and_slide 入口
+	super._physics_process(delta)
 
-	if velocity.x != 0:
+# 朝向
+	if 当前状态 == 状态.攻击:
+		var target = 索敌组件.get_target() if 索敌组件 else null
+		if target and is_instance_valid(target):
+			角色图像.flip_h = target.global_position.x < global_position.x
+	elif velocity.x != 0:
 		角色图像.flip_h = velocity.x < 0
 
 
-func 切换状态(to: State) -> void:
+## 移动结束信号处理
+func _on_剑士移动结束(结果: 移动结果) -> void:
+	if DIAG: print("[SWORD] 移动结束 结果=", 结果.结果, " 当前命令=", 当前命令)
+	match 结果.结果:
+		移动结果.结果类型.已到达:
+			# 到达目的地
+			match 当前命令:
+				命令管理器.命令类型.攻击:
+					var target = 索敌组件.get_target()
+					if not target or not is_instance_valid(target):
+						当前命令 = 命令管理器.命令类型.无
+						切换状态(状态.待机)
+				命令管理器.命令类型.巡逻:
+					pass
+				_:
+					当前命令 = 命令管理器.命令类型.无
+					切换状态(状态.待机)
+
+		移动结果.结果类型.目标丢失:
+			# 追击目标死亡
+			当前命令 = 命令管理器.命令类型.无
+			切换状态(状态.待机)
+
+		移动结果.结果类型.被中断:
+			# 被新命令覆盖，不用处理
+			pass
+
+		移动结果.结果类型.卡死:
+			# 卡死时保持当前状态，运动服务会自动重新寻路
+			pass
+
+
+func 切换状态(to: 状态) -> void:
 	if 当前状态 == to:
 		return
+	if DIAG: print("[SWORD] ", name, " 状态: ", 当前状态, " → ", to, " 当前命令=", 当前命令)
 	当前状态 = to
 	match to:
-		State.IDLE: _切换动画("待机")
-		State.MOVE: _切换动画("移动")
-		State.ATTACK: _切换动画("攻击")
+		状态.待机: _切换动画("待机")
+		状态.移动: _切换动画("移动")
+		状态.攻击: _切换动画("攻击")
 
 
 func _切换动画(动画名: String) -> void:
@@ -113,12 +137,10 @@ func _切换动画(动画名: String) -> void:
 		角色动画.play(动画名)
 
 
-func _on_anim_finished(anim_name: String) -> void:
-	if anim_name == "攻击" and 当前状态 == State.ATTACK:
-		# 攻击动画播完 → 播放待机等待下次攻击
-		# ⚠ 不要 .stop()：play() 后立即 stop() 会导致待机帧不生效，
-		#   角色会卡在攻击动画的最后一帧（举剑帧）
+func _on_动画结束(anim_name: String) -> void:
+	if anim_name == "攻击" and 当前状态 == 状态.攻击:
 		角色动画.play("待机")
+		角色动画.stop()
 
 
 # ============================================================
@@ -127,124 +149,98 @@ func _on_anim_finished(anim_name: String) -> void:
 
 func _同步命令状态() -> void:
 	match 当前命令:
-		命令类型.移动:
-			if 当前状态 != State.MOVE:
-				切换状态(State.MOVE)
+		命令管理器.命令类型.移动:
+			if 当前状态 != 状态.移动:
+				切换状态(状态.移动)
 
-		命令类型.攻击:
-			var target = targeting_component.get_target() if targeting_component else null
+		命令管理器.命令类型.攻击:
+			var target = 索敌组件.get_target() if 索敌组件 else null
 			if target and is_instance_valid(target):
-				if 当前状态 == State.IDLE:
-					切换状态(State.MOVE)
-				elif 当前状态 == State.ATTACK:
+				if 当前状态 == 状态.待机:
+					切换状态(状态.移动)
+				elif 当前状态 == 状态.攻击:
 					if global_position.distance_to(target.global_position) > 攻击范围:
-						切换状态(State.MOVE)
-			else:
-				命令停止()
+						切换状态(状态.移动)
 
-		命令类型.无, 命令类型.驻守, _:
-			if 当前状态 != State.IDLE:
-				切换状态(State.IDLE)
+		命令管理器.命令类型.停止, 命令管理器.命令类型.驻守, _:
+			if 当前状态 != 状态.待机:
+				切换状态(状态.待机)
 
 
 # ============================================================
 # 待机
 # ============================================================
 
-func _处理待机状态(delta: float) -> void:
-	velocity = velocity.move_toward(Vector2.ZERO, 移动速度 * 10.0 * delta)
-
-	if 当前命令 in [命令类型.移动, 命令类型.攻击, 命令类型.巡逻]:
+func _处理待机(delta: float) -> void:
+	if DIAG and 当前命令 != 命令管理器.命令类型.无:
+		pass  # 有命令时 同步命令状态已处理
+	# 有命令时立即响应
+	if 当前命令 in [命令管理器.命令类型.移动, 命令管理器.命令类型.攻击, 命令管理器.命令类型.巡逻]:
 		if 目标位置 != Vector2.ZERO:
-			切换状态(State.MOVE)
+			切换状态(状态.移动)
 		return
 
-	if 当前命令 == 命令类型.驻守:
+	if 当前命令 == 命令管理器.命令类型.驻守:
 		return
 
-	if 当前命令 == 命令类型.无:
-		var target = targeting_component.get_target() if targeting_component else null
+	# 空闲自动索敌
+	if 当前命令 == 命令管理器.命令类型.无:
+		var target = 索敌组件.get_target() if 索敌组件 else null
 		if target and is_instance_valid(target):
 			目标位置 = target.global_position
-			当前命令 = 命令类型.攻击
-			_是自动索敌攻击 = true
-			_追击起始位置 = global_position
-			切换状态(State.MOVE)
+			当前命令 = 命令管理器.命令类型.攻击
+			切换状态(状态.移动)
 
 
 # ============================================================
 # 移动
 # ============================================================
 
-func _处理移动状态(delta: float) -> void:
-	if _是自动索敌攻击 and _追击起始位置 != Vector2.ZERO:
-		if global_position.distance_to(_追击起始位置) > 追击上限距离:
-			targeting_component.clear_target()
-			_是自动索敌攻击 = false
-			_追击起始位置 = Vector2.ZERO
-			if _原始目标位置 != Vector2.ZERO:
-				目标位置 = _原始目标位置
-				当前命令 = 命令类型.移动
-				_是攻击移动 = true
-				切换状态(State.MOVE)
-			else:
-				命令停止()
-			return
+func _处理移动(delta: float) -> void:
+	var target = 索敌组件.get_target() if 索敌组件 else null
 
-	var target = targeting_component.get_target() if targeting_component else null
+	# 接近攻击目标 → 切攻击（同时停止移动）
 	if target and is_instance_valid(target):
 		if global_position.distance_to(target.global_position) <= 攻击范围:
-			切换状态(State.ATTACK)
+			立即停止()
+			切换状态(状态.攻击)
 			return
-
-	if target and is_instance_valid(target):
+		# 目标位置变化 → 更新移动请求
 		目标位置 = target.global_position
 
-	var 到达: bool = _使用流场移动(delta)
-	if 到达:
-		match 当前命令:
-			命令类型.攻击:
-				if not target or not is_instance_valid(target):
-					if _原始目标位置 != Vector2.ZERO:
-						目标位置 = _原始目标位置
-						当前命令 = 命令类型.移动
-						_是攻击移动 = true
-						_是自动索敌攻击 = false
-						切换状态(State.MOVE)
-						return
-				target = targeting_component.get_target() if targeting_component else null
-				if target:
-					目标位置 = target.global_position
-				return
-			命令类型.巡逻:
-				_下一个巡逻点()
-			_:
-				命令停止()
-		return
+	# 速度由 运动服务 管理，这里不做任何 velocity 操作
+
+
+# ============================================================
+# 攻击
+# ============================================================
+
+func _处理攻击(delta: float) -> void:
+	var target = 索敌组件.get_target() if 索敌组件 else null
+	if target and is_instance_valid(target):
+		if global_position.distance_to(target.global_position) > 攻击范围:
+			切换状态(状态.移动)
+	# 攻击时 velocity 已由立即停止() 归零，无需额外操作
 
 
 # ============================================================
 # CombatComponent 信号响应
 # ============================================================
 
-func _on_剑士_attack_started(_target: Node2D) -> void:
-	## ⭐ 每次攻击切换动画（不论是否已在 ATTACK）
+func _on_攻击开始(_target: Node2D) -> void:
 	_切换动画("攻击")
 
-
-func _on_剑士_strike(target: Node2D, packet: DamagePacket) -> void:
-	## ⭐ CombatComponent 已在打击时检查距离，这里只需造成伤害
+func _on_打击(target: Node2D, packet: DamagePacket) -> void:
 	if target and is_instance_valid(target):
 		DamageSystem.apply_damage(packet)
 
-
-func _on_剑士_attack_finished(_target: Node2D) -> void:
-	## ⭐ 攻击结束后的状态决策：继续攻击 / 追击 / 停止
-	var action = _default_attack_finished_decision()
-	match action:
-		"stay":
-			pass  # 继续 ATTACK，下一个周期自动开始
-		"chase":
-			切换状态(State.MOVE)
-		"stop":
-			命令停止()
+func _on_攻击结束(_target: Node2D) -> void:
+	var target = 索敌组件.get_target() if 索敌组件 else null
+	if target and is_instance_valid(target):
+		var dist = global_position.distance_to(target.global_position)
+		if dist <= 攻击范围:
+			pass  # 继续攻击
+		else:
+			切换状态(状态.移动)
+	elif 当前命令 == 命令管理器.命令类型.无:
+		切换状态(状态.待机)

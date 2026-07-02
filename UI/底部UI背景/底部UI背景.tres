@@ -1,0 +1,6 @@
+[gd_resource type="StyleBoxTexture" format=3 uid="uid://cnml0nm0weexj"]
+
+[ext_resource type="Texture2D" uid="uid://dh7vh33songhj" path="res://美术、音频/UI/UI表/框架背景/底部.png" id="1_seau6"]
+
+[resource]
+texture = ExtResource("1_seau6")

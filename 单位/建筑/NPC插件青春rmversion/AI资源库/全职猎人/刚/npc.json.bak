@@ -1,0 +1,171 @@
+{
+    "schemaVersion": 1,
+    "meta": {
+        "id": "刚",
+        "displayName": "刚",
+        "style": "wasteland_scifi",
+        "category": "merchant",
+        "types": [
+            "npc"
+        ],
+        "description": "刚 的角色设定待补充。",
+        "generator": "codex_batch_template_v1",
+        "createdAt": "2026-04-27T12:45:34Z",
+        "updatedAt": "2026-04-27T12:45:34Z",
+        "tags": [
+            "auto-generated",
+            "needs-review"
+        ]
+    },
+    "assets": {
+        "spritePath": "./sprite.png",
+        "thumbPath": "./sprite.png"
+    },
+    "spritesheet": {
+        "layoutVersion": "yituquan_v1",
+        "frameWidth": 21,
+        "frameHeight": 40,
+        "columns": 12,
+        "rows": 6,
+        "margin": 0,
+        "spacing": 0,
+        "defaultFps": 10,
+        "animations": {
+            "idle_down": {
+                "row": 2,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "walk_down": {
+                "row": 3,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "idle_left": {
+                "row": 2,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "walk_left": {
+                "row": 3,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "idle_right": {
+                "row": 2,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "walk_right": {
+                "row": 3,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "idle_up": {
+                "row": 1,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "walk_up": {
+                "row": 1,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "run_down": {
+                "row": 4,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            },
+            "run_left": {
+                "row": 4,
+                "from": 6,
+                "to": 11,
+                "loop": true
+            },
+            "run_up": {
+                "row": 5,
+                "from": 0,
+                "to": 5,
+                "loop": true
+            }
+        }
+    },
+    "gameplay": {
+        "faction": "未设定",
+        "role": "npc",
+        "level": 1,
+        "stats": {
+            "hp": 100,
+            "attack": 10,
+            "defense": 10,
+            "moveSpeed": 100
+        },
+        "interaction": {
+            "canTalk": true,
+            "canTrade": false,
+            "questGiver": false
+        },
+        "merchant": {
+            "enabled": false,
+            "shopItems": []
+        },
+        "quest": {
+            "enabled": false,
+            "questId": "",
+            "title": "",
+            "description": "",
+            "objective": "",
+            "rewards": {
+                "gold": 0,
+                "exp": 0,
+                "items": []
+            },
+            "tasks": []
+        }
+    },
+    "ext": {
+        "librarySortPriority": 0,
+        "cardPreviewAnim": "idle_down",
+        "animationParams": "standard_humanoid_4dir",
+        "dialogueState": "default",
+        "localization": {
+            "appearance": {
+                "zh": "待补充",
+                "ja": "",
+                "en": ""
+            },
+            "background": {
+                "zh": "待补充",
+                "ja": "",
+                "en": ""
+            },
+            "dialogues": {
+                "greeting": {
+                    "zh": "像素交流群 群号：1079961300，密码：bimelona",
+                    "ja": "",
+                    "en": "Hello."
+                }
+            }
+        },
+        "spawnCoordinates": {
+            "mapId": "unassigned",
+            "x": 0,
+            "y": 0
+        },
+        "shopSystem": {
+            "enabled": false,
+            "presetId": ""
+        },
+        "otherPayload": {},
+        "projectPrivate": {}
+    }
+}

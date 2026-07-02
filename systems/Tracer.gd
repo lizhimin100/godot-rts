@@ -50,9 +50,9 @@ static func trace(module: String, event: String, detail: String = "", cost_ms: f
 	var cost_str: String = "%.4fms" % cost_ms if cost_ms >= 0 else "?"
 	var effects_str: String = _effects_to_str(effects)
 	# 使用 print 而非 push_notification，避免污染错误面板
-	print("[MCP_TRACE] %s | %s | %d | %s | %s%s" % [
-		module, event, timestamp, cost_str, detail, effects_str
-	])
+	#print("[MCP_TRACE] %s | %s | %d | %s | %s%s" % [
+	#	module, event, timestamp, cost_str, detail, effects_str
+	#])
 
 
 static func _effects_to_str(effects: int) -> String:

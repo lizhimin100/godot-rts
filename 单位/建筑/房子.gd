@@ -9,7 +9,7 @@ func _ready() -> void:
 	建筑名称 = "房子"
 
 	# 配置 HealthComponent
-	var hc: HealthComponent = _get_health()
+	var hc: HealthComponent = _获取生命组件()
 	if hc:
 		hc.max_hp = 300.0
 		hc.set_hp(300.0)

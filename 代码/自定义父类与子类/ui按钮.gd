@@ -66,7 +66,7 @@ func _on_mouse_entered() -> void:
 
 
 func _on_mouse_exited() -> void:
-	print("鼠标离开信号连接成功。")
+	#print("鼠标离开信号连接成功。")  # DEBUG
 	create_tween().tween_property(self, "scale", 原始缩放, 0.2)
 	if is_instance_valid(当前提示框):
 		当前提示框.queue_free()
@@ -80,4 +80,4 @@ func _on_pressed() -> void:
 	执行操作()# 执行操作
 
 func 执行操作() -> void:
-	print("正在使用ui按钮。")
+	#print("正在使用ui按钮。")  # DEBUG

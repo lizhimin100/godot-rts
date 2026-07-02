@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "spritesheet.schema.v1.json",
+  "title": "Spritesheet Schema v1",
+  "type": "object",
+  "required": [
+    "layoutVersion",
+    "frameWidth",
+    "frameHeight",
+    "columns",
+    "rows",
+    "margin",
+    "spacing",
+    "defaultFps",
+    "animations"
+  ],
+  "properties": {
+    "layoutVersion": {
+      "type": "string",
+      "const": "yituquan_v1"
+    },
+    "frameWidth": {
+      "type": "integer",
+      "const": 128
+    },
+    "frameHeight": {
+      "type": "integer",
+      "const": 128
+    },
+    "columns": {
+      "type": "integer",
+      "const": 8
+    },
+    "rows": {
+      "type": "integer",
+      "const": 12
+    },
+    "margin": {
+      "type": "integer",
+      "const": 0
+    },
+    "spacing": {
+      "type": "integer",
+      "const": 0
+    },
+    "defaultFps": {
+      "type": "integer",
+      "const": 8
+    },
+    "animations": {
+      "type": "object",
+      "required": [
+        "idle_down",
+        "walk_down",
+        "idle_left",
+        "walk_left",
+        "idle_right",
+        "walk_right",
+        "idle_up",
+        "walk_up"
+      ],
+      "properties": {
+        "idle_down": { "$ref": "#/$defs/animRowRange" },
+        "walk_down": { "$ref": "#/$defs/animRowRange" },
+        "idle_left": { "$ref": "#/$defs/animRowRange" },
+        "walk_left": { "$ref": "#/$defs/animRowRange" },
+        "idle_right": { "$ref": "#/$defs/animRowRange" },
+        "walk_right": { "$ref": "#/$defs/animRowRange" },
+        "idle_up": { "$ref": "#/$defs/animRowRange" },
+        "walk_up": { "$ref": "#/$defs/animRowRange" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "animRowRange": {
+      "type": "object",
+      "required": ["row", "from", "to", "loop"],
+      "properties": {
+        "row": { "type": "integer", "minimum": 0, "maximum": 11 },
+        "from": { "type": "integer", "minimum": 0, "maximum": 7 },
+        "to": { "type": "integer", "minimum": 0, "maximum": 7 },
+        "loop": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "from": { "type": "integer" }, "to": { "type": "integer" } }, "required": ["from", "to"] },
+          "then": { "properties": { "to": { "minimum": 0 } } }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

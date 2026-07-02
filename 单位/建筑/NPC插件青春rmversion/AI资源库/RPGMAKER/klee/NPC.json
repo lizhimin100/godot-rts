@@ -1,0 +1,127 @@
+{
+	"schemaVersion": 1,
+	"meta": {
+		"id": "npc_RPG_0001",
+		"displayName": "klee",
+		"style": "medieval",
+		"category": "combat",
+		"types": ["combat"],
+		"description": "Dororororororororo。",
+		"generator": "senior_writer_v2",
+		"createdAt": "2026-04-13T00:00:00Z",
+		"updatedAt": "2026-04-13T00:00:00Z",
+		"tags": ["NIKKE", "战力爆表？", "Q版", "萌物？", "粉毛"]
+	},
+	"assets": {
+		"spritePath": "./sprite.png",
+		"thumbPath": "./thumb.png"
+	},
+	
+	"gameplay": {
+		"faction": "伊甸",
+		"role": "combat_mage_senior",
+		"level": 21,
+		"stats": {
+			"hp": 920,
+			"attack": 142,
+			"defense": 76,
+			"moveSpeed": 118
+		},
+		"interaction": {
+			"canTalk": true,
+			"canTrade": false,
+			"questGiver": true
+		},
+		"combat": {
+			"enabled": true,
+			"aiArchetype": "agile_burst_mage",
+			"element": "arcane_fire",
+			"skills": [
+				{
+					"skillId": "sk_arcane_bolt_fan",
+					"skillName": "星火连弹",
+					"cooldown": 3.5,
+					"power": 1.0
+				},
+				{
+					"skillId": "sk_meteoric_circle",
+					"skillName": "陨辉法环",
+					"cooldown": 8.0,
+					"power": 1.6
+				},
+				{
+					"skillId": "sk_blink_step",
+					"skillName": "瞬步闪烁",
+					"cooldown": 5.0,
+					"power": 0.0
+				}
+			]
+		},
+		"quest": {
+			"enabled": true,
+			"questId": "qst_academy_017",
+			"title": "打酱油",
+			"description": "没事就打个酱油",
+			"objective": "前往【海X酱油】击败失控傀儡，收集3瓶【味极鲜】交给Doro。",
+			"rewards": {
+				"gold": 1800,
+				"exp": 2200,
+				"items": [
+					{
+						"itemId": "acc_emily_ribbon",
+						"itemName": "Doro写真集",
+						"count": 1
+					}
+				]
+			},
+			"tasks": []
+		}
+	},
+	"ext": {
+		"librarySortPriority": 8,
+		"cardPreviewAnim": "idle_down",
+		"animationParams": "standard_humanoid_4dir",
+		"dialogueState": "first_meet_unlocked",
+		"localization": {
+			"appearance": {
+				"zh": "Doro是个~~人形？~~Q版娇小粉色短发萌物。",
+				"ja": "",
+				"en": ""
+			},
+			"background": {
+				"zh": "Dora只用卖萌就行了，啥都不干。",
+				"ja": "",
+				"en": ""
+			},
+			"dialogues": {
+				"greeting": {
+					"zh": "呀～你也来啦？要不要和我一起打打酱油呀？",
+					"ja": "",
+					"en": ""
+				},
+				"shopOpen": {
+					"zh": "想听变强小秘诀的话，可要好好讨好我哦！",
+					"ja": "",
+					"en": ""
+				},
+				"questHint": {
+					"zh": "帮我打打酱油嘛，事后有奖励哦～",
+					"ja": "",
+					"en": ""
+				}
+			}
+		},
+		"spawnCoordinates": {
+			"mapId": "map_magic_academy_yard",
+			"x": 736,
+			"y": 420
+		},
+		"battleProfile": {
+			"engageRadius": 380,
+			"leashRadius": 640,
+			"preferredRange": 220
+		},
+		"otherPayload": {},
+		"projectPrivate": {}
+	}
+}

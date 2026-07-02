@@ -27,7 +27,7 @@ extends Resource
 @export var attack_cooldown: float = 1.0  # 攻击间隔（秒）
 
 # ========== 移动参数 ==========
-@export var move_speed: float = 200.0
+@export var move_speed: float = 180.0
 @export var max_speed: float = 350.0
 @export var acceleration: float = 800.0
 
@@ -54,7 +54,7 @@ static func create_剑士_stats() -> UnitStats:
 	s.aggro_range = 250.0
 	s.chase_range = 400.0
 	s.attack_cooldown = 1.0
-	s.move_speed = 200.0
+	s.move_speed = 250.0  # ⭐ 剑士最快
 	return s
 
 static func create_弓箭手_stats() -> UnitStats:
@@ -66,7 +66,7 @@ static func create_弓箭手_stats() -> UnitStats:
 	s.aggro_range = 250.0
 	s.chase_range = 400.0
 	s.attack_cooldown = 0.8
-	s.move_speed = 200.0
+	s.move_speed = 180.0  # ⭐ 弓箭手中等
 	return s
 
 static func create_农民_stats() -> UnitStats:
@@ -77,5 +77,5 @@ static func create_农民_stats() -> UnitStats:
 	s.attack_range = 25.0
 	s.aggro_range = 0.0
 	s.attack_cooldown = 1.5
-	s.move_speed = 200.0
+	s.move_speed = 140.0  # ⭐ 农民最慢
 	return s

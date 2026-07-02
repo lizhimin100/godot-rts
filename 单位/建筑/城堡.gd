@@ -46,7 +46,8 @@ const 单位图标帧尺寸 := {
 
 func _ready() -> void:
 	super._ready()
-	print("🏰 城堡 _ready()，阵营: %s，collision_layer: %d" % [阵营管理器.阵营.keys()[阵营], collision_layer])
+	视野半径 = 350.0  # 城堡更大，视野更远
+	#print("🏰 城堡 _ready()，阵营: %s，collision_layer: %d" % [阵营管理器.阵营.keys()[阵营], collision_layer])  # DEBUG
 
 	_训练计时器 = Timer.new()
 	_训练计时器.name = "训练计时器"
@@ -60,7 +61,7 @@ func _ready() -> void:
 	_集结点标记.visible = false
 	_集结点标记.z_index = 50
 	add_child(_集结点标记)
-	print("🏰 城堡初始化完成，训练计时器已创建")
+	#print("🏰 城堡初始化完成，训练计时器已创建")  # DEBUG
 
 
 ## 右键设置集结点（由 rts 系统在右击地面时调用）
@@ -77,17 +78,17 @@ func 获取集结点() -> Vector2:
 
 ## 添加单位到训练队列
 func 添加训练(单位类型: String) -> bool:
-	print("🏰 添加训练被调用: %s" % 单位类型)
+	#print("🏰 添加训练被调用: %s" % 单位类型)  # DEBUG
 	if not 可训练单位.has(单位类型):
-		print("  ❌ 未知单位类型")
+		#print("  ❌ 未知单位类型")  # DEBUG
 		return false
 	if _训练队列.size() >= 5:
-		print("  ❌ 队列已满")
+		#print("  ❌ 队列已满")  # DEBUG
 		return false
 
 	var 配置 = 可训练单位[单位类型]
 	if 全局变量.金钱 < 配置["花费"]["金钱"] or 全局变量.木材 < 配置["花费"]["木材"]:
-		print("资源不足！")
+		#print("资源不足！")  # DEBUG
 		return false
 
 	# 扣除资源
@@ -120,7 +121,7 @@ func _开始训练() -> void:
 	var 当前训练 = _训练队列[0]
 	_训练计时器.wait_time = 当前训练["配置"]["时间"]
 	_训练计时器.start()
-	print("  ▶️ 开始训练: %s (%.1f秒)" % [当前训练["类型"], 当前训练["配置"]["时间"]])
+	#print("  ▶️ 开始训练: %s (%.1f秒)" % [当前训练["类型"], 当前训练["配置"]["时间"]])  # DEBUG
 
 
 func _完成下一个训练() -> void:
@@ -129,7 +130,7 @@ func _完成下一个训练() -> void:
 		return
 
 	var 完成的 = _训练队列.pop_front()
-	print("  ✅ 训练完成: %s，剩余队列: %d" % [完成的["类型"], _训练队列.size()])
+	#print("  ✅ 训练完成: %s，剩余队列: %d" % [完成的["类型"], _训练队列.size()])  # DEBUG
 	_生成单位(完成的["类型"])
 
 	if not _训练队列.is_empty():
@@ -145,12 +146,12 @@ func _生成单位(类型: String) -> void:
 		"弓箭手": 场景路径 = "res://单位/弓箭手/弓箭手.tscn"
 		"农民": 场景路径 = "res://单位/农民/农民.tscn"
 		_:
-			print("  ⚠️ 未知单位类型: %s" % 类型)
+			#print("  ⚠️ 未知单位类型: %s" % 类型)  # DEBUG
 			return
 
 	var 场景 = load(场景路径)
 	if not 场景:
-		print("  ⚠️ 无法加载场景: %s" % 场景路径)
+		#print("  ⚠️ 无法加载场景: %s" % 场景路径)  # DEBUG
 		return
 
 	var 实例 = 场景.instantiate()
@@ -161,9 +162,9 @@ func _生成单位(类型: String) -> void:
 	实例.阵营 = 阵营
 	get_parent().add_child(实例)
 
-	# 集结点：训练出的单位自动前往
-	if 集结点 != Vector2.ZERO and 实例.has_method("命令移动"):
-		实例.命令移动(集结点)
+	# 集结点：训练出的单位自动前往（使用新架构命令接口）
+	if 集结点 != Vector2.ZERO and 实例.has_method("设置命令"):
+		实例.设置命令(命令管理器.命令类型.移动, 集结点)
 
 	单位训练完成.emit(类型, 实例.position)
 
@@ -179,7 +180,6 @@ func 取消训练() -> bool:
 	全局变量.木材 += 取消项["配置"]["花费"]["木材"]
 	全局变量.显示通知("已取消训练 " + 取消项["类型"], global_position + Vector2(0, -120))
 	return true
-
 
 
 

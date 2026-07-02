@@ -28,9 +28,17 @@ config/icon="uid://b0ouu0qdf58dc"
 Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 "防建筑重叠"="*res://自动加载/防建筑重叠.tscn"
 "全局变量"="*res://代码/自动加载/全局变量.gd"
-"资源ui显示"="*res://UI组件/总UI/资源和经验谈UI显示.tscn"
 "阵营管理器"="*res://代码/自动加载/阵营管理器.gd"
 DamageSystem="*res://combat/DamageSystem.gd"
+"单位管理器"="*res://系统/单位管理器.gd"
+"迷雾系统"="*res://系统/迷雾系统.gd"
+"情报系统"="*res://系统/情报系统.gd"
+"选择管理器"="*res://系统/选择管理器.gd"
+"命令管理器"="*res://系统/命令管理器.gd"
+"标记"="*res://系统/标记.gd"
+"流场管理器"="*res://脚本/移动系统/流场管理器.gd"
+"避障系统"="*res://脚本/移动系统/避障系统.gd"
+"运动服务"="*res://脚本/移动系统/运动服务.gd"
 MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 
 [dialogic]
@@ -51,8 +59,8 @@ variables={
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/size/window_width_override=1300
-window/size/window_height_override=800
+window/size/window_width_override=1500
+window/size/window_height_override=960
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
 

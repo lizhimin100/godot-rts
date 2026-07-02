@@ -15,6 +15,6 @@ func _process(_delta: float) -> void:
 
 func 执行操作() -> void:
 	super.执行操作()
-	print("[调试] 正在打开背包")  # 添加调试输出
+	#print("[调试] 正在打开背包")  # 添加调试输出  # DEBUG
 	存储物品界面ui.visible = true  # ✅ 切换显示状态
 	#get_tree().paused = 存储物品界面ui.visible  # 可选：暂停游戏

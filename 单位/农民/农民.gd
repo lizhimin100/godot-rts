@@ -101,7 +101,12 @@ func _physics_process(delta: float) -> void:
 
 	# 动画管理（建造中由建造振荡覆盖，非建造由速度驱动）
 	if _建造类型 < 0:
-		if velocity.length_squared() < 4.0:
+		# ⭐ SLOT_LOCKED 单位不响应速度动画（运动服务会强制设 idle）
+		var 槽锁定 = 运动服务.实例 and 运动服务.实例.是否是槽锁定(self)
+		if 槽锁定:
+			if 角色动画.current_animation == "移动":
+				角色动画.play("待机")
+		elif velocity.length_squared() < 4.0:
 			if 角色动画.current_animation == "移动":
 				角色动画.play("待机")
 		else:

@@ -11,7 +11,7 @@ class_name 追击目标移动
 ##
 ## ⭐ 速度使用单位设定的 移动速度（非最大速度）
 
-const DIAG: bool = false
+func _diag() -> bool: return 调试配置.DEBUG_MOVE
 
 func 计算速度(单位: Node2D, 请求: 移动请求) -> Vector2:
 	if not is_instance_valid(请求.目标实体):
@@ -24,7 +24,7 @@ func 计算速度(单位: Node2D, 请求: 移动请求) -> Vector2:
 
 	# ⭐ 使用移动速度（非最大速度），让单位按照自己设定的速度移动
 	var 速度值 = 单位.移动速度 if "移动速度" in 单位 else 200.0
-	if DIAG: print("[CHASE] ", 单位.name, " 追击速度=", 速度值)
+	if _diag(): print("[CHASE] ", 单位.name, " 追击速度=", 速度值)
 	return 方向 * 速度值
 
 

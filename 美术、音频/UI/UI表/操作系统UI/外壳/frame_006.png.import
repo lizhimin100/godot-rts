@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bandk2y2l3tk1"
-path="res://.godot/imported/巡逻.png-1d802dfa3f61de36d64101fd37185b16.ctex"
+uid="uid://davin8rck2pp4"
+path="res://.godot/imported/frame_006.png-4634558eed89cd1e5ce7573c2411a05f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://美术、音频/UI/UI表/巡逻.png"
-dest_files=["res://.godot/imported/巡逻.png-1d802dfa3f61de36d64101fd37185b16.ctex"]
+source_file="res://美术、音频/UI/UI表/操作系统UI/外壳/frame_006.png"
+dest_files=["res://.godot/imported/frame_006.png-4634558eed89cd1e5ce7573c2411a05f.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmwtngvlsl7fl"
-path="res://.godot/imported/驻守.png-4e286963c23564df99f74d154ea7a7a2.ctex"
+uid="uid://dph4t64ei4ti6"
+path="res://.godot/imported/frame_007.png-abdaac839e5fe47d1dbbe894329db968.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://美术、音频/UI/UI表/驻守.png"
-dest_files=["res://.godot/imported/驻守.png-4e286963c23564df99f74d154ea7a7a2.ctex"]
+source_file="res://美术、音频/UI/UI表/frame_007.png"
+dest_files=["res://.godot/imported/frame_007.png-abdaac839e5fe47d1dbbe894329db968.ctex"]
 
 [params]
 

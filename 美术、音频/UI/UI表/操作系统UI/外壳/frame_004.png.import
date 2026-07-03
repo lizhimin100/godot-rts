@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwm4os7s2gtbh"
-path="res://.godot/imported/攻击.png-7113cafbc40be994553aa462dec0cd55.ctex"
+uid="uid://eb5cmccgp4hj"
+path="res://.godot/imported/frame_004.png-94359e5dc1cf6ebd48a2990b976e6275.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://美术、音频/UI/UI表/攻击.png"
-dest_files=["res://.godot/imported/攻击.png-7113cafbc40be994553aa462dec0cd55.ctex"]
+source_file="res://美术、音频/UI/UI表/操作系统UI/外壳/frame_004.png"
+dest_files=["res://.godot/imported/frame_004.png-94359e5dc1cf6ebd48a2990b976e6275.ctex"]
 
 [params]
 

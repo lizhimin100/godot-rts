@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bvmyd8sr3eo8t"
-path="res://.godot/imported/停止.png-5bfc7c633183f3b1571ced775fac4a0b.ctex"
+uid="uid://dvhulg3l0mbw7"
+path="res://.godot/imported/frame_000.png-e68f1003b8edb46ac21ad92f80ca12f8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://美术、音频/UI/UI表/停止.png"
-dest_files=["res://.godot/imported/停止.png-5bfc7c633183f3b1571ced775fac4a0b.ctex"]
+source_file="res://美术、音频/UI/UI表/操作系统UI/外壳/frame_000.png"
+dest_files=["res://.godot/imported/frame_000.png-e68f1003b8edb46ac21ad92f80ca12f8.ctex"]
 
 [params]
 

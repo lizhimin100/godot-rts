@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://0ovs88ipqcpd"
-path="res://.godot/imported/移动.png-a8218924791ae56966685bc022a029fd.ctex"
+uid="uid://dr6on88yfkjnx"
+path="res://.godot/imported/顶部UI.png-418903afba9a05962fa2e5b4cca384f7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://美术、音频/UI/UI表/移动.png"
-dest_files=["res://.godot/imported/移动.png-a8218924791ae56966685bc022a029fd.ctex"]
+source_file="res://美术、音频/UI/UI表/操作系统UI/外壳/顶部UI.png"
+dest_files=["res://.godot/imported/顶部UI.png-418903afba9a05962fa2e5b4cca384f7.ctex"]
 
 [params]
 

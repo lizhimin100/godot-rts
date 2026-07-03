@@ -256,7 +256,8 @@ func _发出移动请求():
 	var 请求 = 移动请求.前往位置(_单位.目标位置)
 	请求.停止距离 = _单位.停止阈值
 	# 写入预存的队形偏移（由 CommandManager 在发出命令前设置）
-	if _单位._pending_formation_offset != Vector2.ZERO:
+	# ⭐ 用 slot_id >= 0 判断（不要用 offset != ZERO，offset 可能为 0）
+	if _单位._pending_formation_slot >= 0:
 		请求.队形偏移 = _单位._pending_formation_offset
 		请求.队形槽位 = _单位._pending_formation_slot
 		_单位._pending_formation_offset = Vector2.ZERO
@@ -296,9 +297,6 @@ func _on_移动完成(移动单位: Node2D, 结果: 移动结果):
 
 
 func _on_到达():
-	# 记录到达日志（用于阵型间距分析）
-	if _单位 and _单位.目标位置 != Vector2.ZERO:
-		UnitFormation.获取日志().记录单位到达(_单位, _单位.目标位置)
 	到达目的地.emit()
 	match 当前状态:
 		状态.移动, 状态.移动攻击:

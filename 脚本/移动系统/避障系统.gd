@@ -1,96 +1,160 @@
 extends Node
 
-## 避障系统 — 两层避障：被动卡死修复 + 主动让路
+## 避障系统 — 纯分离力计算器
 ##
-## 被动避障：单位被卡住时报告运动服务，让其重新规划
-## 主动避障：单位挡住己方单位时主动让出空间
+## ⚠ 核心原则：
+##   avoidance_force 是速度微调 (px/s)，不是独立移动系统。
+##   final 必须 <= unit.移动速度 * 0.35。
+##   同组单位优先横向展开，不前后互推。
+##   静止单位（SLOT_LOCKED）产生软绕行，不强推。
 ##
-## 使用方式（自动加载单例）：
-##   避障系统.检测卡死(单位, 期望速度) → bool
-##   避障系统.计算让路修正(单位, 周围单位) → Vector2
+## ⚠ 调用约定：
+##   运动服务在速度合成中使用 分离力权重(0.4)：
+##     final = path + formation*0.6 + avoidance*0.4
+##   本系统返回值单位 = px/s，不是位移不是冲量。
+
+func _diag() -> bool: return 调试配置.DEBUG_AVOID
 
 static var 实例: Node = null
 
-## 卡死检测参数
-const 卡死阈值: float = 2.0       # 每帧位移 < 2px 视为卡住
-const 卡死超时: float = 0.5       # 连续卡住 0.5s 触发报告
-const 让路半径: float = 32.0      # 此半径内检测周围单位
-const 让路强度: float = 60.0     # 让路修正力度（大幅增强，用于推开静止单位）
-const 让路最大比例: float = 0.4    # 让路修正最多占期望速度 80%（更强推开效果）
+## 避障半径 (px) — 约 spacing * 0.9
+const 分离半径: float = 44.0
 
-## 卡死计时缓存：单位 → 累计卡死时间
-var _卡死计时: Dictionary = {}
+## raw → final 增益：累加方向长度 × 移动速度 × 此值
+const 分离增益: float = 0.5
+
+## 硬限幅比例：final ≤ 移动速度 × 此值
+const 分离最大比例: float = 0.35
+
+## 静止阈值：低于此速度视为 SLOT_LOCKED
+const 静止速度阈值: float = 4.0
+
+## 静止单位避障力折扣
+const 静止折扣: float = 0.3
+
 
 func _enter_tree() -> void:
 	实例 = self
 
 func _exit_tree() -> void:
-	if 实例 == self: 实例 = null
+	if 实例 == self:
+		实例 = null
 
 
-## 检测单位是否卡死
-## @param 单位        移动中的单位
-## @param 期望速度    策略计算的期望速度
-## @param 帧间隔      delta
-## @return            true=卡死超时，需要重新规划
-func 检测卡死(单位: Node2D, 期望速度: Vector2, 帧间隔: float) -> bool:
-	var 当前速度长度 = 单位.velocity.length()
-	var 期望速度长度 = 期望速度.length()
-
-	# 期望速度本身接近于零 → 不检测卡死
-	if 期望速度长度 < 卡死阈值:
-		_卡死计时.erase(单位)
-		return false
-
-	# 实际速度远低于期望 → 可能卡住
-	if 当前速度长度 < 卡死阈值:
-		var 计时 = _卡死计时.get(单位, 0.0)
-		计时 += 帧间隔
-		_卡死计时[单位] = 计时
-		if 计时 >= 卡死超时:
-			_卡死计时.erase(单位)
-			return true
-	else:
-		_卡死计时.erase(单位)
-
-	return false
-
-
-## 计算主动让路修正向量
-## @param 单位        移动中的单位
-## @param 周围单位    周围的所有单位列表
-## @param 期望方向    策略期望的移动方向（归一化）
-## @return            修正速度向量（将被限幅后叠加到期望速度上）
+## ⭐ 计算避障力 (px/s)
+## 返回值 = 速度修正向量，已限幅。
+## cap = unit.移动速度 * 0.35
+##
+## @param 单位      当前移动单位（必须有 移动速度 或 最大速度 属性）
+## @param 周围单位  九宫格邻居（来自 空间哈希网格）
+## @param 期望方向  策略当前移动方向（归一化）
 func 计算让路修正(单位: Node2D, 周围单位: Array, 期望方向: Vector2) -> Vector2:
-	var 修正 := Vector2.ZERO
+	if not is_instance_valid(单位):
+		return Vector2.ZERO
 
+		# â­ Step 3: ä½¿ç¨å®éç§»å¨éåº¦(110)ï¼ä¸æ¯æå¤§éåº¦ç¡¬ä¸é(800)
+		#    é¿écap = ç§»å¨éåº¦Ã0.35ï¼ä¸æ¯ æå¤§éåº¦Ã0.35
+	var move_speed: float = 单位.移动速度 if "移动速度" in 单位 else 单位.最大速度 if "最大速度" in 单位 else 200.0
+	var max_avoid: float = move_speed * 分离最大比例  # ≈ 110*0.35=38.5
+
+	var 累加方向 := Vector2.ZERO
+	var 邻居数 := 0
+	var 有同组移动邻居 := false
+
+	# ⭐ Step 1+8: 遍历邻居，累加分离方向
 	for 其他 in 周围单位:
 		if 其他 == 单位 or not is_instance_valid(其他):
 			continue
 
-		# 只对同阵营让路（不对敌人让路）
+		# 只对同阵营产生避障
 		if _是否为敌对(单位, 其他):
 			continue
 
 		var 偏移: Vector2 = 单位.global_position - 其他.global_position
 		var 距离: float = 偏移.length()
-		if 距离 > 让路半径 or 距离 < 1.0:
+
+		if 距离 > 分离半径 or 距离 < 1.0:
 			continue
 
-		# 分离力：距离越近越强
-		var 强度 = (1.0 - 距离 / 让路半径)
-		修正 += 偏移.normalized() * 强度 * 让路强度
+		邻居数 += 1
+		var 强度 = 1.0 - 距离 / 分离半径
 
-	# 限幅：修正最多占期望速度的 80%
-	if 修正.length_squared() > 0:
-		修正 = 修正.limit_length(单位.最大速度 * 让路最大比例)
+		# ⭐ Step 8: 静止单位 (SLOT_LOCKED) → 仅产生软绕行
+		var is_stationary = "velocity" in 其他 and 其他.velocity.length_squared() < 静止速度阈值
+		if is_stationary:
+			强度 *= 静止折扣  # ×0.3
+
+		# ⭐ Step 7: 标记同组非静止邻居 → 横向展开
+		if not is_stationary and _在同一队形组(单位, 其他):
+			有同组移动邻居 = true
+
+		累加方向 += 偏移.normalized() * 强度
+
+	# --- 无邻居 → 返回零 ---
+	if 累加方向.length_squared() < 0.0001:
+		return Vector2.ZERO
+
+	var 累加长 = 累加方向.length()
+	var 归一方向 = 累加方向 / 累加长
+
+	# --- raw force (before cap) ---
+	#   formula: raw = direction * accumulation_length * move_speed * gain
+	#   gain=0.5 → raw_mag = 累加长 * move_speed * 0.5
+	var raw_mag = 累加长 * move_speed * 分离增益
+	var raw_force = 归一方向 * raw_mag
+
+	# --- Step 2: 硬限幅 ---
+	var 修正 = raw_force
+	if 修正.length_squared() > max_avoid * max_avoid:
+		修正 = 修正.normalized() * max_avoid
+
+	# --- Step 7: 同组横向展开（替换修正为横向分量） ---
+	if 有同组移动邻居 and 期望方向.length_squared() > 0.001:
+		var forward = 期望方向.normalized()
+		var side = Vector2(-forward.y, forward.x)
+		var side_amount = 修正.dot(side)  # 投影到侧向
+		修正 = side * side_amount  # 只保留侧向分量
+
+		# 重新限幅（投影可能超越原限幅）
+		if 修正.length_squared() > max_avoid * max_avoid:
+			修正 = 修正.normalized() * max_avoid
+
+	# --- Step 6: 前向投影保护 ---
+	#   防止 avoidance 长期把单位往目标反方向推
+	if 期望方向.length_squared() > 0.001 and 修正.length_squared() > 1.0:
+		var forward = 期望方向.normalized()
+		var fwd_amount = 修正.dot(forward)
+
+		# 如果反向分量超过 max_avoid * 0.5，移除整个反向分量
+		if fwd_amount < -max_avoid * 0.5:
+			修正 -= forward * fwd_amount  # 移除反向
+
+			# 重新限幅
+			if 修正.length_squared() > max_avoid * max_avoid:
+				修正 = 修正.normalized() * max_avoid
+
+	# --- Step 4: 日志（raw / cap / final） ---
+	if _diag():
+		var raw_len = raw_force.length()
+		var final_len = 修正.length()
+		if final_len > 1.0:
+			print("[AVOID] unit=", 单位.name, " neighbors=", 邻居数,
+				  " raw=", raw_len, " cap=", max_avoid,
+				  " final=", final_len)
+		elif 邻居数 > 3 and final_len < 0.5:
+			print("[AVOID-IGNORE] unit=", 单位.name, " neighbors=", 邻居数,
+				  " reason=final≈0 raw=", raw_len)
 
 	return 修正
 
 
-## 计算静止单位让路修正（由运动服务在更新循环中调用）
-## 当移动单位靠近静止单位时，给静止单位一个小推力
-
+## 检查两单位是否在同一队形组（用于横向展开）
+func _在同一队形组(a: Node2D, b: Node2D) -> bool:
+	if not 队形系统.实例:
+		return false
+	var ga = 队形系统.实例.获取单位组ID(a)
+	var gb = 队形系统.实例.获取单位组ID(b)
+	return ga >= 0 and ga == gb
 
 
 ## 判断是否为敌对单位

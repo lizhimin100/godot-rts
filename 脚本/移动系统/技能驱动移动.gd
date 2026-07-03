@@ -23,7 +23,7 @@ func 计算速度(单位: Node2D, 请求: 移动请求) -> Vector2:
 	_初始化(请求)
 
 	# 不走流场，直接指向目标（施工场地本身的碰撞体会阻挡流场）
-	var 最终目标 = 获取最终目标(请求)
+	var 最终目标 = 获取最终目标(请求, 单位)
 	var 方向 = 最终目标 - 单位.global_position
 	if 方向.length_squared() < 0.0001:
 		return Vector2.ZERO
@@ -32,6 +32,6 @@ func 计算速度(单位: Node2D, 请求: 移动请求) -> Vector2:
 
 func 是否已到达(单位: Node2D, 请求: 移动请求) -> bool:
 	_初始化(请求)
-	var 最终目标 = 获取最终目标(请求)
+	var 最终目标 = 获取最终目标(请求, 单位)
 	var 距离平方 = 单位.global_position.distance_squared_to(最终目标)
 	return 距离平方 <= _停止距离平方

@@ -25,6 +25,8 @@ var _amode激活: bool = false
 var _最后右键位置: Vector2 = Vector2.ZERO
 var _相机: Camera2D = null
 var _框选控件: Control = null
+## 记录 _左键按下 是否选中了单位，用于 _左键释放 防止误取消
+var _按下时选中了单位: bool = false
 
 
 func _ready() -> void:
@@ -71,6 +73,7 @@ func _处理鼠标(event: InputEventMouseButton) -> void:
 func _左键按下(event: InputEventMouseButton) -> void:
 	_鼠标按下位置 = event.position
 	_拖拽中 = false
+	_按下时选中了单位 = false
 
 	# A-move
 	if _amode激活:
@@ -82,6 +85,8 @@ func _左键按下(event: InputEventMouseButton) -> void:
 	# 点选
 	var 点中的 = _检测点击(event.position, [选择碰撞层, 敌人碰撞层])
 	if 点中的:
+		_按下时选中了单位 = true
+		print("[PICK] mouse=(", event.position.x, ",", event.position.y, ") hit=", 点中的.name)
 		var 是敌人 = 点中的.has_method("_是敌人") and 点中的._是敌人()
 		if 是敌人:
 			# 敌人只在视野可见时才可选（看信息不能操控）
@@ -117,8 +122,12 @@ func _左键释放(event: InputEventMouseButton) -> void:
 			_执行框选(框选区)
 			return
 
-	var 点中的 = _检测点击(event.position, [选择碰撞层, 敌人碰撞层])
-	if not 点中的: 选择管理器.取消选中()
+	# ⭐ 不在释放时重新检测点击 —— press 已选中单位，防止释放时的
+	#   微小鼠标偏移导致二次检测失败而误取消选中。
+	#   只有 press 时也未选中任何单位（点击空地），才在 release 取消选中。
+	if not _按下时选中了单位:
+		var 点中的 = _检测点击(event.position, [选择碰撞层, 敌人碰撞层])
+		if not 点中的: 选择管理器.取消选中()
 
 
 func _右键按下(event: InputEventMouseButton) -> void:
@@ -205,10 +214,28 @@ func _检测点击(屏幕位置: Vector2, 碰撞层列表: Array) -> Node2D:
 	var 空间状态 = _获取空间状态()
 	if not 空间状态: return null
 	var 结果 = 空间状态.intersect_point(查询)
+	if 结果.is_empty():
+		return null
+
+	# ⭐ 按距离排序，选最近的单位（而不是 z_index/ysort 序）
+	#   intersect_point 不保证返回顺序，手动排序确保点击最近单位
+	var 点击位置 = 查询.position
+	结果.sort_custom(func(a, b): return _点选排序(a, b, 点击位置))
+
 	for r in 结果:
 		var c = r.collider
-		if c and is_instance_valid(c) and c is Node2D: return c
+		if c and is_instance_valid(c) and c is Node2D:
+			return c
 	return null
+
+
+## 按距离排序（防 null collider）
+func _点选排序(a: Dictionary, b: Dictionary, 原点: Vector2) -> bool:
+	var ca = a.collider if a.collider != null else null
+	var cb = b.collider if b.collider != null else null
+	if not is_instance_valid(ca): return false
+	if not is_instance_valid(cb): return true
+	return ca.global_position.distance_squared_to(原点) < cb.global_position.distance_squared_to(原点)
 
 
 func _屏幕到世界(屏幕坐标: Vector2) -> Vector2:

@@ -40,6 +40,8 @@ DamageSystem="*res://combat/DamageSystem.gd"
 "避障系统"="*res://脚本/移动系统/避障系统.gd"
 "运动服务"="*res://脚本/移动系统/运动服务.gd"
 MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
+"空间哈希网格"="*res://脚本/移动系统/空间哈希网格.gd"
+"队形系统"="*res://脚本/移动系统/队形系统.gd"
 
 [dialogic]
 
@@ -63,6 +65,7 @@ window/size/window_width_override=1500
 window/size/window_height_override=960
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
+mouse_cursor/custom_image="uid://drkl206lafgj6"
 
 [editor_plugins]
 
@@ -172,6 +175,5 @@ Q={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
+renderer/rendering_method.mobile="forward_plus"
 viewport/hdr_2d=true

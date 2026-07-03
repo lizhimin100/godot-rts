@@ -48,7 +48,9 @@ func 发出命令(units: Array, type: int, pos: Vector2 = Vector2.ZERO, target: 
 		for i in range(units.size()):
 			var u = units[i]
 			if is_instance_valid(u):
-				offsets[u] = UnitFormation.get_slot_offset(i, units.size(), 24.0)
+				offsets[u] = UnitFormation.get_slot_offset(i, units.size())
+			# ① 记录阵型日志
+			UnitFormation.获取日志().记录阵型分配(pos, units, UnitFormation.DEFAULT_SPACING)
 
 	for i in range(units.size()):
 		var unit = units[i]

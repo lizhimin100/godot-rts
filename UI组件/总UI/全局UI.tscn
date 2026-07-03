@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://dlvjgh7o4fn8k" path="res://美术、音频/UI/UI表/小地图UI/注意.png" id="12_qu46t"]
 [ext_resource type="Texture2D" uid="uid://bandk2y2l3tk1" path="res://美术、音频/UI/UI表/巡逻.png" id="13_5hasl"]
 [ext_resource type="Texture2D" uid="uid://boxp6da6ujk0r" path="res://美术、音频/UI/UI表/框架背景/人族背景UI/头像框.png" id="13_6uuwx"]
+[ext_resource type="Texture2D" uid="uid://pf7w8aobmfq8" path="res://美术、音频/UI/UI表/框架背景/人族背景UI/属性背景.png" id="14_lpefm"]
 [ext_resource type="Texture2D" uid="uid://dmwtngvlsl7fl" path="res://美术、音频/UI/UI表/驻守.png" id="14_q8yxu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_82q0j"]
@@ -302,6 +303,28 @@ theme_override_styles/background = SubResource("StyleBoxFlat_lpefm")
 theme_override_styles/fill = SubResource("StyleBoxFlat_227fd")
 value = 100.0
 show_percentage = false
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/下方UI/HBoxContainer2" unique_id=1988907190]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0, 0.05)
+offset_transform_scale = Vector2(1.25, 1.25)
+texture = ExtResource("14_lpefm")
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/下方UI/HBoxContainer2/TextureRect" unique_id=1395944610]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 79.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="和操作面板的间隙" type="Control" parent="MarginContainer/下方UI" unique_id=108853774]
 custom_minimum_size = Vector2(30, 0)

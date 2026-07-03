@@ -1,17 +1,16 @@
 class_name 单位基类
 extends CharacterBody2D
 
-## 单位基类 — RTS 单位根基类（服务化架构版）
+## 单位基类 — RTS 单位根基类（状态机整合版）
 ##
-## ⚠ 不再持有移动控制器，所有移动请求委托给 运动服务 全局单例
-##    velocity 由 运动服务 在 _physics_process 中写入，
+## ⚠ velocity 由 运动服务 在 _physics_process 中写入，
 ##    本类 _physics_process 只调用 move_and_slide()
+##    状态决策由 单元状态机 子节点统一处理
 
 const DIAG: bool = true
 
 signal 避开友军
 signal 移动开始              # 收到新的移动请求时
-signal 移动结束(结果: 移动结果)  # 到达/卡死/目标丢失等
 
 # ========== 阵营系统 ==========
 var _阵营: int = 阵营管理器.阵营.玩家
@@ -29,7 +28,7 @@ var _阵营: int = 阵营管理器.阵营.玩家
 @export var 移动速度: float = 200.0
 ## 最大速度上限（用于技能加速/减速时限制上限，正常 = 移动速度）
 @export var 最大速度: float = 350.0
-@export var 停止阈值: float = 16.0
+@export var 停止阈值: float = 4.0
 @export var move_priority: int = 0
 
 # ========== 生命 ==========
@@ -49,7 +48,7 @@ var _状态条: UnitStatusBar
 ## 由 运动服务 管理，单位仅用于读取状态
 var 当前移动请求: 移动请求 = null
 
-# ========== 命令状态（由 CommandManager 外部设置） ==========
+# ========== 命令状态（由 CommandManager + 状态机共同管理） ==========
 var 当前命令: int = 命令管理器.命令类型.无
 var 目标位置: Vector2 = Vector2.ZERO
 var 攻击目标: Node2D = null
@@ -68,6 +67,9 @@ const GARRISON_ICON = preload("res://combat/effects/garrison_icon.tscn")
 # ========== 队形偏移预存（CommandManager 在请求创建前设置） ==========
 var _pending_formation_offset: Vector2 = Vector2.ZERO
 var _pending_formation_slot: int = -1
+
+# ========== 状态机引用 ==========
+var _状态机: 单元状态机 = null
 
 
 func _ready() -> void:
@@ -91,12 +93,8 @@ func _ready() -> void:
 	if 迷雾系统.实例:
 		迷雾系统.实例.注册视野来源(self)
 
-
-func _enter_tree() -> void:
-	# 每次进入场景树时连接运动服务信号（比 _ready 更可靠）
-	if is_instance_valid(运动服务.实例):
-			if not 运动服务.实例.移动完成.is_connected(_on_运动服务移动结束):
-				运动服务.实例.移动完成.connect(_on_运动服务移动结束)
+	# 创建状态机子节点
+	_状态机 = 单元状态机.附加到(self)
 
 
 func _设置碰撞() -> void:
@@ -113,10 +111,7 @@ func _设置碰撞() -> void:
 func _exit_tree() -> void:
 	if 单位管理器.实例: 单位管理器.实例.注销单位(self)
 	if 迷雾系统.实例: 迷雾系统.实例.注销视野来源(self)
-	if is_instance_valid(运动服务.实例):
-		# 断开信号避免悬空引用
-		if 运动服务.实例.移动完成.is_connected(_on_运动服务移动结束):
-			运动服务.实例.移动完成.disconnect(_on_运动服务移动结束)
+	# 状态机的 _exit_tree 会自动断开运动服务信号
 
 
 # ============================================================
@@ -227,91 +222,34 @@ func 立即停止() -> void:
 	当前移动请求 = null
 
 
-## 响应运动服务的移动完成信号
-func _on_运动服务移动结束(单位: Node2D, 结果: 移动结果) -> void:
-	if 单位 != self:
-		return
-	当前移动请求 = null
-	移动结束.emit(结果)
-
-
 # ============================================================
-# 命令接口（CommandManager 调用 + 子类可重写）
+# 命令接口（CommandManager 调用 → 状态机响应）
 # ============================================================
 
 func 设置命令(type: int, pos: Vector2 = Vector2.ZERO, target: Node2D = null) -> void:
 	if DIAG: print("[CMD] 单位基类.设置命令: ", name, " type=", type, " pos=", pos, " target=", target.name if target else "null")
+
+	# 非攻击命令取消正在进行的攻击
+	if type != 命令管理器.命令类型.攻击:
+		取消攻击()
+
+	# 设置命令参数
 	当前命令 = type
 	if pos != Vector2.ZERO: 目标位置 = pos
-	if target: 攻击目标 = target
+	if target:
+		攻击目标 = target
+		# 同步给索敌组件（状态机需要它判断距离）
+		if 索敌组件 and type == 命令管理器.命令类型.攻击:
+			索敌组件.set_target(target)
 
-	match type:
-		命令管理器.命令类型.移动: _执行移动命令()
-		命令管理器.命令类型.攻击: _执行攻击命令()
-		命令管理器.命令类型.移动攻击: _执行攻击移动命令()
-		命令管理器.命令类型.停止: _执行停止命令()
-		命令管理器.命令类型.驻守: _执行驻守命令()
-		命令管理器.命令类型.巡逻: _执行巡逻命令()
+	# 通知状态机立即响应（不必等下一帧 physics）
+	if _状态机:
+		_状态机.立即响应()
 
 
 func 取消攻击() -> void:
 	if 战斗组件: 战斗组件.cancel_attack()
 	if 索敌组件: 索敌组件.clear_target()
-
-
-func _执行移动命令() -> void:
-	取消攻击()
-	var 请求 = 移动请求.前往位置(目标位置)
-	请求.停止距离 = 停止阈值  # 使用单位自身的停止阈值
-	if _pending_formation_offset != Vector2.ZERO:
-		请求.队形偏移 = _pending_formation_offset
-		请求.队形槽位 = _pending_formation_slot
-		_pending_formation_offset = Vector2.ZERO
-		_pending_formation_slot = -1
-	应用移动请求(请求)
-	_切换动画("移动")
-	_隐藏驻守图标()
-
-
-func _执行攻击命令() -> void:
-	if not is_instance_valid(攻击目标) or not 是敌对(攻击目标): return
-	if 索敌组件: 索敌组件.set_target(攻击目标)
-	var 请求 = 移动请求.追击敌人(攻击目标)
-	应用移动请求(请求)
-	_切换动画("移动")
-	_隐藏驻守图标()
-
-
-func _执行攻击移动命令() -> void:
-	取消攻击()
-	var 请求 = 移动请求.移动攻击(目标位置)
-	应用移动请求(请求)
-	_切换动画("移动")
-	_隐藏驻守图标()
-
-
-func _执行停止命令() -> void:
-	if DIAG: print("[CMD] ", name, " 执行停止命令")
-	取消攻击()
-	立即停止()
-	_切换动画("待机")
-	_隐藏驻守图标()
-
-
-func _执行驻守命令() -> void:
-	if DIAG: print("[CMD] ", name, " 执行驻守命令")
-	取消攻击()
-	立即停止()
-	_切换动画("待机")
-	_显示驻守图标()
-
-
-func _执行巡逻命令() -> void:
-	取消攻击()
-	var 请求 = 移动请求.前往位置(目标位置)
-	应用移动请求(请求)
-	_切换动画("移动")
-	_隐藏驻守图标()
 
 
 # ============================================================
@@ -342,6 +280,8 @@ func _process(_delta: float) -> void:
 	_update_visual_separation()
 	if has_node("角色图像"):
 		$角色图像.position = visual_offset
+	# 驻守图标跟随当前命令状态
+	_更新驻守图标()
 
 func _update_visual_separation() -> void:
 	_visual_sep_counter += 1
@@ -362,18 +302,6 @@ func _update_visual_separation() -> void:
 
 
 # ============================================================
-# 兼容旧接口（保留但标记为弃用）
-# ============================================================
-
-func _使用流场移动(delta: float) -> bool:
-	"""兼容旧接口：返回是否已到达
-	   新单位请用 应用移动请求() + 移动结束 信号"""
-	if 当前移动请求 != null:
-		return 运动服务.实例.是否在移动(self) == false
-	return false
-
-
-# ============================================================
 # 驻守图标
 # ============================================================
 
@@ -389,39 +317,20 @@ func _显示驻守图标() -> void:
 func _隐藏驻守图标() -> void:
 	if _驻守图标 and is_instance_valid(_驻守图标): _驻守图标.visible = false
 
+func _更新驻守图标() -> void:
+	if 当前命令 == 命令管理器.命令类型.驻守:
+		_显示驻守图标()
+	else:
+		_隐藏驻守图标()
 
-## 逐圈搜索空位：20px→36px→52px→68px→84px，全占满才放弃
-func _尝试队形散开() -> void:
-	var 周围单位 = 单位管理器.获取所有单位() if is_instance_valid(单位管理器.实例) else []
-	var 占据位置: Array = []
-	for 其他 in 周围单位:
-		if 其他 == self or not is_instance_valid(其他):
-			continue
-		if 其他.global_position.distance_squared_to(global_position) < 2500.0:
-			占据位置.append(其他.global_position)
-	if 占据位置.is_empty():
-		return
-	var 搜索圈半径 := [20, 36, 52, 68, 84]
-	for 圈半径 in 搜索圈半径:
-		var 候选位置列表: Array = [
-			global_position + Vector2(圈半径, 0),
-			global_position + Vector2(-圈半径, 0),
-			global_position + Vector2(0, 圈半径),
-			global_position + Vector2(0, -圈半径),
-			global_position + Vector2(圈半径 * 0.7, 圈半径 * 0.7),
-			global_position + Vector2(-圈半径 * 0.7, 圈半径 * 0.7),
-			global_position + Vector2(圈半径 * 0.7, -圈半径 * 0.7),
-			global_position + Vector2(-圈半径 * 0.7, -圈半径 * 0.7),
-		]
-		for 候选位置 in 候选位置列表:
-			var 被占据 = false
-			for 占用 in 占据位置:
-				if 候选位置.distance_squared_to(占用) < 400.0:
-					被占据 = true
-					break
-			if not 被占据:
-				var 请求 = 移动请求.前往位置(候选位置)
-				请求.停止距离 = 4.0
-				应用移动请求(请求)
-				return
-	if _驻守图标 and is_instance_valid(_驻守图标): _驻守图标.visible = false
+
+# ============================================================
+# 兼容旧接口（保留但标记为弃用）
+# ============================================================
+
+func _使用流场移动(delta: float) -> bool:
+	"""兼容旧接口：返回是否已到达
+	   新单位请用 应用移动请求() + 状态机信号"""
+	if 当前移动请求 != null:
+		return 运动服务.实例.是否在移动(self) == false
+	return false

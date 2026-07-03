@@ -3,9 +3,8 @@ class_name 农民
 
 ## 农民 — RTS 基础生产单位
 ##
-## 3 状态状态机：IDLE / MOVE / BUILD
-## 速度由 运动服务 统一管理
-## 建造移动使用 技能驱动移动 策略
+## 状态机由 单元状态机 管理，建造逻辑由本类直接处理
+## 建造移动使用 技能驱动移动 策略（不经过状态机）
 
 enum State {
 	IDLE,
@@ -82,36 +81,26 @@ func _ready() -> void:
 
 	角色动画.animation_finished.connect(_动画结束重播)
 
-	# 监听移动结束
-	移动结束.connect(_on_农民移动结束)
-
 
 func _physics_process(delta: float) -> void:
-	if is_instance_valid(选中标签):
-		选中标签.visible = false
-
-	if 当前状态 == State.BUILD:
-		_处理建造振荡(delta)
-
-	_同步命令状态()
-
-	match 当前状态:
-		State.IDLE:
-			_处理待机状态(delta)
-		State.MOVE:
-			_处理移动状态(delta)
-
 	super._physics_process(delta)
 
-	# ⭐ 移动中速度归零时的动画 fallback
-	if 当前状态 == State.MOVE and velocity.length_squared() < 4.0:
-		if 当前状态 == State.BUILD:
-			pass
-		elif 角色动画.current_animation == "移动":
-			角色动画.play("待机")
+	# 建造振荡
+	if _建造类型 >= 0 and _施工场地 and is_instance_valid(_施工场地):
+		_处理建造振荡(delta)
+		# 建造中覆盖动画（状态机会设待机，这里强制设攻击）
+		if _建造类型 >= 0 and 当前状态 == State.BUILD:
+			if 角色动画.current_animation != "攻击" and 角色动画.has_animation("攻击"):
+				角色动画.play("攻击")
 
-	# 动画
-	if 当前状态 == State.MOVE:
+	# 到达施工场地 → 开始建造
+	if _建造类型 >= 0:
+		if 当前状态 == State.MOVE:
+			if _检测施工场地接触() or (运动服务.实例 and not 运动服务.实例.是否在移动(self)):
+				_开始建造()
+
+	# 动画管理（建造中由建造振荡覆盖，非建造由速度驱动）
+	if _建造类型 < 0:
 		if velocity.length_squared() < 4.0:
 			if 角色动画.current_animation == "移动":
 				角色动画.play("待机")
@@ -119,24 +108,23 @@ func _physics_process(delta: float) -> void:
 			if 角色动画.current_animation != "移动":
 				角色动画.play("移动")
 
+	# 朝向
 	if velocity.x != 0:
 		角色图像.flip_h = velocity.x < 0
 
-	if 当前状态 == State.MOVE and _建造类型 >= 0 and _检测施工场地接触():
-		_开始建造()
+	# 选中标签
+	if is_instance_valid(选中标签):
+		选中标签.visible = false
 
 
-func _on_农民移动结束(结果: 移动结果) -> void:
-	match 结果.结果:
-		移动结果.结果类型.已到达:
-			if _建造类型 >= 0:
-				_开始建造()
-			else:
-				当前命令 = 命令管理器.命令类型.无
-				切换状态(State.IDLE)
-		_:
-			pass
+func _动画结束重播(动画名: String) -> void:
+	if _建造类型 >= 0 and 动画名 == "攻击" and 角色动画.has_animation("攻击"):
+		角色动画.play("攻击")
 
+
+# ============================================================
+# 命令接口
+# ============================================================
 
 func 命令移动(位置: Vector2, 攻击移动: bool = false) -> void:
 	if _建造类型 >= 0:
@@ -162,62 +150,22 @@ func 设置命令(type: int, pos: Vector2 = Vector2.ZERO, target: Node2D = null)
 	super.设置命令(type, pos, target)
 
 
-func _同步命令状态() -> void:
-	if 当前状态 == State.BUILD:
-		return
-	match 当前命令:
-		命令管理器.命令类型.移动:
-			if 当前状态 != State.MOVE:
-				切换状态(State.MOVE)
-		命令管理器.命令类型.无, 命令管理器.命令类型.驻守, _:
-			if 当前状态 != State.IDLE:
-				切换状态(State.IDLE)
+# ============================================================
+# 建造
+# ============================================================
 
-
-func 切换状态(to: State) -> void:
-	if 当前状态 == to: return
-	当前状态 = to
-	_建造闪烁计时 = 0.0
-	_建造闪烁间隔 = randf_range(1.0, 3.0)
-	match to:
-		State.IDLE:
-			_切换动画("待机")
-			# ⚠ 不调用强制停止（运动服务的到达锁定已负责 velocity 归零）
-		State.MOVE:
-			_切换动画("移动")
-		State.BUILD:
-			if 角色动画.has_animation("攻击"):
-				角色动画.play("攻击")
-			else:
-				角色动画.play("待机")
-
-
-func _切换动画(动画名: String) -> void:
-	if 角色动画 and 角色动画.has_animation(动画名):
-		角色动画.play(动画名)
-
-
-func _动画结束重播(动画名: String) -> void:
-	if 当前状态 == State.BUILD and 动画名 == "攻击" and 角色动画.has_animation("攻击"):
-		角色动画.play("攻击")
-
-
-func _处理待机状态(delta: float) -> void:
-	if 当前命令 in [命令管理器.命令类型.移动, 命令管理器.命令类型.攻击, 命令管理器.命令类型.巡逻]:
-		if 目标位置 != Vector2.ZERO:
-			切换状态(State.MOVE)
-		return
-
-
-func _处理移动状态(delta: float) -> void:
+func 命令建造(建筑类型: int, 建筑位置: Vector2) -> void:
 	if _建造类型 >= 0:
-		if not is_instance_valid(_施工场地):
-			_创建施工场地()
-		if not is_instance_valid(运动服务.实例) or not 运动服务.实例.是否在移动(self):
-			var 请求 = 移动请求.技能驱动(_建造位置, self, {"建筑类型": _建造类型})
-			请求.停止距离 = 建造接近阈值
-			应用移动请求(请求)
 		return
+	_建造类型 = 建筑类型
+	_建造位置 = 建筑位置
+	_建造目标 = null
+	目标位置 = 建筑位置
+	当前状态 = State.MOVE
+	当前命令 = 命令管理器.命令类型.驻守  # 驻守让状态机待在待机且不自动索敌
+	var 请求 = 移动请求.技能驱动(_建造位置, self, {"建筑类型": _建造类型})
+	请求.停止距离 = 建造接近阈值
+	应用移动请求(请求)
 
 
 const CONSTRUCTION_SITE = preload("res://combat/effects/construction_site.tscn")
@@ -241,11 +189,13 @@ func _创建施工场地() -> void:
 
 
 func _开始建造() -> void:
-	if 当前状态 == State.BUILD:
+	if _建造类型 < 0:
 		return
 	if not is_instance_valid(_施工场地):
 		_创建施工场地()
-	切换状态(State.BUILD)
+	当前状态 = State.BUILD
+	if 角色动画.has_animation("攻击"):
+		角色动画.play("攻击")
 	_建造总时间 = 建造时间表.get(_建造类型, 8.0)
 	_建造计时器.start(_建造总时间)
 	_原始z_index = z_index
@@ -374,21 +324,7 @@ func _取消建造() -> void:
 	_建造类型 = -1
 	_建造位置 = Vector2.ZERO
 	z_index = _原始z_index
-	切换状态(State.IDLE)
-
-
-func 命令建造(建筑类型: int, 建筑位置: Vector2) -> void:
-	if 当前状态 == State.BUILD:
-		return
-	_建造类型 = 建筑类型
-	_建造位置 = 建筑位置
-	_建造目标 = null
-	目标位置 = 建筑位置
-	当前命令 = 命令管理器.命令类型.移动
-	切换状态(State.MOVE)
-	var 请求 = 移动请求.技能驱动(_建造位置, self, {"建筑类型": _建造类型})
-	请求.停止距离 = 建造接近阈值
-	应用移动请求(请求)
+	当前状态 = State.IDLE
 
 
 func _建造完成() -> void:
@@ -410,9 +346,9 @@ func _建造完成() -> void:
 		全局变量.显示通知("建造完成！", _建造位置 + Vector2(0, -40))
 	_建造类型 = -1
 	_建造位置 = Vector2.ZERO
+	当前状态 = State.IDLE
 	当前命令 = 命令管理器.命令类型.无
 	z_index = _原始z_index
-	切换状态(State.IDLE)
 
 
 func 执行攻击() -> void:

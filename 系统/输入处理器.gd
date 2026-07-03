@@ -46,6 +46,9 @@ func _input(event: InputEvent) -> void:
 		if event.keycode == KEY_A:
 			_amode激活 = not _amode激活
 			return
+		if event.keycode == KEY_F9:
+			_记录阵型快照()
+			return
 	if event is InputEventMouseButton:
 		_处理鼠标(event)
 	elif event is InputEventMouseMotion and _拖拽中:
@@ -242,3 +245,39 @@ func _获取空间状态() -> PhysicsDirectSpaceState2D:
 	var w2d: World2D = root.world_2d
 	if not w2d: return null
 	return w2d.direct_space_state
+
+# ============================================================
+# F9 — 记录当前选中单位的位置（阵型快照，供AI分析间距）
+# ============================================================
+
+func _记录阵型快照() -> void:
+	var 选中的 = 选择管理器.获取选中()
+	if 选中的.is_empty():
+		print('[F9] ❌ 没有选中单位')
+		return
+	# 计算选中中心
+	var 中心: Vector2 = Vector2.ZERO
+	var 有效计数: int = 0
+	for u in 选中的:
+		if is_instance_valid(u):
+			中心 += u.global_position
+			有效计数 += 1
+	if 有效计数 == 0:
+		print('[F9] ❌ 没有有效单位')
+		return
+	中心 /= 有效计数
+	# 写入日志
+	var 日志 = UnitFormation.获取日志()
+	日志.写日志('=== F9 手动阵型快照 ===')
+	日志.写日志('中心点: (%.1f, %.1f) | 单位数: %d' % [中心.x, 中心.y, 有效计数])
+	日志.写日志('')
+	for i in range(选中的.size()):
+		var u = 选中的[i]
+		if not is_instance_valid(u): continue
+		var 偏移 = u.global_position - 中心
+		var 碰撞信息 = UnitFormation.获取碰撞信息(u)
+		日志.写日志('[%d] %s | 碰撞=%s | 偏移=(%.1f, %.1f) | 全局位=(%.1f, %.1f)' % [
+			i, u.name, 碰撞信息, 偏移.x, 偏移.y, u.global_position.x, u.global_position.y])
+	日志.写日志('')
+	print('[F9] ✅ 已记录 %d 个单位的位置到日志' % 有效计数)
+	print('[F9]    中心=(%.1f, %.1f), 查看 _formation_log.txt' % [中心.x, 中心.y])

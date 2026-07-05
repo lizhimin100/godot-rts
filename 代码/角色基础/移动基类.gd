@@ -137,7 +137,7 @@ func 命令停止() -> void:
 	_原始目标位置 = Vector2.ZERO
 	目标位置 = global_position
 	导航代理.target_position = global_position
-	velocity = Vector2.ZERO
+	velocity = Vector2.ZERO  # ★ LEGACY VELOCITY
 	_切换动画("待机")
 	_隐藏驻守图标()
 
@@ -149,7 +149,7 @@ func 命令驻守() -> void:
 	_追击起始位置 = Vector2.ZERO
 	_原始目标位置 = Vector2.ZERO
 	目标位置 = global_position
-	velocity = Vector2.ZERO
+	velocity = Vector2.ZERO  # ★ LEGACY VELOCITY
 	_切换动画("待机")
 	_显示驻守图标()
 
@@ -229,9 +229,9 @@ func _隐藏驻守图标() -> void:
 func _导航移动到(目标位置: Vector2, delta: float) -> bool:
 	var 剩余距离 = global_position.distance_to(目标位置)
 	if 剩余距离 <= 停止阈值:
-		velocity = velocity.move_toward(Vector2.ZERO, 加速度 * delta)
+			velocity = velocity.move_toward(Vector2.ZERO, 加速度 * delta)  # ★ LEGACY VELOCITY
 		if velocity.length() < 5.0:
-			velocity = Vector2.ZERO
+			velocity = Vector2.ZERO  # ★ LEGACY VELOCITY
 		return true
 
 	# 获取方向（FFManager 流场，不可用时回退到指向目标方向）
@@ -239,7 +239,7 @@ func _导航移动到(目标位置: Vector2, delta: float) -> bool:
 	var 目标速度 = 移动方向 * 移动速度
 
 	# 速度平滑过渡（仅平滑速度大小，不平滑方向向量）
-	velocity = velocity.move_toward(目标速度.limit_length(最大速度), 加速度 * delta)
+		velocity = velocity.move_toward(目标速度.limit_length(最大速度), 加速度 * delta)  # ★ LEGACY VELOCITY
 
 	return false
 

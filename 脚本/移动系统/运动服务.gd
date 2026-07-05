@@ -1,4 +1,7 @@
 extends Node
+## ⚠ DEPRECATED: Movement 2.0 migration in progress.
+##    新单位使用 MovementSolver。此系统保留给遗留单位使用。
+##    当所有单位迁移完成后移除。
 signal 移动完成(单位: Node2D, 结果: 移动结果)
 signal 单位卡死(单位: Node2D)
 static var 实例: Node = null
@@ -95,6 +98,10 @@ func 请求移动(单位: Node2D, 请求: 移动请求) -> void:
 	if not is_instance_valid(单位):
 		return
 
+	# ⭐ Movement 2.0：已迁移单位由 MovementSolver 处理
+	if "移动意图" in 单位 and 单位._using_movement_solver:
+		return
+
 	if 单位 in _移动中单位:
 		_发送结果(单位, 移动结果.结果类型.被中断)
 
@@ -127,6 +134,12 @@ func 请求移动(单位: Node2D, 请求: 移动请求) -> void:
 func 强制停止(单位: Node2D, 原因: int = 移动结果.结果类型.被中断) -> void:
 	if not is_instance_valid(单位):
 		_移动中单位.erase(单位)
+		return
+
+	# ⭐ Movement 2.0：已迁移单位由 MovementSolver 处理
+	if "移动意图" in 单位 and 单位._using_movement_solver:
+		if is_instance_valid(MovementSolver.实例):
+			MovementSolver.实例.强制停止(单位, 原因)
 		return
 
 	var 数据 = _移动中单位.get(单位)
@@ -167,6 +180,11 @@ func _更新所有移动单位(delta: float) -> void:
 
 	for 单位 in _移动中单位.keys():
 		if not is_instance_valid(单位):
+			待移除.append(单位)
+			continue
+
+		# ⭐ Movement 2.0：跳过已迁移单位
+		if "移动意图" in 单位 and 单位.移动意图 != null and 单位._using_movement_solver:
 			待移除.append(单位)
 			continue
 

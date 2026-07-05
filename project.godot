@@ -42,6 +42,8 @@ DamageSystem="*res://combat/DamageSystem.gd"
 MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 "空间哈希网格"="*res://脚本/移动系统/空间哈希网格.gd"
 "队形系统"="*res://脚本/移动系统/队形系统.gd"
+"障碍解析层"="*res://脚本/移动系统/障碍解析层.gd"
+MovementSolver="*res://脚本/移动系统/MovementSolver.gd"
 
 [dialogic]
 

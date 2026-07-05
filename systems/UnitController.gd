@@ -114,7 +114,7 @@ func _ready() -> void:
 		set_physics_process(false)
 		set_process(false)
 		return
-	velocity = _unit.velocity
+	velocity = _unit.velocity  # ★ LEGACY VELOCITY
 
 
 # ============================================================
@@ -148,7 +148,7 @@ func stop() -> void:
 
 func lock_arrival() -> void:
 	_move_state = MoveState.ARRIVED_LOCKED
-	velocity = Vector2.ZERO
+	velocity = Vector2.ZERO  # ★ LEGACY VELOCITY
 	arrived.emit()
 
 
@@ -166,7 +166,7 @@ func is_moving() -> bool:
 
 func compute_velocity(delta: float, flow_field = null, all_units: Array = []) -> Vector2:
 	if _unit:
-		velocity = _unit.velocity
+		velocity = _unit.velocity  # ★ LEGACY VELOCITY
 
 	match _move_state:
 		MoveState.ARRIVED_LOCKED:
@@ -379,7 +379,7 @@ func _check_stuck(delta: float, ff, original_flow_dir: Vector2) -> void:
 
 			var recovery: Vector2 = fresh_dir * max_speed * 0.5 + perturbation
 			if recovery.length_squared() > 0.0001:
-				velocity = recovery
+				velocity = recovery  # ★ LEGACY VELOCITY
 
 			_stuck_timer = 0.0
 	else:
@@ -395,7 +395,7 @@ func reset() -> void:
 	target_position = Vector2.ZERO
 	formation_offset = Vector2.ZERO
 	formation_slot_id = -1
-	velocity = Vector2.ZERO
+	velocity = Vector2.ZERO  # ★ LEGACY VELOCITY
 	_move_state = MoveState.IDLE
 	_approaching_slot = false
 	_stuck_timer = 0.0

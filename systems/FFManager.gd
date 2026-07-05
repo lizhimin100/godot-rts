@@ -16,7 +16,7 @@ extends Node
 ##   var ff = FFManager.get_flow_field()
 ##   var dir = FFManager.get_direction(world_pos, target)
 
-const DIAG: bool = true
+const DIAG: bool = false
 
 signal flow_field_updated
 
@@ -176,15 +176,13 @@ func _execute_update(target: Vector2) -> void:
 		return
 	_last_target_cell = target_cell
 
-	# 整合慢速单位障碍
-	if _integrate_timer <= 0.0 or _stationary_dirty:
-		var new_hash := _compute_unit_hash()
-		if new_hash != _last_stationary_hash or _cached_merged.is_empty():
-			var all_u: Array = _get_all_units()
-			_cached_merged = _integrate_slow_units(_cached_cost_map, all_u)
-			_last_stationary_hash = new_hash
-		_integrate_timer = INTEGRATE_INTERVAL
-		_stationary_dirty = false
+	# Phase 7.3: 移除慢速单位障碍整合 — 禁止单位作为流场障碍物
+	# ⚠ 慢速单位不应成为流场障碍物，否则会导致：
+	#   1. 被推单位 C 成为 persistent obstacle → 其他单位流场绕行 → C 更被推
+	#   2. 阻塞传播："C 跟着 A 走" 现象
+	# 修复：不使用 _cached_merged（含单位障碍），改用纯地形 _cached_cost_map
+	# 动态单位分离由 SeparationForceProvider 处理
+
 
 	var cell_size: float = 64.0
 	if nav_world.ground_layer and nav_world.ground_layer.tile_set:
@@ -193,7 +191,7 @@ func _execute_update(target: Vector2) -> void:
 		nav_world.grid_offset.x * cell_size,
 		nav_world.grid_offset.y * cell_size
 	)
-	current_ff = FlowFieldGenerator.generate(_cached_merged, target_cell, cell_size, origin)
+	current_ff = FlowFieldGenerator.generate(_cached_cost_map, target_cell, cell_size, origin)
 	if DIAG: print("[FF] flow field generated: ", current_ff.width, "x", current_ff.height, " valid=", current_ff.is_valid())
 	flow_field_updated.emit()
 

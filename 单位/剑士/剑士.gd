@@ -24,6 +24,9 @@ func _ready() -> void:
 
 	super._ready()
 
+	# ⭐ Movement 2.0 Phase 2: 迁移到 MovementSolver
+	_using_movement_solver = true
+
 	战斗组件.attack_damage = stats.attack
 	战斗组件.attack_range = stats.attack_range
 	战斗组件.attack_cooldown = stats.attack_cooldown

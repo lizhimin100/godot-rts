@@ -71,7 +71,7 @@ func 开始移动() -> void:
 
 func 停止移动() -> void:
 	super.停止移动()
-	velocity = Vector2.ZERO  # 清除速度向量
+	velocity = Vector2.ZERO  # ★ LEGACY VELOCITY 清除速度向量
 	角色动画.play("待机动画")   # 切换回待机动画
 
 #  自定义信号处理 

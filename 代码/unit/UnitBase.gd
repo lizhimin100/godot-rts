@@ -68,6 +68,12 @@ const GARRISON_ICON = preload("res://combat/effects/garrison_icon.tscn")
 var _pending_formation_offset: Vector2 = Vector2.ZERO
 var _pending_formation_slot: int = -1
 
+# ========== MovementSolver（新移动系统） ==========
+## 当前移动意图（由状态机写入，MovementSolver 读取）
+var 移动意图: MovementIntent = MovementIntent.new()
+## 是否已迁移到 MovementSolver（Phase 1: false，所有单位走旧路径）
+var _using_movement_solver: bool = false
+
 # ========== 状态机引用 ==========
 var _状态机: 单元状态机 = null
 
@@ -216,7 +222,20 @@ func 设队形槽位(slot_id: int) -> void:
 
 
 ## 立即停止所有移动
+##
+## ⚠ Phase 7.4: 禁止 clear() 就地修改 intent。
+##   clear() 修改同一个 RefCounted 对象，导致 MovementSolver
+##   在该间隙读到无效 intent → 抽搐。
+##   必须原子性替换为新 intent。
 func 立即停止() -> void:
+	if _using_movement_solver:
+		# ★ 原子替换：创建新 NONE 类型 intent，不清除旧对象
+		移动意图 = MovementIntent.new()
+		if is_instance_valid(MovementSolver.实例):
+			MovementSolver.实例.强制停止(self, 移动结果.结果类型.被中断)
+		当前移动请求 = null
+		return
+
 	if is_instance_valid(运动服务.实例):
 		运动服务.实例.强制停止(self, 移动结果.结果类型.被中断)
 	当前移动请求 = null

@@ -44,6 +44,9 @@ signal 移动卡死()         # 卡死超时
 var _单位: 单位基类 = null
 var _已入场: bool = false  # 防止 _ready 的 setter 在 _unit 初始化前触发
 
+# ========== MovementSolver（新移动系统） ==========
+var _移动意图: MovementIntent = MovementIntent.new()
+
 
 # ============================================================
 # 静态工厂
@@ -68,6 +71,10 @@ func _enter_tree():
 	if _单位 and is_instance_valid(运动服务.实例):
 		if not 运动服务.实例.移动完成.is_connected(_on_移动完成):
 			运动服务.实例.移动完成.connect(_on_移动完成)
+	# MovementSolver 信号（新系统）
+	if _单位 and is_instance_valid(MovementSolver.实例):
+		if not MovementSolver.实例.移动完成.is_connected(_on_移动完成):
+			MovementSolver.实例.移动完成.connect(_on_移动完成)
 
 
 func _ready():
@@ -87,6 +94,9 @@ func _exit_tree():
 	if is_instance_valid(运动服务.实例):
 		if 运动服务.实例.移动完成.is_connected(_on_移动完成):
 			运动服务.实例.移动完成.disconnect(_on_移动完成)
+	if is_instance_valid(MovementSolver.实例):
+		if MovementSolver.实例.移动完成.is_connected(_on_移动完成):
+			MovementSolver.实例.移动完成.disconnect(_on_移动完成)
 
 
 # ============================================================
@@ -117,7 +127,19 @@ func 立即响应() -> void:
 
 
 ## 重新发出当前状态的移动请求（用于同状态命令覆盖）
+##
+## ⚠ REPLACE semantics（Phase 7.3）：
+##   新命令必须完全替换旧 intent，禁止先 clear() 再写入。
+##   clear() 会修改同一个 RefCounted 对象，导致 _单位.移动意图
+##   暂时变成 NONE，MovementSolver 在间隙中读到无效意图 → 抖动。
+##   正确的做法是直接创建新 MovementIntent 并原子性替换引用。
 func _重发移动请求(状态值: int) -> void:
+	if _单位._using_movement_solver:
+		# ★ REPLACE semantics：直接创建新意图，不清除旧对象
+		_直接创建意图(状态值)
+		return
+
+	# 旧路径：先打断旧移动再发新请求
 	match 状态值:
 		状态.移动:
 			_单位.立即停止()  # 先打断旧移动
@@ -128,6 +150,31 @@ func _重发移动请求(状态值: int) -> void:
 		状态.移动攻击:
 			_单位.立即停止()
 			_发出移动攻击请求()
+
+
+## REPLACE semantics：直接创建新 MovementIntent 并原子性替换
+## 不清除旧对象，不留下无效窗口期。
+func _直接创建意图(状态值: int) -> void:
+	match 状态值:
+		状态.移动:
+			_移动意图 = MovementIntent.move_to(_单位.目标位置)
+			_移动意图.stop_distance = _单位.停止阈值
+			if _单位._pending_formation_slot >= 0:
+				_移动意图.formation_offset = _单位._pending_formation_offset
+				_移动意图.formation_slot = _单位._pending_formation_slot
+				_单位._pending_formation_offset = Vector2.ZERO
+				_单位._pending_formation_slot = -1
+			_单位.移动意图 = _移动意图  # ⭐ 原子性替换
+
+		状态.追击:
+			var 目标 = _单位.攻击目标
+			if is_instance_valid(目标):
+				_移动意图 = MovementIntent.pursue(目标, 400.0)
+				_单位.移动意图 = _移动意图  # ⭐ 原子性替换
+
+		状态.移动攻击:
+			_移动意图 = MovementIntent.attack_move(_单位.目标位置)
+			_单位.移动意图 = _移动意图  # ⭐ 原子性替换
 
 
 # ============================================================
@@ -253,10 +300,22 @@ func _执行追击():
 
 func _发出移动请求():
 	if not _单位: return
+
+	if _单位._using_movement_solver:
+		# ★ 新路径：写入 MovementIntent
+		_移动意图 = MovementIntent.move_to(_单位.目标位置)
+		_移动意图.stop_distance = _单位.停止阈值
+		if _单位._pending_formation_slot >= 0:
+			_移动意图.formation_offset = _单位._pending_formation_offset
+			_移动意图.formation_slot = _单位._pending_formation_slot
+			_单位._pending_formation_offset = Vector2.ZERO
+			_单位._pending_formation_slot = -1
+		_单位.移动意图 = _移动意图
+		return
+
+	# ★ 旧路径：移动请求（Phase 1 所有单位都走此路径）
 	var 请求 = 移动请求.前往位置(_单位.目标位置)
 	请求.停止距离 = _单位.停止阈值
-	# 写入预存的队形偏移（由 CommandManager 在发出命令前设置）
-	# ⭐ 用 slot_id >= 0 判断（不要用 offset != ZERO，offset 可能为 0）
 	if _单位._pending_formation_slot >= 0:
 		请求.队形偏移 = _单位._pending_formation_offset
 		请求.队形槽位 = _单位._pending_formation_slot
@@ -269,12 +328,24 @@ func _发出追击请求():
 	if not _单位: return
 	var 目标 = _单位.攻击目标
 	if not is_instance_valid(目标): return
+
+	if _单位._using_movement_solver:
+		_移动意图 = MovementIntent.pursue(目标, 400.0)
+		_单位.移动意图 = _移动意图
+		return
+
 	var 请求 = 移动请求.追击敌人(目标)
 	_单位.应用移动请求(请求)
 
 
 func _发出移动攻击请求():
 	if not _单位: return
+
+	if _单位._using_movement_solver:
+		_移动意图 = MovementIntent.attack_move(_单位.目标位置)
+		_单位.移动意图 = _移动意图
+		return
+
 	var 请求 = 移动请求.移动攻击(_单位.目标位置)
 	_单位.应用移动请求(请求)
 

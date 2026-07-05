@@ -9,7 +9,7 @@ class_name 自动追击敌人
 
 func _physics_process(delta: float) -> void:
 	var 移动方向 = to_local(导航.get_next_path_position()) . normalized() #将方向归一化，变成值为1的方向向量
-	velocity = 移动方向 * 移动速度 #设置敌人的速度
+	velocity = 移动方向 * 移动速度  # ★ LEGACY VELOCITY #设置敌人的速度
 	move_and_slide()
 
 func _on_timer_timeout() -> void:

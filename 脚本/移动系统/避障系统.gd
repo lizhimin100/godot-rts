@@ -52,8 +52,8 @@ func 计算让路修正(单位: Node2D, 周围单位: Array, 期望方向: Vecto
 	if not is_instance_valid(单位):
 		return Vector2.ZERO
 
-		# â­ Step 3: ä½¿ç¨å®éç§»å¨éåº¦(110)ï¼ä¸æ¯æå¤§éåº¦ç¡¬ä¸é(800)
-		#    é¿écap = ç§»å¨éåº¦Ã0.35ï¼ä¸æ¯ æå¤§éåº¦Ã0.35
+		# ⭐ Step 3: 使用实际移动速度(110)，不是最大速度硬上限(800)
+		#    避障cap = 移动速度×0.35，不是 最大速度×0.35
 	var move_speed: float = 单位.移动速度 if "移动速度" in 单位 else 单位.最大速度 if "最大速度" in 单位 else 200.0
 	var max_avoid: float = move_speed * 分离最大比例  # ≈ 110*0.35=38.5
 
@@ -89,6 +89,13 @@ func 计算让路修正(单位: Node2D, 周围单位: Array, 期望方向: Vecto
 			有同组移动邻居 = true
 
 		累加方向 += 偏移.normalized() * 强度
+
+	# Phase 7.3: 邻居数归一化 e2�� reciprocity 稳定性修复
+	# 当 C 被 N 个邻居同时推开时，原算法累积 N× 力
+	# 导致：A 推 C 的力量 ×1，但 C 被 A+B+D 推的力 ×3 → 不对称
+	# 修复：除以 sqrt(N)，使多邻居累积力≈ 单邻居力 × sqrt(N) 而不是 ×N
+	if 邻居数 > 1:
+		累加方向 /= maxf(1.0, sqrt(float(邻居数)))
 
 	# --- 无邻居 → 返回零 ---
 	if 累加方向.length_squared() < 0.0001:

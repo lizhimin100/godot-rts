@@ -40,7 +40,7 @@ func 命令移动(位置: Vector2) -> void:
 
 func 命令停止() -> void:
 	正在移动 = false
-	velocity = Vector2.ZERO
+	velocity = Vector2.ZERO  # ★ LEGACY VELOCITY
 	目标位置 = global_position
 	if 角色动画.current_animation != "待机":
 		角色动画.play("待机")
@@ -60,12 +60,12 @@ func _physics_process(delta: float) -> void:
 			return
 
 		var 方向 := (目标位置 - global_position).normalized()
-		velocity = 方向 * 移动速度
+		velocity = 方向 * 移动速度  # ★ LEGACY VELOCITY
 		move_and_slide()
 
 		角色图像.flip_h = velocity.x < 0
 	else:
 		# 减速停止
 		if velocity.length() > 0.5:
-			velocity = velocity.move_toward(Vector2.ZERO, 3000.0 * delta)
+			velocity = velocity.move_toward(Vector2.ZERO, 3000.0 * delta)  # ★ LEGACY VELOCITY
 			move_and_slide()

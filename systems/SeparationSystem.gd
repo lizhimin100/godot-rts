@@ -47,8 +47,13 @@ static func get_force(
 		var dist: float = sqrt(dist_sq)
 		# 平方衰减: (1 - d/r)^2
 		var magnitude: float = (1.0 - dist / radius) * (1.0 - dist / radius)
+		_n_applied += 1
 		force += offset / dist * magnitude
 
+	# Phase 7.3: neighbor count normalization for reciprocity
+	# Prevent cumulative push from N neighbors being N× stronger than single
+	if _n_applied > 1:
+		force /= sqrt(float(_n_applied))
 	return force * strength
 
 

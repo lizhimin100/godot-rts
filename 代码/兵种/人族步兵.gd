@@ -132,11 +132,11 @@ func _处理追敌状态(delta: float):
 	var 所有单位: Array = FFManager.get_all_units()
 	if 移动控制器 and 移动控制器.is_inside_tree():
 		移动控制器.set_target(攻击目标.global_position)
-		velocity = 移动控制器.compute_velocity(delta, FFManager.get_flow_field(), 所有单位)
+			velocity = 移动控制器.compute_velocity(delta, FFManager.get_flow_field(), 所有单位)  # ★ LEGACY VELOCITY
 	else:
 		# 回退：直接向目标移动
 		var 目标方向 = (攻击目标.global_position - global_position).normalized()
-		velocity = 目标方向 * 移动速度
+		velocity = 目标方向 * 移动速度  # ★ LEGACY VELOCITY
 
 
 func _处理移动状态(delta: float):

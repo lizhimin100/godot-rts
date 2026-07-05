@@ -51,12 +51,6 @@ const 卡死超时: float = 0.5        # 秒
 const 队形力权重: float = 0.6
 const 分离力权重: float = 0.4
 
-## 调试开关：统一由 调试配置 管理
-##   DEBUG_MOVE      → 运动服务、路径日志、方向日志、卡死恢复
-##   DEBUG_FORMATION → 队形系统
-##   DEBUG_AVOID     → 避障系统
-## 正常运行全部 false，仅输出错误
-
 
 func _enter_tree() -> void:
 	实例 = self
@@ -68,16 +62,6 @@ func _exit_tree() -> void:
 
 func _ready() -> void:
 	set_physics_process(true)
-	# ⭐ 启动自检：打印所有移动系统 singleton 实例状态
-	print("[SYSCHECK] === 移动系统自检 ===")
-	print("[SYSCHECK] 运动服务.实例 = ", self, " ", is_instance_valid(实例))
-	print("[SYSCHECK] 空间哈希网格.实例 = ", 空间哈希网格.实例 if 空间哈希网格.实例 else "NULL ❌")
-	print("[SYSCHECK] 队形系统.实例 = ", 队形系统.实例 if 队形系统.实例 else "NULL ❌")
-	print("[SYSCHECK] 流场管理器.实例 = ", 流场管理器.实例 if 流场管理器.实例 else "NULL ❌")
-	print("[SYSCHECK] 避障系统.实例 = ", 避障系统.实例 if 避障系统.实例 else "NULL ❌")
-	print("[SYSCHECK] 单位管理器.实例 = ", 单位管理器.实例 if 单位管理器.实例 else "NULL ❌")
-	print("[SYSCHECK] FFManager.instance = ", FFManager.instance if is_instance_valid(FFManager.instance) else "NULL ❌")
-	print("[SYSCHECK] ====================")
 
 
 func _physics_process(delta: float) -> void:
@@ -118,7 +102,7 @@ func 请求移动(单位: Node2D, 请求: 移动请求) -> void:
 	# ⭐ 初始化 slot 状态（防御：即使 slot_id 丢失也强制启用队形模式）
 	if 队形系统.实例 and 队形系统.实例.是否在队形中(单位):
 		if 请求.队形槽位 < 0:
-			push_error("[FORM-ERROR] <" + 单位.name + "> 队形中但请求缺少 slot_id")
+			return
 		数据.slot_state = MoveSlotState.MOVING_TO_SLOT
 	elif 请求.队形槽位 >= 0:
 		数据.slot_state = MoveSlotState.MOVING_TO_SLOT
@@ -232,13 +216,9 @@ func _更新所有移动单位(delta: float) -> void:
 				_发送结果(单位, 移动结果.结果类型.已到达)
 				if 单位.has_method("_切换动画"):
 					单位._切换动画("待机")
-				if 调试配置.DEBUG_MOVE:
-					print("[SLOT-LOCKED] <", 单位.name, "> anchor=(", int(slot_target.x), ",", int(slot_target.y), ") slot_id=", 请求.队形槽位)
 				continue
 			else:
 				# 非队形单位到达 → 正常移除
-				if 调试配置.DEBUG_MOVE:
-					print("[ARRIVE] <", 单位.name, "> 到达，从运动系统移除")
 				数据.已到达 = true
 				单位.velocity = Vector2.ZERO
 				_发送结果(单位, 移动结果.结果类型.已到达)
@@ -258,8 +238,6 @@ func _更新所有移动单位(delta: float) -> void:
 		var 队形力 = Vector2.ZERO
 		if 队形系统.实例 and 数据.slot_state == MoveSlotState.MOVING_TO_SLOT:
 			队形力 = 队形系统.实例.计算队形力(单位)
-			if 调试配置.DEBUG_MOVE and 队形力.length() < 0.1 and 路径速度.length() > 10.0:
-				print("[DIAG] <", 单位.name, "> 队形中但队形力≈0 slot_id=", 请求.队形槽位)
 
 		# ③ 分离力 — 同阵营单位推开（x0.4）
 		var 路径方向 = 路径速度.normalized() if 路径速度.length_squared() > 0.01 else Vector2.ZERO
@@ -275,22 +253,6 @@ func _更新所有移动单位(delta: float) -> void:
 		var 最大速度: float = 单位.最大速度 if "最大速度" in 单位 else 350.0
 		if 最终速度.length_squared() > 最大速度 * 最大速度:
 			最终速度 = 最终速度.normalized() * 最大速度
-
-		if 调试配置.DEBUG_MOVE and 最终速度.length_squared() > 4.0:
-			print("[SPEED] <", 单位.name, "> final=", 最终速度.length(),
-				  " path=", 路径速度.length(), " form=", 队形力.length(),
-				  " sep=", 分离力.length())
-
-		# ⭐ 方向日志：打印 PATH、FORMATION、FINAL 三方向（仅队形单位）
-		if 调试配置.DEBUG_MOVE and 请求.队形槽位 >= 0 and 数据.slot_state == MoveSlotState.MOVING_TO_SLOT:
-			var p_dir = 路径速度.normalized() if 路径速度.length_squared() > 0.01 else Vector2.ZERO
-			var f_dir = 队形力.normalized() if 队形力.length_squared() > 0.01 else Vector2.ZERO
-			var v_dir = 最终速度.normalized() if 最终速度.length_squared() > 0.01 else Vector2.ZERO
-			if 最终速度.length_squared() > 4.0:
-				print("[FORCE-DIR] <", 单位.name, "> slot_id=", 请求.队形槽位,
-					  " PATH=(", p_dir.x, ",", p_dir.y, ")",
-					  " FORM=(", f_dir.x, ",", f_dir.y, ")",
-					  " FINAL=(", v_dir.x, ",", v_dir.y, ")")
 
 		# ============================================================
 		# 卡死检测（内联）
@@ -330,8 +292,6 @@ func _更新所有移动单位(delta: float) -> void:
 			# ⭐ 不卡死了 → 完全恢复（不是缓慢衰减）
 			if 数据.回退中:
 				数据.回退中 = false
-				if 调试配置.DEBUG_MOVE:
-					print("[DIAG] <", 单位.name, "> 卡死恢复 卡死计数=", 数据.卡死计数)
 			数据.卡死计数 = 0
 			数据.卡死计时 = 0.0
 
@@ -342,15 +302,6 @@ func _更新所有移动单位(delta: float) -> void:
 	# 清理
 	for 单位 in 待移除:
 		_移动中单位.erase(单位)
-
-	# 每帧诊断摘要（每 60 帧输出一次）
-	if 调试配置.DEBUG_MOVE and Engine.get_physics_frames() % 60 == 0:
-		var 队形数 = 0
-		if 队形系统.实例:
-			队形数 = 队形系统.实例.获取活跃组数()
-		var 哈希插入 = 空间哈希网格.实例.获取插入总数() if 空间哈希网格.实例 else 0
-		print("[DIAG] 移动中=", _移动中单位.size(), " 哈希插入=", 哈希插入,
-			  " 队形组=", 队形数)
 
 
 # ============================================================

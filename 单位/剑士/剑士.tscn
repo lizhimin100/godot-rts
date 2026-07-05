@@ -180,8 +180,8 @@ _data = {
 &"移动": SubResource("Animation_j0ojm")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_plyoe"]
-size = Vector2(32, 52)
+[sub_resource type="CircleShape2D" id="CircleShape2D_15n48"]
+radius = 28.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.239216, 0.105882, 0.0980392, 1)
@@ -222,7 +222,7 @@ libraries/ = SubResource("AnimationLibrary_d8d8w")
 
 [node name="碰撞" type="CollisionShape2D" parent="." unique_id=730798949]
 position = Vector2(0, 2)
-shape = SubResource("RectangleShape2D_plyoe")
+shape = SubResource("CircleShape2D_15n48")
 
 [node name="选中标签" type="Label" parent="." unique_id=705522150]
 visible = false

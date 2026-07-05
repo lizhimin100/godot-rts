@@ -71,6 +71,33 @@ const 最大卡死放弃: int = 3
 const 卡死速度阈值: float = 2.0
 const 卡死超时: float = 0.5
 
+# ============================================================
+# Phase 7.5: Geometric Separation Constraint
+# ============================================================
+# Final-stage correction before velocity write.
+# Resolves collider edge resting that steering cannot.
+# ============================================================
+const _GEOM_PUSH_STRENGTH: float = 35.0    # push impulse (px/s)
+const _GEOM_MIN_DIST: float = 44.0         # trigger distance (matches SEP_RADIUS)
+const _GEOM_COOLDOWN_FRAMES: int = 15      # per-pair cooldown frames (~0.25s @60fps)
+
+# ============================================================
+# Phase 7.6: Pair-based Stabilizer (replaces Phase 7.5)
+# ============================================================
+# Per-pair, symmetric, continuous velocity correction.
+# Resolves overlap that steering cannot, without cooldown impulses.
+# Applied as final velocity delta at write point.
+# ============================================================
+const _STABILIZER_STRENGTH: float = 4.0         # push per pixel of overlap
+const _STABILIZER_PADDING: float = 6.0          # extra clearance beyond collision radius
+const _STABILIZER_CLAMP: float = 120.0           # max correction per unit per frame (px/s)
+const _STABILIZER_MAX_RATIO: float = 0.30       # [Step 2] max correction = move_speed * this ratio
+const _HEAD_ON_DOT: float = -0.6                # dot(dir_a, dir_b) below this = head-on
+const _HEAD_ON_BIAS: float = 3.0                # lateral bias strength per overlap
+const _ARRIVAL_SUPPRESSION: float = 0.2          # correction multiplier near target
+const _ARRIVAL_SPEED_THRESHOLD: float = 15.0    # below this speed, zero correction at target
+const _ARRIVAL_DIST_FACTOR: float = 2.0         # stop_distance × factor = arrival range
+const _DEFAULT_COLLISION_RADIUS: float = 24.0   # fallback when no 碰撞半径 found
 
 # ============================================================
 # 每个单位的状态数据
@@ -101,12 +128,32 @@ class SolverUnitData:
 	# Stores previous frame direction to prevent frame-to-frame flip
 	var last_dir: Vector2 = Vector2.ZERO
 
+	# Phase 7.5: Geometric separation constraint
+	# Tracks per-neighbor distance for penetration-direction detection
+	var last_neighbor_dist: Dictionary = {}  # int instance_id -> float distance
 
 # ============================================================
 # 运行时状态
 # ============================================================
 
 var _单位数据: Dictionary = {}  # Unit → SolverUnitData
+
+# Phase 7.5: Geometric per-pair cooldown
+# key = "smaller_id|larger_id", value = physics_frame + COOLDOWN_FRAMES
+var _geom_pair_frame: Dictionary = {}  # "id|id" -> int (expire frame)
+
+# Phase 7.6: Per-frame pair stabilizer state
+# Cleared and rebuilt every physics frame in _compute_pair_stabilizer()
+var _pair_corrections: Dictionary = {}  # int instance_id -> Vector2
+var _id_to_unit: Dictionary = {}        # int instance_id -> Node2D (reverse lookup)
+
+# Phase 7.6 Step 1: Ratio diagnostic accumulators (reset per frame)
+var _dbg_goal_speed_sum: float = 0.0
+var _dbg_corr_mag_sum: float = 0.0
+var _dbg_max_ratio: float = 0.0
+var _dbg_dominated: int = 0
+var _dbg_reversed: int = 0
+var _dbg_unit_count: int = 0
 
 # ============================================================
 # Force Provider 系统（Phase 3）
@@ -140,7 +187,6 @@ func _exit_tree() -> void:
 
 func _ready() -> void:
 	set_physics_process(true)
-	print("[SYSCHECK] MovementSolver.实例 = ", self, " ", is_instance_valid(实例))
 
 	# ⭐ 初始化 Force Pipeline（Phase 5 — 建议力生命周期流水线）
 	_force_pipeline = MovementForcePipeline.new()
@@ -154,23 +200,16 @@ func _注册所有Provider() -> void:
 	for path in _PROVIDER_PATHS:
 		var script = load(path)
 		if script == null or not script.can_instantiate():
-			push_error("[SYSCHECK] MovementSolver 无法加载 Provider 脚本: ", path)
 			continue
 		var instance = script.new()
 		if instance is MovementForceProvider:
 			_providers.append(instance)
-			print("[SYSCHECK] MovementSolver 已加载 Provider: ", path.get_file())
-		else:
-			push_error("[SYSCHECK] MovementSolver 脚本不是 MovementForceProvider: ", path)
 
 	# ② 静态注册队列（外部通过 注册Provider() 添加）
 	for p in _待注册Provider:
 		if p != null:
 			_providers.append(p)
-			print("[SYSCHECK] MovementSolver 已注册外部 Provider: ", p.provider_name)
 	_待注册Provider.clear()
-
-	print("[SYSCHECK] MovementSolver 共 ", _providers.size(), " 个 Provider 已注册")
 
 
 ## 静态注册 Provider（外部调用，无需修改本文件）
@@ -183,6 +222,9 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(单位管理器.实例):
 		return
 
+	# ⭐ Phase 7.6: Pre-compute pair stabilizer corrections for all active units
+	_compute_pair_stabilizer()
+
 	for unit in 单位管理器.获取所有单位():
 		if not is_instance_valid(unit):
 			continue
@@ -190,10 +232,24 @@ func _physics_process(delta: float) -> void:
 		if not ("_using_movement_solver" in unit) or not unit._using_movement_solver:
 			continue
 		if not ("移动意图" in unit) or unit.移动意图 == null or not unit.移动意图.is_valid():
-			# 意图为空 → 已迁移单位不应在此状态，但安全处理
 			continue
 
 		_解析单位(unit, delta)
+
+	# ⭐ Phase 7.6: Apply pair corrections post-loop (includes SLOT_LOCKED units)
+	_apply_pair_corrections()
+
+	# ═══════════════════════════════════════════════════════════
+	# Phase 7.6 Step 1: Ratio diagnostic (30-frame aggregate)
+	# ═══════════════════════════════════════════════════════════
+	if Engine.get_physics_frames() % 30 == 0 and _dbg_unit_count > 0:
+		var avg_goal: float = _dbg_goal_speed_sum / _dbg_unit_count
+		var avg_corr: float = _dbg_corr_mag_sum / _dbg_unit_count
+		var avg_ratio: float = _dbg_corr_mag_sum / maxf(_dbg_goal_speed_sum, 0.001)
+		print("[RATIO] frame=%d N=%d goal=%.1f corr=%.1f ratio=%.2f max_r=%.2f dominated=%d opp=%d" % [
+			Engine.get_physics_frames(), _dbg_unit_count,
+			avg_goal, avg_corr, avg_ratio,
+			_dbg_max_ratio, _dbg_dominated, _dbg_reversed])
 
 	# 清理无效单位
 	_清理死单位()
@@ -334,9 +390,6 @@ func _解析单位(unit: Node2D, delta: float) -> void:
 	var fusion_result = _force_pipeline.process(all_forces, delta, 最大速度)
 	var 最终速度 = fusion_result.direction * fusion_result.strength
 
-	# ============================================================
-	# 卡死检测（与 运动服务._检测卡死 一致）
-	# ============================================================
 
 	if _检测卡死(unit, data, 最终速度, delta):
 		# 回退阶段：反向移动 0.3 秒
@@ -370,9 +423,304 @@ func _解析单位(unit: Node2D, delta: float) -> void:
 		data.卡死计数 = 0
 		data.卡死计时 = 0.0
 
-	# ★ 写入 velocity（唯一写入点）
-	unit.velocity = 最终速度
-	data.上次位置 = unit.global_position
+		# Phase 7.5 disabled — replaced by Phase 7.6 pair stabilizer below
+		# 最终速度 = _apply_geometric_constraint(unit, data, 最终速度)
+
+		# ★ 写入 velocity（唯一写入点）
+		unit.velocity = 最终速度
+
+
+# ============================================================
+# Phase 7.5: Geometric Separation Constraint
+# ============================================================
+#
+# Lightweight spatial decoupling executed just before velocity write.
+# Not a force/steering model - operates at the geometric overlap level.
+#
+# Triggers when:
+#   1. Two units are within _GEOM_MIN_DIST
+#   2. Distance is still decreasing (penetration deepening)
+#   3. The pair is not on cooldown (prevents oscillation)
+#
+# Effect:
+#   velocity += (pos - neighbor_pos).normalize() * _GEOM_PUSH_STRENGTH
+#
+# Cooldown:
+#   Uses absolute physics frame number to avoid double-decrement
+#   when both units in a pair check each other in the same frame.
+# ============================================================
+
+## Apply geometric separation constraint.
+## Returns velocity with corrective impulse if units overlap.
+func _apply_geometric_constraint(unit: Node2D, data: SolverUnitData, velocity: Vector2) -> Vector2:
+	if not is_instance_valid(空间哈希网格.实例):
+		return velocity
+
+	var nearby: Array[Node2D] = 空间哈希网格.实例.查询9宫格(unit.global_position)
+	var result: Vector2 = velocity
+
+	for other in nearby:
+		if other == unit or not is_instance_valid(other):
+			continue
+		if not ("_using_movement_solver" in other) or not other._using_movement_solver:
+			continue
+
+		var dist: float = unit.global_position.distance_to(other.global_position)
+		if dist >= _GEOM_MIN_DIST or dist < 0.1:
+			continue
+
+		# Cooldown check - absolute frame, immune to double-decrement
+		var pair_key: String = _geom_pair_key(unit, other)
+		if Engine.get_physics_frames() < _geom_pair_frame.get(pair_key, 0):
+			continue
+
+		# Penetration direction: only push when still approaching
+		var other_id: int = other.get_instance_id()
+		var prev_dist: float = data.last_neighbor_dist.get(other_id, dist)
+		data.last_neighbor_dist[other_id] = dist
+		if prev_dist < dist and prev_dist > 0.0:
+			continue  # moving apart, no push needed
+
+		# Apply corrective impulse
+		var push_dir: Vector2 = (unit.global_position - other.global_position).normalized()
+		result += push_dir * _GEOM_PUSH_STRENGTH
+
+		# Set per-pair cooldown
+		_geom_pair_frame[pair_key] = Engine.get_physics_frames() + _GEOM_COOLDOWN_FRAMES
+
+	return result
+
+
+## Generate deterministic pair key (sorted instance IDs)
+func _geom_pair_key(a: Node2D, b: Node2D) -> String:
+	var id_a: int = a.get_instance_id()
+	var id_b: int = b.get_instance_id()
+	return str(mini(id_a, id_b)) + "|" + str(maxi(id_a, id_b))
+
+
+# ============================================================
+# Phase 7.6: Pair-based Stabilizer
+# ============================================================
+#
+# Lightweight per-pair overlap resolution executed as a pre-pass
+# before the main unit loop.  Computes symmetric velocity corrections
+# for all overlapping pairs, then applies them at velocity write.
+#
+# Key properties:
+#   - Each pair processed once per frame (sorted instance ID key)
+#   - Correction is symmetric (50/50 split between units)
+#   - No cooldown — continuous small corrections every frame
+#   - No impulse — correction is a velocity delta, not a position delta
+#   - Head-on lateral bias uses deterministic side (no jitter)
+#   - Arrival suppression prevents slot jitter for parked units
+# ============================================================
+
+
+## Pre-compute pair stabilizer corrections for all active solver units.
+## Runs once per physics frame before the main _解析单位 loop.
+func _compute_pair_stabilizer() -> void:
+	# Reset per-frame state
+	_pair_corrections.clear()
+	_id_to_unit.clear()
+
+	# Collect all active solver units + their intent directions
+	var units: Array[Node2D] = []
+	var intent_dirs: Dictionary = {}  # int instance_id -> Vector2
+
+	for unit in 单位管理器.获取所有单位():
+		if not is_instance_valid(unit):
+			continue
+		if not ("_using_movement_solver" in unit) or not unit._using_movement_solver:
+			continue
+		if not ("移动意图" in unit) or unit.移动意图 == null or not unit.移动意图.is_valid():
+			continue
+		units.append(unit)
+		var id: int = unit.get_instance_id()
+		_id_to_unit[id] = unit
+		intent_dirs[id] = _get_intent_direction(unit)
+
+	if units.size() < 2:
+		return
+
+	# Process all unique pairs (i < j ensures each pair once)
+	var processed: Dictionary = {}  # "id|id" -> true
+
+	for i in range(units.size()):
+		var a: Node2D = units[i]
+		var id_a: int = a.get_instance_id()
+		var radius_a: float = _get_collision_radius(a)
+		var dir_a: Vector2 = intent_dirs.get(id_a, Vector2.ZERO)
+
+		for j in range(i + 1, units.size()):
+			var b: Node2D = units[j]
+			var id_b: int = b.get_instance_id()
+
+			var pair_key: String = _geom_pair_key(a, b)
+			if processed.has(pair_key):
+				continue
+			processed[pair_key] = true
+
+			var delta_vec: Vector2 = a.global_position - b.global_position
+			var dist: float = delta_vec.length()
+			var radius_b: float = _get_collision_radius(b)
+			var desired_dist: float = radius_a + radius_b + _STABILIZER_PADDING
+
+			if dist >= desired_dist:
+				continue
+
+			var overlap: float = desired_dist - dist
+			var normal: Vector2 = delta_vec / maxf(dist, 0.001)
+			var correction: Vector2 = normal * overlap * _STABILIZER_STRENGTH
+
+
+			# ── Head-on lateral bias ──
+			# Both units moving toward each other → add deterministic
+			# sideways nudge so they can pass instead of deadlocking.
+			var dir_b: Vector2 = intent_dirs.get(id_b, Vector2.ZERO)
+			if dir_a.length_squared() > 0.01 and dir_b.length_squared() > 0.01:
+				var ndir_a: Vector2 = dir_a.normalized()
+				var ndir_b: Vector2 = dir_b.normalized()
+				if ndir_a.dot(ndir_b) < _HEAD_ON_DOT:
+					# Deterministic side derived from sorted pair IDs
+					var side: Vector2 = Vector2(-normal.y, normal.x)
+					if (id_a ^ id_b) & 1:
+						side = -side
+					correction += side * overlap * _HEAD_ON_BIAS
+
+			# ── Split symmetrically ──
+			var corr_a: Vector2 = correction * 0.5
+			var corr_b: Vector2 = -correction * 0.5
+
+			# ── Arrival suppression (per-unit) ──
+			if _is_near_arrival(a):
+				if a.velocity.length() < _ARRIVAL_SPEED_THRESHOLD:
+					corr_a = Vector2.ZERO
+				else:
+					corr_a *= _ARRIVAL_SUPPRESSION
+
+			if _is_near_arrival(b):
+				if b.velocity.length() < _ARRIVAL_SPEED_THRESHOLD:
+					corr_b = Vector2.ZERO
+				else:
+					corr_b *= _ARRIVAL_SUPPRESSION
+
+			# ── Per-unit clamp ──
+			if corr_a.length_squared() > _STABILIZER_CLAMP * _STABILIZER_CLAMP:
+				corr_a = corr_a.normalized() * _STABILIZER_CLAMP
+			if corr_b.length_squared() > _STABILIZER_CLAMP * _STABILIZER_CLAMP:
+				corr_b = corr_b.normalized() * _STABILIZER_CLAMP
+
+			# ── Accumulate ──
+			if not _pair_corrections.has(id_a):
+				_pair_corrections[id_a] = Vector2.ZERO
+			if not _pair_corrections.has(id_b):
+				_pair_corrections[id_b] = Vector2.ZERO
+
+			_pair_corrections[id_a] += corr_a
+			_pair_corrections[id_b] += corr_b
+
+func _apply_pair_corrections() -> void:
+	# Reset per-frame diagnostic accumulators
+	_dbg_goal_speed_sum = 0.0
+	_dbg_corr_mag_sum = 0.0
+	_dbg_max_ratio = 0.0
+	_dbg_dominated = 0
+	_dbg_reversed = 0
+	_dbg_unit_count = 0
+
+	for id in _pair_corrections:
+		var corr: Vector2 = _pair_corrections[id]
+		if corr.length_squared() <= 0.001:
+			continue
+		var unit: Node2D = _id_to_unit.get(id) as Node2D
+		if not is_instance_valid(unit) or not ("velocity" in unit):
+			continue
+		# Skip units that arrived and were removed from tracking
+		if not _单位数据.has(unit):
+			continue
+		# Skip SLOT_LOCKED units (they hold position via anchor return)
+		if 是否是槽锁定(unit):
+			continue
+
+		# Step 1: Capture pre-correction velocity and accumulate stats
+		var pre_vel: Vector2 = unit.velocity
+		var goal_spd: float = pre_vel.length()
+		var corr_mag: float = corr.length()
+
+		_dbg_unit_count += 1
+		_dbg_goal_speed_sum += goal_spd
+		_dbg_corr_mag_sum += corr_mag
+
+		var ratio: float = corr_mag / maxf(goal_spd, 0.001)
+		if ratio > _dbg_max_ratio:
+			_dbg_max_ratio = ratio
+		if corr_mag >= goal_spd and goal_spd > 0.001:
+			_dbg_dominated += 1
+		# Reversed: correction pushes opposite to goal direction
+		if goal_spd > 0.001 and corr.dot(pre_vel / goal_spd) < -0.5 * corr_mag:
+			_dbg_reversed += 1
+
+		# Step 2: Speed-proportional clamp (max = move_speed * ratio)
+		var move_spd: float = unit.移动速度 if "移动速度" in unit else unit.最大速度 if "最大速度" in unit else 200.0
+		var max_corr: float = move_spd * _STABILIZER_MAX_RATIO
+		if corr_mag > max_corr:
+			corr = corr / corr_mag * max_corr
+			corr_mag = max_corr
+		unit.velocity += corr
+
+	# [DIAG] Per-frame pair correction status (every 60 frames)
+	if Engine.get_physics_frames() % 60 == 0:
+		print("[PCDBG] pc_size=%d tracked=%d applied=%d" % [_pair_corrections.size(), _单位数据.size(), _dbg_unit_count])
+
+func _get_intent_direction(unit: Node2D) -> Vector2:
+	var intent: MovementIntent = unit.移动意图
+	if not intent or not intent.is_valid():
+		return Vector2.ZERO
+
+	match intent.type:
+		MovementIntent.IntentType.MOVE_TO, MovementIntent.IntentType.ATTACK_MOVE:
+			return (intent.target_position - unit.global_position).normalized()
+		MovementIntent.IntentType.PURSUE:
+			if is_instance_valid(intent.target_unit):
+				return (intent.target_unit.global_position - unit.global_position).normalized()
+		MovementIntent.IntentType.SKILL_DRIVEN:
+			return (intent.target_position - unit.global_position).normalized()
+	return Vector2.ZERO
+
+
+## Check if unit is near its arrival point.
+## Used by arrival suppression to reduce pair correction strength.
+func _is_near_arrival(unit: Node2D) -> bool:
+	# SLOT_LOCKED or already arrived → fully suppressed
+	var data = _单位数据.get(unit)
+	if data:
+		if data.slot_state == SLOT_LOCKED:
+			return true
+		if data.已到达:
+			return true
+
+	# Distance-based check against intent target
+	var intent: MovementIntent = unit.移动意图
+	if not intent or not intent.is_valid():
+		return true
+	var stop_dist: float = maxf(intent.stop_distance, 20.0)
+	var dist_to_target: float = unit.global_position.distance_to(intent.target_position)
+	return dist_to_target < stop_dist * _ARRIVAL_DIST_FACTOR
+
+
+## Get collision radius for a unit, with sensible fallback.
+func _get_collision_radius(unit: Node2D) -> float:
+	if "碰撞半径" in unit:
+		var r = unit.碰撞半径
+		if typeof(r) == TYPE_FLOAT:
+			return r
+	# Read from CollisionShape2D child if accessible
+	if unit.has_node("碰撞"):
+		var shape_node = unit.get_node("碰撞")
+		if shape_node and shape_node.shape and "radius" in shape_node.shape:
+			return shape_node.shape.radius
+	return _DEFAULT_COLLISION_RADIUS
+
 
 
 # ============================================================
@@ -427,8 +775,6 @@ func _构建策略(intent: MovementIntent) -> 移动策略:
 			return 前往位置移动.new()
 
 
-
-
 # ============================================================
 # 内联建议力构建（Phase 7 — 分离力已迁移至 SeparationForceProvider）
 # ============================================================
@@ -473,14 +819,6 @@ func _构建内联力(unit: Node2D, data: SolverUnitData, intent: MovementIntent
 		pf.weight = 1.0
 		pf.priority = 0
 		forces.append(pf)
-
-	# ③ 分离力 — 已迁移至 SeparationForceProvider（2026-07-05）
-	#     旧内联代码（代替代保持参考，已删除）：
-	#       if 避障系统.实例:
-	#           var 周围单位 = _获取周围单位(unit)
-	#           var 分离力向量 = 避障系统.实例.计算让路修正(unit, 周围单位, 路径方向)
-	#           if 分离力向量.length_squared() > 0.0001:
-	#               → MovementForce(AVOIDANCE, weight=0.4)
 
 	return forces
 

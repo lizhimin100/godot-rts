@@ -1,7 +1,7 @@
 [gd_resource type="TileSet" format=3 uid="uid://ckprlv4mqbbho"]
 
 [ext_resource type="Texture2D" uid="uid://bn4ityw0b3ub4" path="res://小剑资源/Terrain/Ground/Tilemap_Flat.png" id="1_4f6fn"]
-[ext_resource type="Texture2D" uid="uid://duem0w7bmxonj" path="res://美术、音频/建筑/高亮瓦片.png" id="2_18il5"]
+[ext_resource type="Texture2D" uid="uid://duem0w7bmxonj" path="res://美术、音频/美术、音频/建筑/高亮瓦片.png" id="2_18il5"]
 [ext_resource type="Texture2D" uid="uid://cgsgx074v5bpq" path="res://小剑资源/UI/Buttons/Button_Hover.png" id="3_nah8i"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_18il5"]

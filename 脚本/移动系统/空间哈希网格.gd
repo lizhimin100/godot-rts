@@ -10,8 +10,6 @@ extends Node
 ##   - neighbor query 返回 9 cells 内所有单位
 ##   - 调用方负责排除 self
 
-func _diag() -> bool: return 调试配置.DEBUG_MOVE
-
 static var 实例: Node = null
 
 ## 网格单元大小（px）
@@ -22,11 +20,6 @@ const CELL_SIZE: float = 64.0
 var _grid: Dictionary = {}
 ## 已插入单位集合（防同一单位多次插入同一格）
 var _已插入: Dictionary = {}
-
-## 统计：本帧插入的单位总数
-var _帧插入计数: int = 0
-## 统计：本帧查询计数
-var _帧查询计数: int = 0
 
 
 func _enter_tree() -> void:
@@ -52,7 +45,6 @@ func 插入单位(单位: Node2D) -> void:
 	if _已插入.has(单位):
 		return
 	_已插入[单位] = true
-	_帧插入计数 += 1
 
 	var key = _cell_key(单位.global_position)
 	if not _grid.has(key):
@@ -71,11 +63,6 @@ func 清空() -> void:
 	_grid.clear()
 	_已插入.clear()
 
-	if _diag() and _帧插入计数 > 0:
-		pass  # 不在这里打日志，由调用方在重建后输出
-	_帧插入计数 = 0
-	_帧查询计数 = 0
-
 
 ## 查询九宫格内所有单位（不剪裁距离）
 ## 返回 9 cells 中所有有效单位
@@ -93,23 +80,7 @@ func 查询9宫格(位置: Vector2) -> Array[Node2D]:
 					if is_instance_valid(单位):
 						结果.append(单位)
 
-	_帧查询计数 += 1
-
-	# ⭐ 调试验证：查询应有结果
-	if _diag() and _帧查询计数 == 1 and 结果.is_empty():
-		pass  # 第一个查询在运动服务中可能是单位自身，等运动服务日志
-
 	return 结果
-
-
-## 获取本帧的插入总数（调试用）
-func 获取插入总数() -> int:
-	return _帧插入计数
-
-
-## 获取本帧查询次数（调试用）
-func 获取查询次数() -> int:
-	return _帧查询计数
 
 
 ## 查询半径内所有单位（九宫格 + 距离剪裁）

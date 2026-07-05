@@ -15,13 +15,7 @@ extends Node
 ##   - 到达单位不参与队形力（由运动服务管理）
 ##   - 队形力只能温柔修正，不能主导移动
 
-func _diag() -> bool: return 调试配置.DEBUG_FORMATION
-
 static var 实例: Node = null
-
-## debug 节流（每 0.5 秒输出一次槽位概况）
-var _debug_timer: float = 0.0
-const DEBUG_INTERVAL: float = 0.5
 
 
 ## 阵型枚举
@@ -115,15 +109,6 @@ func 创建队形(单位列表: Array[Node2D], 目标中心: Vector2,
 
 	_组字典[组.组ID] = 组
 
-	if _diag():
-		var colrow = ""
-		if 组.列数 > 0:
-			colrow = " columns=%d rows=%d" % [组.列数, 组.行数]
-		print("[FORM-SLOTS] group=", 组.组ID, " count=", 总数, colrow, " spacing=", 间距, " type=", 阵型)
-		for 槽 in 组.槽位列表:
-			var 理想 = 目标中心 + 槽.偏移
-			print("[FORM-IDEAL] unit=", 槽.单位.name, " slot=", 槽.槽位ID, " ideal=(", 理想.x, ",", 理想.y, ")")
-
 	return 组.组ID
 
 
@@ -214,9 +199,6 @@ func 计算队形力(单位: Node2D) -> Vector2:
 	var 强度 = minf(距离 * 增益, 最大力)
 	var 力 = 偏移向量.normalized() * 强度
 
-	if _diag() and 力.length() > 1.0:
-		print("[FORM-FORCE] <", 单位.name, "> dist=", 距离, " force=", 力.length(), " ideal=", 理想位置)
-
 	return 力
 
 
@@ -232,8 +214,6 @@ func 移除单位(单位: Node2D) -> void:
 	# 组空 -> 自动销毁
 	if 组.槽位列表.is_empty():
 		_组字典.erase(组.组ID)
-		if _diag():
-			print("[FORM] 组ID=", 组.组ID, " 空，自动销毁")
 
 
 ## 销毁整个队形组
@@ -245,9 +225,6 @@ func 销毁组(组ID: int) -> void:
 	for 槽 in 组.槽位列表:
 		_单位所属组.erase(槽.单位)
 	_组字典.erase(组ID)
-
-	if _diag():
-		print("[FORM] 销毁组 组ID=", 组ID)
 
 
 ## 获取当前活跃的队形组数量
@@ -264,38 +241,6 @@ func 获取组行列(组ID: int) -> Dictionary:
 	if not 组:
 		return {}
 	return {"columns": 组.列数, "rows": 组.行数}
-
-
-# ============================================================
-# 调试（每 0.5 秒输出槽位概况打印）
-# ============================================================
-
-func _physics_process(delta: float) -> void:
-	_debug_timer += delta
-	if _debug_timer < DEBUG_INTERVAL:
-		return
-	_debug_timer = 0.0
-
-	if not _diag():
-		return
-
-	# 低频输出所有活跃组的理想位置分布
-	for 组ID in _组字典:
-		var 组 = _组字典[组ID] as 队形组
-		if not 组:
-			continue
-
-		var col_info = ""
-		if 组.列数 > 0:
-			col_info = " columns=%d rows=%d" % [组.列数, 组.行数]
-
-		print("[FORM-SLOTS] group=", 组ID, " count=", 组.槽位列表.size(), col_info)
-
-		for 槽 in 组.槽位列表:
-			if not is_instance_valid(槽.单位):
-				continue
-			var 理想 = 获取单位目标(槽.单位)
-			print("[FORM-IDEAL] unit=", 槽.单位.name, " slot=", 槽.槽位ID, " ideal=(", 理想.x, ",", 理想.y, ")")
 
 
 # ============================================================
@@ -363,12 +308,12 @@ func _计算组中心(组: 队形组) -> Vector2:
 			计数 += 1
 
 	if 计数 == 0:
-		return 组.目标中心
+			return 组.目标中心
 
 	return 和 / 计数
 
 
-## 获取组所有理想位置（调试用）
+## 获取组所有理想位置
 func 获取所有理想位置(组ID: int) -> Array[Vector2]:
 	var 组 = _组字典.get(组ID)
 	if not 组:

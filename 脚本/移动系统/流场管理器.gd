@@ -14,8 +14,6 @@ extends Node
 ##
 ##   每个 unit 的每帧方向查询完全独立计算。
 
-func _diag() -> bool: return 调试配置.DEBUG_MOVE
-
 static var 实例: 流场管理器 = null
 
 

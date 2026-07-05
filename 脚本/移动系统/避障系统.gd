@@ -13,8 +13,6 @@ extends Node
 ##     final = path + formation*0.6 + avoidance*0.4
 ##   本系统返回值单位 = px/s，不是位移不是冲量。
 
-func _diag() -> bool: return 调试配置.DEBUG_AVOID
-
 static var 实例: Node = null
 
 ## 避障半径 (px) — 约 spacing * 0.9
@@ -90,7 +88,7 @@ func 计算让路修正(单位: Node2D, 周围单位: Array, 期望方向: Vecto
 
 		累加方向 += 偏移.normalized() * 强度
 
-	# Phase 7.3: 邻居数归一化 e2�� reciprocity 稳定性修复
+	# Phase 7.3: 邻居数归一化 reciprocity 稳定性修复
 	# 当 C 被 N 个邻居同时推开时，原算法累积 N× 力
 	# 导致：A 推 C 的力量 ×1，但 C 被 A+B+D 推的力 ×3 → 不对称
 	# 修复：除以 sqrt(N)，使多邻居累积力≈ 单邻居力 × sqrt(N) 而不是 ×N
@@ -139,18 +137,6 @@ func 计算让路修正(单位: Node2D, 周围单位: Array, 期望方向: Vecto
 			# 重新限幅
 			if 修正.length_squared() > max_avoid * max_avoid:
 				修正 = 修正.normalized() * max_avoid
-
-	# --- Step 4: 日志（raw / cap / final） ---
-	if _diag():
-		var raw_len = raw_force.length()
-		var final_len = 修正.length()
-		if final_len > 1.0:
-			print("[AVOID] unit=", 单位.name, " neighbors=", 邻居数,
-				  " raw=", raw_len, " cap=", max_avoid,
-				  " final=", final_len)
-		elif 邻居数 > 3 and final_len < 0.5:
-			print("[AVOID-IGNORE] unit=", 单位.name, " neighbors=", 邻居数,
-				  " reason=final≈0 raw=", raw_len)
 
 	return 修正
 
